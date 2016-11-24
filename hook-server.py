@@ -21,10 +21,16 @@ def redeploy_webserver(path, branch):
 
 	cwd = os.getcwd()
 	os.chdir(path)
-	subprocess.run(['sudo', './manage', '{}'.format(branch), 'stop'])
-	subprocess.run(['git', 'pull', 'origin', '{}'.format(branch)])
-	subprocess.run(['git', 'checkout', '{}'.format(branch)])
-	subprocess.run(['sudo', './manage', '{}'.format(branch), 'start'])
+
+	subprocess.run(['sudo', './manage', branch, 'stop'])
+	
+	# subprocess.run(['git', 'pull', 'origin', branch])
+	# The two lines below is replacement for the above, and handles local changes better
+	subprocess.run(['git', 'fetch', 'origin', branch])
+	subprocess.run(['git', 'merge', '-s', 'recursive', '-X', 'theirs', 'origin/{}'.format(branch)])
+
+	subprocess.run(['git', 'checkout', branch])
+	subprocess.run(['sudo', './manage', branch, 'start'])
 	os.chdir(cwd)
 	return
 
