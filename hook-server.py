@@ -14,12 +14,17 @@ def redeploy_webserver(path, branch):
 	'''
 
 	# TODO: Add update of python requirements
+	# TODO: What if manage did not exist at first?
+	# TODO: What if manage fails?
+	
+	print('Redeploying {branch} web server'.format(branch=branch))
+
 	cwd = os.getcwd()
 	os.chdir(path)
-	subprocess.run(['sudo ./manage', '{}'.format(branch), 'stop'])
+	subprocess.run(['sudo', './manage', '{}'.format(branch), 'stop'])
 	subprocess.run(['git', 'pull', 'origin', '{}'.format(branch)])
 	subprocess.run(['git', 'checkout', '{}'.format(branch)])
-	subprocess.run(['sudo ./manage', '{}'.format(branch), 'start'])
+	subprocess.run(['sudo', './manage', '{}'.format(branch), 'start'])
 	os.chdir(cwd)
 	return
 
