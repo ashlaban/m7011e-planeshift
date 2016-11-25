@@ -1,0 +1,6 @@
+#
+####### Planeshift python requirements #######
+#
+flask
+python-daemon
+setproctitle
