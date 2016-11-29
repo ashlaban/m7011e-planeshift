@@ -5,6 +5,7 @@ __pycache__/
 
 # Project specific
 notes/
+config.json
 
 # macOS specific
 *.DS_Store

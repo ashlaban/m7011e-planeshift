@@ -16,6 +16,8 @@ import argparse
 import daemon
 from setproctitle import setproctitle
 
+import run
+
 class Lockfile(object):
 	def __init__(self, branch):
 		self.path = '/var/run/planeshift/' + branch + '.lock'
@@ -64,9 +66,9 @@ class DaemonManager(object):
 				stderr=err,
 				uid=pwd.getpwnam('www').pw_uid,
 				gid=pwd.getpwnam('www').pw_gid,
+				working_directory='./'
 			):
-				from app import app
-				app.run(debug=False, host='0.0.0.0', port=8080)
+				run.start()
 
 		def stop(self):
 			pid = self.lockfile.read_pid()
