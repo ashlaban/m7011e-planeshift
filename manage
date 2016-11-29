@@ -6,6 +6,7 @@
 # 	- Add sane exceptions and error handling
 # 	- Add logging with import logger to /var/log/planeshift
 #	- Force start, remove the previous lockfile
+#	- remove branch arg
 
 import signal
 import os
@@ -108,7 +109,7 @@ if __name__ == '__main__':
 		elif args.mode ==  'status':
 			manager.status()
 	except Exception:
-		logger = logger.getLogger('manage')
+		logger = logging.getLogger('manage')
 		logger.error('', exc_info=True)
 		raise
 
