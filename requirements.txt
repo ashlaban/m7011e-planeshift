@@ -1,6 +1,11 @@
 #
 ####### Planeshift python requirements #######
+# 
+# Run pip install -r requirements.txt to install
 #
-flask
 python-daemon
 setproctitle
+
+flask
+flask_sqlalchemy
+flask_login
