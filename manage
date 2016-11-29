@@ -88,23 +88,28 @@ class DaemonManager(object):
 				print('Daemon _not_ running.')
 
 if __name__ == '__main__':
-	parser = argparse.ArgumentParser()
-	parser.add_argument('branch', default='master', help='')
-	parser.add_argument('mode'  , choices=['start', 'stop', 'restart', 'status'], help='')
-	parser.add_argument('--debug', action='store_true')
-	args = parser.parse_args()
+	try:
+		parser = argparse.ArgumentParser()
+		parser.add_argument('branch', default='master', help='')
+		parser.add_argument('mode'  , choices=['start', 'stop', 'restart', 'status'], help='')
+		parser.add_argument('--debug', action='store_true')
+		args = parser.parse_args()
 
-	setproctitle('planeshift-{branch}'.format(branch=args.branch))
+		setproctitle('planeshift-{branch}'.format(branch=args.branch))
 
-	manager = DaemonManager(args.branch, args.debug)
+		manager = DaemonManager(args.branch, args.debug)
 
-	if args.mode == 'start':
-		manager.start()
-	elif args.mode == 'stop':
-		manager.stop()
-	elif args.mode ==  'restart':
-		manager.restart()
-	elif args.mode ==  'status':
-		manager.status()
+		if args.mode == 'start':
+			manager.start()
+		elif args.mode == 'stop':
+			manager.stop()
+		elif args.mode ==  'restart':
+			manager.restart()
+		elif args.mode ==  'status':
+			manager.status()
+	except Exception:
+		logger = logger.getLogger('manage')
+		logger.error('', exc_info=True)
+		raise
 
 

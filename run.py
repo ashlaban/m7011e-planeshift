@@ -28,8 +28,12 @@ def start():
 	run_logger.info('Loading configuration.')
 	config = rc.load_config(path=rc.CONFIG_PATH, module=CONFIG_MODULE)
 	
-	run_logger.info('Starting server')
-	app.run(**config)
+	run_logger.info('Starting server on port={}'.format(config['port']))
+	try:
+		app.run(**config)
+	except Exception:
+		run_logger.error('Could not start server.', exc_info=True)
+		raise
 
 if __name__ == '__main__':
 	start()
