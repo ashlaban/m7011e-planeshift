@@ -12,11 +12,10 @@ import os
 import pwd
 import sys
 import argparse
+import logging
 
 import daemon
 from setproctitle import setproctitle
-
-import run
 
 class Lockfile(object):
 	def __init__(self, branch):
@@ -68,6 +67,7 @@ class DaemonManager(object):
 				gid=pwd.getpwnam('www').pw_gid,
 				working_directory='./'
 			):
+				import run
 				run.start()
 
 		def stop(self):
