@@ -52,6 +52,7 @@ DEFAULTS = {
 }
 
 WEB_TYPES = {
+	'port' : int,
 	'debug': from_str_to_bool,
 }
 
