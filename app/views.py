@@ -1,7 +1,7 @@
 from flask import render_template, flash, redirect, session, url_for, request, g
 from flask_login import login_user, logout_user, current_user, login_required
 from app import app, db, lm
-from .forms import LoginForm
+from .forms import LoginForm, SignupForm
 from .models import User
 
 #Not currently used, I think...
@@ -24,7 +24,9 @@ def login():
 		return redirect(url_for('index'))
 	form = LoginForm()
 	if form.validate_on_submit():
+		#########################################################################################
 		#Queries all users. Find a way to only query correct username!
+		'''
 		users = User.query.all()
 		for u in users:
 			if(u.username==form.username.data and u.password==form.password.data):
@@ -34,9 +36,48 @@ def login():
 				
 		flash('Wrong username or password!')
 		return redirect(url_for('login'))
+		'''
+
+		#########################################################################################
+		#Should be a more appropriate query. Not tested if functioning...
+		'''
+		try:
+			u = User.query().filter_by(username=form.username.data).one()
+			if(u.password==form.password.data):
+				login_user(u)
+				flash('User %s successfully logged in.' % (u.username))
+				return redirect(url_for('index'))
+			flash('Wrong password! Try again.')
+			return redirect(url_for('login'))
+		except NoResultsFound:	
+			flash('No user by that name exists!')
+			return redirect(url_for('login'))
+		except MultipleResultsFound:
+			flash('It seems that the system somehow allowed multiple users with the same name to be created. Well, this is embarrasing...')
+			return redirect(url_for('login'))
+		'''
+
+		########################################################################################
+		#Confirmation and error handling implemented in login form. Much cleaner!
+		login_user(form.user)
+		flash('Successfully logged in as %s' % form.user.username)
+		return redirect(url_for('index'))
+		
 	return render_template('login.html', title='Login', form=form)
 
 @app.route('/logout')
 def logout():
 	logout_user()
 	return redirect(url_for('index'))
+
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+	form = SignupForm()
+	if form.validate_on_submit():
+		user = User(username=form.username.data, password=form.password.data, email=form.email.data)
+		db.session.add(user)
+		db.session.commit()
+		flash('Thanks for signing up')
+		return redirect(url_for('login'))
+
+	return render_template('signup.html', title='Signup', form=form)
