@@ -1,169 +1,25 @@
-<!DOCTYPE html>
-<html>
-	<head>
-		<title>Planeshift</title>
-		<style>
-			@import url('https://fonts.googleapis.com/css?family=Open+Sans:300,400,600');
-			
-			/*
-				Color scheme: http://www.colorcombos.com/color-schemes/423/ColorCombo423.html;
-				153450 - darkest blue
-				294052 - dark blue
-				447294 - blue
-				8FBCDB - light blue
-				F4D6BC - linen
-				F8E4CC - light linen
-			 */
+{% extends "base.html" %}
 
-			* {
-				font-family: 'Open Sans', sans-serif;
-				font-weight: 300;
-				font-size: 1em;
-			}
+{% block css %}
+<link rel="stylesheet" type="text/css" href="static/css/index.css" />
+{% endblock css %}
 
-			body {
-				background-color: #F4D6BC;
+{% block content %}
+<section id="about" class="center-content">
+	<div class="section-content center-content">
+			<h1 class="title half">PLANESHIFT</h1>
+			<p class="half">Planeshift is primarily for helping role and board game players during their sessions with digitalized resources. However, the system should be general enough that any kind of meeting involving people and a table can be augmented.</p>
+	</div>
+</section>
 
-				margin: 0;
-			}
+<section id="img-filler" class="center-content">
+	<div class="section-content center-content">
+	</div>
+</section>
 
-			nav {
-				display: flex;
-				flex-direction: row;
-
-				align-items: center;
-
-				background: #8FBCDB;
-
-				height: 5em;
-			}
-
-			nav > a, nav > a:visited{
-				text-decoration: none;
-				color: inherit;
-			}
-
-			.nav-item {
-				padding-left: 1em;
-				padding-right: 1em;
-		/*		padding-top: 1em;
-				padding-bottom: 1em;*/
-
-				display: flex;
-				align-items: center;
-				height: 100%;
-			}
-
-			nav > a:hover {
-				text-decoration: none;
-				color: inherit;
-				background: #F8E4CC;
-			}
-
-			.nav-filler {
-				flex-grow: 1;
-			}
-
-			footer {
-				display: flex;
-				flex-direction: row;
-
-				background: #294052;
-
-				height: 5em;
-			}
-
-			#about {
-			}
-
-			#img-filler {
-				background: linear-gradient(to bottom, #8FBCDB 0%, #294052 100%);
-				/*filter: blur(5px);*/
-
-				border-color: #F8E4CC;
-				border-top-style: solid;
-				border-top-width: 2px;
-			}
-
-			#stay-tuned {
-				border-color: #F8E4CC;
-				border-top-style: solid;
-				border-top-width: 2px;
-
-				font-size: 40px;
-			}
-
-			.title {
-				color: #294052;
-				font-size: 4em;
-				font-weight: 600;
-			}
-
-			.center-content {
-				display: flex;
-				flex-direction: column;
-				justify-content: center;
-				align-items: center;
-			}
-
-			.section {
-				width: 100%;
-			}
-
-			.section-content {
-				display: flex;
-				flex-direction: row;
-
-				width: 800px;
-				height: 400px;
-			}
-
-			.right {
-				width: 50%;
-			}
-
-			.left {
-				width: 50%;
-			}
-			</style>
-	</head>
-	<body>
-		<nav>
-			<a href="/" class="nav-item">PLANESHIFT</a>
-			<a class="nav-item">About</a>
-			<a class="nav-item">Tables</a>
-			<a class="nav-item">Modules</a>
-			<span class="nav-filler nav-item"></span>
-			<a class="nav-item">Profile</a>
-		</nav>
-
-		<div id="main" class="center-content">
-			
-			<section id="about" class="section center-content">
-				<div class="section-content center-content">
-					<div class="right">
-						<h1 class="title">PLANESHIFT</h1>
-					</div>
-					<div class="left">
-						<p>Planeshift is primarily for helping role and board game players during their sessions with digitalized resources. However, the system should be general enough that any kind of meeting involving people and a table can be augmented.</p>
-					</div>
-				</div>
-			</section>
-			
-			<section id="img-filler" class="section center-content">
-				<div class="section-content center-content">
-				</div>
-			</section>
-			
-			<section id="stay-tuned" class="section center-content">
-				<div class="section-content center-content">
-					<p>Stay tuned for more!</p>
-				</div>
-			</section>
-		</div>
-
-		<footer>
-			
-		</footer>
-	</body>
-</html>
+<section id="stay-tuned" class="center-content">
+	<div class="section-content center-content">
+		<p>Stay tuned for more!</p>
+	</div>
+</section>
+{% endblock %}

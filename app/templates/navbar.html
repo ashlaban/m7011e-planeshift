@@ -1,0 +1,15 @@
+<nav>
+	<a href="/" class="nav-item">PLANESHIFT</a>
+	<a class="nav-item">About</a>
+	<a class="nav-item">Planes</a>
+	<a class="nav-item">Modules</a>
+	<span class="nav-filler nav-item"></span>
+
+	{% if g.user.is_authenticated %}
+	<a class="nav-item">Profile</a>
+	<a class="nav-item" href="/logout">Logout</a>
+	{% else %}
+	<a class="nav-item" href="/signup">Signup</a>
+	<a class="nav-item" href="/login">Login</a>
+	{% endif %}
+</nav>

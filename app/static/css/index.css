@@ -1,0 +1,47 @@
+/*
+	Color scheme: http://www.colorcombos.com/color-schemes/423/ColorCombo423.html;
+	153450 - darkest blue
+	294052 - dark blue
+	447294 - blue
+	8FBCDB - light blue
+	F4D6BC - linen
+	F8E4CC - light linen
+*/
+
+.title {
+	color: #294052;
+	font-size: 4em;
+	font-weight: 600;
+}
+
+section {
+	width: 100%;
+}
+
+.section-content {
+	display: flex;
+	flex-direction: row;
+
+	width : 800px;
+	height: 300px;
+}
+
+#about {
+}
+
+#img-filler {
+	background: linear-gradient(to bottom, #8FBCDB 0%, #294052 100%);
+	/*filter: blur(5px);*/
+
+	border-color: #F8E4CC;
+	border-top-style: solid;
+	border-top-width: 2px;
+}
+
+#stay-tuned {
+	border-color: #F8E4CC;
+	border-top-style: solid;
+	border-top-width: 2px;
+
+	font-size: 40px;
+}

@@ -1,0 +1,95 @@
+/*
+	Color scheme: http://www.colorcombos.com/color-schemes/423/ColorCombo423.html;
+	153450 - darkest blue
+	294052 - dark blue
+	447294 - blue
+	8FBCDB - light blue
+	F4D6BC - linen
+	F8E4CC - light linen
+*/
+
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:300,400,600');
+
+* {
+	font-family: 'Open Sans', sans-serif;
+	font-weight: 300;
+	font-size: 1em;
+}
+
+html, body {
+	background-color: #294052;
+
+	margin: 0;
+
+	height: 100%;
+}
+
+nav {
+	display: flex;
+	flex-direction: row;
+
+	align-items: center;
+
+	background: #8FBCDB;
+
+	height: 5em;
+}
+
+nav > a, nav > a:visited{
+	text-decoration: none;
+	color: inherit;
+}
+
+.nav-item {
+	padding-left: 1em;
+	padding-right: 1em;
+
+	display: flex;
+	align-items: center;
+	height: 100%;
+}
+
+nav > a:hover {
+	text-decoration: none;
+	color: inherit;
+	background: #F8E4CC;
+}
+
+.nav-filler {
+	flex-grow: 1;
+}
+
+#main {
+	background: #F4D6BC;
+	
+	min-height: calc(100% - 10em);
+}
+
+footer {
+	display: flex;
+	flex-direction: row;
+
+	background: #294052;
+
+	height: 5em;
+}
+
+/* Utilities */
+
+.center-content {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+
+.whole   { width: 100%  ; }
+.half    { width: 50%   ; }
+.quarter { width: 25%   ; }
+.eigth   { width: 12.5% ; }
+
+.top-padding-xs { padding-top: 1em; }
+.top-padding-sm { padding-top: 2em; }
+.top-padding-md { padding-top: 3em; }
+.top-padding-lg { padding-top: 4em; }
+.top-padding-xl { padding-top: 5em; }
