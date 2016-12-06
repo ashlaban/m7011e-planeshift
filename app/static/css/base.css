@@ -93,3 +93,10 @@ footer {
 .top-padding-md { padding-top: 3em; }
 .top-padding-lg { padding-top: 4em; }
 .top-padding-xl { padding-top: 5em; }
+
+.top-margin-xs { margin-top: 1em; }
+.top-margin-sm { margin-top: 2em; }
+.top-margin-md { margin-top: 3em; }
+.top-margin-lg { margin-top: 4em; }
+.top-margin-xl { margin-top: 5em; }
+

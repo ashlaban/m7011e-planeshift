@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block css %}
+<link rel="stylesheet" type="text/css" href="/static/css/modules/modules.css" />
+{% endblock css %}
+
+{% block content %}
+
+<ul class=center-content>
+{% for module in modules %}
+<a href="/modules/{{module.name}}" class="section-content center-content">
+	<div class="half center-content">
+		<img src="data:image/png;base64,{{module.picture}}">
+	</div>
+	<div class="half">
+		<h1>{{module.name}}</h1>
+		<p>{{module.short_desc}}</p>
+	</div>
+</a>
+{% endfor %}
+</ul>
+{% endblock %}

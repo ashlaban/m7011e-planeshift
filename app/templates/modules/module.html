@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block css %}
+<link rel="stylesheet" type="text/css" href="/static/css/modules/modules.css" />
+{% endblock css %}
+
+{% block content %}
+<section class="section-content center-content top-padding-md">
+	<div class="half center-content">
+		<img src="data:image/png;base64,{{module.picture}}">
+	</div>
+	<div class="half">
+		<h1>{{module.name}}</h1>
+		<p>{{module.short_desc}}</p>
+		<h2>Long description</h2>
+		<p>{{module.long_desc}}</p>
+	</div>
+</section>
+{% endblock %}
