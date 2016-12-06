@@ -9,3 +9,5 @@ setproctitle
 flask
 flask_sqlalchemy
 flask_login
+
+sqlalchemy-migrate

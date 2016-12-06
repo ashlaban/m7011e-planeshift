@@ -20,7 +20,7 @@ import log
 from app import app
 
 CONFIG_MODULE = 'web'
-rc.DEBUG      = True
+rc.DEBUG      = False
 
 def start():
 	run_logger = logging.getLogger('runner')
