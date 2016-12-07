@@ -1,8 +1,9 @@
 from flask import render_template, flash, redirect, session, url_for, request, g
 from flask_login import login_user, logout_user, current_user, login_required
 from app import app, db, lm
-from .forms import LoginForm, SignupForm
-from .models import User
+from .forms import LoginForm, SignupForm, CreatePlaneForm
+from .models import User, Plane
+from .modules.models import Module
 
 #Not currently used, I think...
 @lm.user_loader
@@ -24,39 +25,6 @@ def login():
 		return redirect(url_for('index'))
 	form = LoginForm()
 	if form.validate_on_submit():
-		#########################################################################################
-		#Queries all users. Find a way to only query correct username!
-		'''
-		users = User.query.all()
-		for u in users:
-			if(u.username==form.username.data and u.password==form.password.data):
-				login_user(u)
-				flash('User %s successfully logged in.' % (u.username))
-				return redirect(url_for('index'))
-				
-		flash('Wrong username or password!')
-		return redirect(url_for('login'))
-		'''
-
-		#########################################################################################
-		#Should be a more appropriate query. Not tested if functioning...
-		'''
-		try:
-			u = User.query().filter_by(username=form.username.data).one()
-			if(u.password==form.password.data):
-				login_user(u)
-				flash('User %s successfully logged in.' % (u.username))
-				return redirect(url_for('index'))
-			flash('Wrong password! Try again.')
-			return redirect(url_for('login'))
-		except NoResultsFound:	
-			flash('No user by that name exists!')
-			return redirect(url_for('login'))
-		except MultipleResultsFound:
-			flash('It seems that the system somehow allowed multiple users with the same name to be created. Well, this is embarrasing...')
-			return redirect(url_for('login'))
-		'''
-
 		########################################################################################
 		#Confirmation and error handling implemented in login form. Much cleaner!
 		login_user(form.user)
@@ -81,3 +49,23 @@ def signup():
 		return redirect(url_for('login'))
 
 	return render_template('signup.html', title='Signup', form=form)
+
+#Move to own file!
+@app.route('/create_plane', methods=['GET', 'POST'])
+def create_plane():
+	if g.user is not None and g.user.is_authenticated:
+		form = CreatePlaneForm()
+		form.module.choices = form.getModules()
+		if form.validate_on_submit():
+			m = None
+			if Module.query.filter_by(id=form.module.data).scalar() is not None:
+				m = Module.query.filter_by(id=form.module.data).first()
+			plane = Plane(owner=g.user.id, password=form.password.data, module=m.id, data=None, name=form.name.data, public=form.public.data)
+			db.session.add(plane)
+			db.session.commit()
+			flash('Plane created')
+			return redirect(url_for('index'))
+	else:
+		return redirect(url_for('login'))
+
+	return render_template('create_plane.html', title='Create Plane', form=form)

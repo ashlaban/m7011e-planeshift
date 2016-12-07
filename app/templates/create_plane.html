@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block css %}
+{% endblock css %}
+
+{% block content  %}
+	<form action="" method="post" name="Create_plane" class="center-content top-padding-md">
+		{{ form.hidden_tag()  }}
+		{{ form.name(size=30, placeholder='name') }}
+		{% for error in form.name.errors %}
+		<span style="color: red;">[{{ error }}]</span>
+		{% endfor %}
+		{{ form.password(size=30, placeholder='password') }}
+		{% for error in form.password.errors %}
+		<span style="color: red;">[{{ error }}]</span>
+		{% endfor %}
+		{{ form.module(placeholder='none') }}
+		{% for error in form.module.errors %}
+		<span style="color: red;">[{{ error }}]</span>
+		{% endfor %}
+		{{ form.public }} Public
+		{% for error in form.public.errors %}
+		<span style="color: red;">[{{ error }}]</span>
+		{% endfor %}
+		<input type="submit" value="Create">
+	</form>
+{% endblock  content %}
