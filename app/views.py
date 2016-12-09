@@ -1,8 +1,8 @@
 from flask import render_template, flash, redirect, session, url_for, request, g
 from flask_login import login_user, logout_user, current_user, login_required
 from app import app, db, lm
-from .forms import LoginForm, SignupForm, CreatePlaneForm
-from .models import User, Plane
+from .forms import LoginForm, SignupForm
+from .models import User
 from .modules.models import Module
 
 #Not currently used, I think...
@@ -51,6 +51,7 @@ def signup():
 	return render_template('signup.html', title='Signup', form=form)
 
 #Move to own file!
+'''
 @app.route('/create_plane', methods=['GET', 'POST'])
 def create_plane():
 	if g.user is not None and g.user.is_authenticated:
@@ -69,3 +70,4 @@ def create_plane():
 		return redirect(url_for('login'))
 
 	return render_template('create_plane.html', title='Create Plane', form=form)
+'''

@@ -1,0 +1,46 @@
+# Import flask dependencies
+from flask import Blueprint, render_template, flash, redirect, session, url_for, request, g
+
+from app import db
+from app.planes.forms import CreatePlaneForm
+from app.planes.models import Plane
+from app.modules.models import Module
+
+# Define the blueprint: 'auth', set its url prefix: app.url/auth
+planes = Blueprint('planes', __name__, url_prefix='/planes')
+api     = Blueprint('planes', __name__, url_prefix='/api')
+
+
+# Views
+@planes.route('/create', methods=['GET', 'POST'])
+def create_plane():
+	if g.user is not None and g.user.is_authenticated:
+		form = CreatePlaneForm()
+		form.module.choices = form.getModules()
+		if form.validate_on_submit():
+			m = None
+			if Module.query.filter_by(id=form.module.data).scalar() is not None:
+				m = Module.query.filter_by(id=form.module.data).first()
+			plane = Plane(owner=g.user.id, password=form.password.data, module=m.id, data=None, name=form.name.data, public=form.public.data)
+			db.session.add(plane)
+			db.session.commit()
+			flash('Plane created')
+			return redirect(url_for('index'))
+	else:
+		return redirect(url_for('login'))
+
+	return render_template('planes/create.html', title='Create Plane', form=form)
+
+@planes.route('/<name>')
+def join_plane(name):
+	plane = Plane.query.filter_by(name=name).first()
+	
+	if plane is None:
+		return render_template('planes/404.html', name=name)
+
+	return render_template('planes/plane.html', plane=plane)
+
+# API endpoints
+@api.route('/create')
+def api_create_plane():
+	pass
