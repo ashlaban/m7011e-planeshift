@@ -11,9 +11,14 @@
 	</div>
 	<div class="half">
 		<h1>{{module.name}}</h1>
+		<h2>Version</h2>
+		<p>{{form.version_list}}</p>
 		<p>{{module.short_desc}}</p>
 		<h2>Long description</h2>
 		<p>{{module.long_desc}}</p>
+		{% if is_owner %}
+		<a href=/modules/upload/{{module.name}}>Upload new version</a>
+		{% endif %}
 	</div>
 </section>
 {% endblock %}

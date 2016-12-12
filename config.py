@@ -10,3 +10,6 @@ SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir, 'db_repository')
 
 # To disable warning about "significant overhead added by this feature".
 SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+UPLOAD_FOLDER        = './static/uploads'
+STATIC_UPLOAD_FOLDER = '/static/uploads'

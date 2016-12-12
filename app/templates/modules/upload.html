@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block css %}
+<link rel="stylesheet" type="text/css" href="/static/css/modules/modules.css" />
+{% endblock css %}
+
+{% block content %}
+
+	<section class="center-content top-padding-md">
+		<h1>{{module_name}}</h1>
+
+		{% with errors = get_flashed_messages(category_filter=["error"]) %}
+		{% if errors %}
+		<div class="alert-message block-message error">
+			<a class="close" href="#">×</a>
+		  	<ul>
+				{%- for msg in errors %}
+				<li>{{ msg }}</li>
+				{% endfor -%}
+		 	</ul>
+		</div>
+		{% endif %}
+		{% endwith %}
+
+		{% if error %}
+		<p class=error><strong>Error:</strong> {{ error }}
+		{% endif %}
+
+		<form action="" method="post" enctype="multipart/form-data" name="module_upload" class="center-content top-padding-md">
+			{{ form.hidden_tag()  }}
+		
+			{{ form.version(placeholder="version") }}
+			{% for error in form.version.errors %}
+			<span style="color: red;">[{{ error }}]</span>
+			{% endfor %}
+
+			<span> js {{ form.js() }} </span>
+			{% for error in form.js.errors %}
+			<span style="color: red;">[{{ error }}]</span>
+			{% endfor %}
+			
+			<span> html {{ form.html() }} </span>
+			{% for error in form.html.errors %}
+			<span style="color: red;">[{{ error }}]</span>
+			{% endfor %}
+
+			<span> css {{ form.css() }} </span>
+			{% for error in form.css.errors %}
+			<span style="color: red;">[{{ error }}]</span>
+			{% endfor %}
+
+			<input type="submit" value="Upload">
+		</form>
+	</section>
+{% endblock content %}

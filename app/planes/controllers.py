@@ -8,10 +8,11 @@ from app.planes.forms import CreatePlaneForm
 from app.planes.models import Plane
 from app.modules.models import Module
 
+from app.modules import manager
+
 # Define the blueprint: 'auth', set its url prefix: app.url/auth
 planes = Blueprint('planes', __name__, url_prefix='/planes')
 api     = Blueprint('planes', __name__, url_prefix='/api')
-
 
 # Views
 @planes.route('/')
@@ -49,14 +50,16 @@ def create_plane():
 @planes.route('/name/<name>')
 def join_plane(name):
 	plane = Plane.query.filter_by(name=name).first()
-	paths = {}
 	
 	if plane is None:
 		return render_template('planes/404.html', name=name)
 
-	paths['html'] = '/static/test_module/test.html'
-	paths['css']  = '/static/test_module/test.css'
-	paths['js']   = '/static/test_module/test.js'
+	module = plane.get_module()
+
+	paths = {}
+	paths['html'] = manager.get_path_for_module_content('html', module.name)
+	paths['css']  = manager.get_path_for_module_content('css' , module.name)
+	paths['js']   = manager.get_path_for_module_content('js'  , module.name)
 	return render_template('planes/plane.html', paths=paths)
 
 # API endpoints
