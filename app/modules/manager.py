@@ -20,6 +20,12 @@ def get_module_path(module_name, escaped_version):
 
 	return full_path
 
+def get_module_system_path(module_name, escaped_version):
+	module_path  = os.path.join(module_name, escaped_version)
+	full_path    = os.path.join( app.config['UPLOAD_FOLDER'], module_path)
+
+	return full_path
+
 def ensure_module_path(module_name, escaped_version):
 	module_path = get_module_path(module_name, escaped_version)
 	return os.makedirs(module_path, exist_ok=True)
@@ -52,7 +58,7 @@ def upload_version(module, escaped_version, files_dict):
 		module.latest_version = new_version.id
 		session.add(module)
 
-		module_path = get_module_path(module_name=module.name, escaped_version=escaped_version)
+		module_path = get_module_system_path(module_name=module.name, escaped_version=escaped_version)
 		ensure_module_path(module.name, escaped_version)
 
 		filebasename = get_file_basename(module_name=module.name, escaped_version=escaped_version)
