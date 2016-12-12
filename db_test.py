@@ -1,12 +1,23 @@
 #!/usr/bin/env python3
 from app import db, models
+from app.planes import models as plane_models
+from app.modules import models as module_models
 
+import uuid
+
+#Add test users
+####################################################################
 if db.session.query(models.User).filter(models.User.username=='john').first() is None:
-	u = models.User(username='john', password='pass', email='john@email.com')
+	u = models.User(
+	username='john',
+	password='pass',
+	email='john@email.com')
+
 	db.session.add(u)
 	db.session.commit()
 
-from app.modules import models as module_models
+#Add test modules
+####################################################################
 user_john = db.session.query(models.User).filter(models.User.username=='john').first()
 
 module1 = module_models.Module(
@@ -33,5 +44,52 @@ module2 = module_models.Module(
 )
 db.session.add(module2)
 
-
 db.session.commit()
+
+#Add test planes
+####################################################################
+user_john = db.session.query(models.User).filter(models.User.username=='john').first()
+
+'''
+uid = []
+for i in range(3):
+	x = uuid.uuid4()
+	
+	while x in uid:
+		x = uuid.uuid4()
+	
+	uid.append(x)
+#debug stuff
+for j in uid:
+	print j.hex
+'''
+
+
+test_module = db.session.query(module_models.Module).filter(module_models.Module.name=='TestModule').first()
+
+plane1 = plane_models.Plane(
+	owner = user_john.id,
+	password = None,
+	module = test_module.id,
+	name = 'Astral Plane',
+	public = True)
+
+plane2 = plane_models.Plane(
+	owner = user_john.id,
+	password = 'iomedae',
+	module = test_module.id,
+	name = 'Haven',
+	public = False)
+
+plane3 = plane_models.Plane(
+	owner = user_john.id,
+	password = 'asmodeus',
+	module = test_module.id,
+	name = 'Hell',
+	public = False)
+
+db.session.add(plane1)
+db.session.add(plane2)
+db.session.add(plane3)
+db.session.commit()
+

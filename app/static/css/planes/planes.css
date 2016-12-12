@@ -1,0 +1,31 @@
+ul {
+	padding: 2em;
+	margin : 0;
+}
+
+a, a:visited, a:hover{
+	text-decoration: none;
+	color: inherit;
+}
+
+.section-content {
+	display: flex;
+	flex-direction: row;
+
+	width : 800px;
+	height: 200px;
+}
+
+ul > * {
+	background: #F8E4CC;
+
+	border-style: solid;
+	border-width: 0px;
+	border-radius: 1em;
+
+	margin-top: 2em;
+}
+
+ul > *:first-child {
+	margin-top: 0em;
+}

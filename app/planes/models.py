@@ -1,8 +1,10 @@
-
 from app import db
+from app.modules.models import Module
+from app.models import User
 
 class Plane(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
+	#uuid = db.Column(db.String(64), index=True, unique=True)
 	owner = db.Column(db.Integer, db.ForeignKey('user.id'))
 	password = db.Column(db.String(64), index=True, nullable=True, unique=False)
 	module = db.Column(db.Integer, db.ForeignKey('module.id'), nullable=True)
@@ -15,6 +17,30 @@ class Plane(db.Model):
 			return unicode(self.id)
 		except NameError:
 			return str(self.id)
+
+	'''
+	def get_uuid(self):
+		return str(self.uuid)
+	'''
+
+	def get_owner(self):
+		return User.query.get(int(self.owner))
+
+	def get_module(self):
+		module = Module.query.get(int(self.module))
+		return module
+
+	def get_name(self):
+		return str(self.name)
+
+	def is_public(self):
+		if int((self.public)==1):
+			return True
+		return False
+
+	@staticmethod
+	def get_planes():
+		return Plane.query.all()
 	
 	def __repr__(self):
 		return '<Name %r>' % (self.name)

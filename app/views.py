@@ -50,24 +50,3 @@ def signup():
 
 	return render_template('signup.html', title='Signup', form=form)
 
-#Move to own file!
-'''
-@app.route('/create_plane', methods=['GET', 'POST'])
-def create_plane():
-	if g.user is not None and g.user.is_authenticated:
-		form = CreatePlaneForm()
-		form.module.choices = form.getModules()
-		if form.validate_on_submit():
-			m = None
-			if Module.query.filter_by(id=form.module.data).scalar() is not None:
-				m = Module.query.filter_by(id=form.module.data).first()
-			plane = Plane(owner=g.user.id, password=form.password.data, module=m.id, data=None, name=form.name.data, public=form.public.data)
-			db.session.add(plane)
-			db.session.commit()
-			flash('Plane created')
-			return redirect(url_for('index'))
-	else:
-		return redirect(url_for('login'))
-
-	return render_template('create_plane.html', title='Create Plane', form=form)
-'''

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block css %}
+<link rel="stylesheet" type="text/css" href="/static/css/planes/planes.css" />
+{% endblock css %}
+
+{% block content %}
+
+<ul class=center-content>
+{% for plane in planes %}
+<a href="/planes/name/{{plane.name}}" class="section-content center-content">
+	<div class="half">
+		<h1>{{plane.name}}</h1>
+		<p>Owner: {{plane.get_owner().username}}</p>
+		<p>Module: {{plane.get_module().name}}</p>
+	</div>
+</a>
+{% endfor %}
+</ul>
+{% endblock %}
