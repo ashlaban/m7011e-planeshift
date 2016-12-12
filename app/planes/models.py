@@ -8,7 +8,7 @@ class Plane(db.Model):
 	owner = db.Column(db.Integer, db.ForeignKey('user.id'))
 	password = db.Column(db.String(64), index=True, nullable=True, unique=False)
 	module = db.Column(db.Integer, db.ForeignKey('module.id'), nullable=True)
-	data = db.Column(db.LargeBinary, index=True, nullable=True, unique=False)
+	data = db.Column(db.LargeBinary, nullable=True, unique=False)
 	name = db.Column(db.String(64), index=True, unique=False)
 	public = db.Column(db.Boolean, index=True, unique=False)
 		

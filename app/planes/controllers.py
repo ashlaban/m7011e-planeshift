@@ -49,11 +49,15 @@ def create_plane():
 @planes.route('/name/<name>')
 def join_plane(name):
 	plane = Plane.query.filter_by(name=name).first()
+	paths = {}
 	
 	if plane is None:
 		return render_template('planes/404.html', name=name)
 
-	return render_template('planes/plane.html', plane=plane)
+	paths['html'] = '/static/test_module/test.html'
+	paths['css']  = '/static/test_module/test.css'
+	paths['js']   = '/static/test_module/test.js'
+	return render_template('planes/plane.html', paths=paths)
 
 # API endpoints
 @api.route('/create')

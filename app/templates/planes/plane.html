@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
 {% block css %}
+<link rel="stylesheet" type="text/css" href="{{paths['css']}}" />
 {% endblock css %}
 
 {% block js %}
+<script src="{{paths['js']}}"></script>
 {% endblock js %}
 
 {% block content %}
-<section id="placeholder" class="center-content top-padding-md">
-			<h1 class="title half">There should be a plane here named {{ plane.name }}!</h1>
-</section>
+{% include paths['html'] ignore missing %}
 {% endblock %}

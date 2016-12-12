@@ -19,11 +19,24 @@ class CreatePlaneForm(Form):
 			modules.append((m.id, m.name))
 		return modules
 
-	'''
+class PlanarAuthenticateForm(Form):
+	password = PasswordField('password', [validators.InputRequired()])
+
+	
+	def __init__(self, plane_name, *args, **kwargs):
+		Form.__init__(self, *args, **kwargs)
+		self.plane_name = plane_name
+		self.plane = None
+
 	def validate(self):
 		rv = Form.validate(self)
 		if not rv:
 			return False
 
+		plane = Plane.query.filter_by(name=self.plane_name).first()
+		if(plane.password != self.password.data):	
+			self.password.errors.append('Invalid password')
+			return False
+
+		self.plane = plane
 		return True
-	'''
