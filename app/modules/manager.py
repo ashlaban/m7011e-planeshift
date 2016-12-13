@@ -27,7 +27,7 @@ def get_module_system_path(module_name, escaped_version):
 	return full_path
 
 def ensure_module_path(module_name, escaped_version):
-	module_path = get_module_path(module_name, escaped_version)
+	module_path = get_module_system_path(module_name, escaped_version)
 	return os.makedirs(module_path, exist_ok=True)
 
 def get_path_for_module_content(ext, module_name, escaped_version=None):
@@ -47,7 +47,7 @@ def get_path_for_module_content(ext, module_name, escaped_version=None):
 	return os.path.join(module_path, filename)
 
 def upload_version(module, escaped_version, files_dict):
-	# TODO: The from argument should be extracted 
+	# TODO: The from argument should be extracted
 	# session = db.create_session(options={})
 	session = db.session
 	try:
@@ -68,11 +68,11 @@ def upload_version(module, escaped_version, files_dict):
 		js_filename   = os.path.join(module_path, '{}.{}'.format(filebasename, 'js'  ))
 
 		with open(html_filename, 'wb+') as html_file:
-			html_file.write(files_dict['html'])
+				html_file.write(files_dict['html'])
 		with open(css_filename, 'wb+') as css_file:
-			css_file.write(files_dict['css'])
+				css_file.write(files_dict['css'])
 		with open(js_filename, 'wb+') as js_file:
-			js_file.write(files_dict['js'])
+				js_file.write(files_dict['js'])
 
 		session.commit()
 
