@@ -24,56 +24,58 @@ html, body {
 	height: 100%;
 }
 
-nav {
+nav ul {
+	padding: 0;
+	margin : 0;
+	list-style-type: none;
+}
+
+nav > ul{
 	display: flex;
 	flex-direction: row;
 
-	align-items: center;
+	align-items: stretch;
 
 	background: #8FBCDB;
-
 	height: 5em;
 }
 
-nav > a, nav > a:visited{
-	text-decoration: none;
-	color: inherit;
-}
-
-.nav-item {
-	padding-left: 1em;
-	padding-right: 1em;
-
+nav a, nav a:visited{
 	display: flex;
 	align-items: center;
-	height: 100%;
-}
 
-nav > a:hover {
+	padding: 0 1em 0 1em;
+
 	text-decoration: none;
 	color: inherit;
+}
+
+nav .nav-item {
+	display: flex;
+	align-items: stretch;
+	text-align: middle;
+}
+
+nav .nav-item .nav-right-menu {
+	position: absolute;
+	top: 5em;
+	right: 0em;
+	padding: 0.5em 0.5em 1em 0.5em;
+
+	display: none;
 	background: #F8E4CC;
 }
 
-nav #login-btn:hover #login-menu {
-
+nav .nav-item:hover {
+	background: #F8E4CC;
 }
 
-.nav-filler {
+nav .nav-item:hover .nav-right-menu {
+	display: block;
+}
+
+nav .nav-filler {
 	flex-grow: 1;
-}
-
-.right-menu {
-	float: right;
-	margin-top: 5em;
-}
-
-#signup-menu {
-
-}
-
-#login-menu {
-
 }
 
 #main {
