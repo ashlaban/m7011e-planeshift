@@ -15,12 +15,15 @@ from app import util
 import sqlalchemy
 import collections
 import werkzeug
+import pathlib
 
 # Define blueprints
 modules    = Blueprint('modules_mod', __name__, url_prefix='/modules')
 module_api = Blueprint('modules_api', __name__, url_prefix='/api/modules')
 
-# Views
+# =============================================================================
+# Frontend endpoints
+# =============================================================================
 @modules.route('/')
 def list_module():
 	modules = db.session.query(Module)
@@ -75,31 +78,82 @@ def info_module(name):
 
 	return render_template('modules/module.html', module=module, form=form, is_owner=is_owner)
 
+# =============================================================================
 # API endpoints
-@module_api.route('/create', methods=['POST'])
-def api_create_module():
+# NOTE: If a resource is created, the correct response code should be returned
+# 	201 - Create
+# NOTE: Location reference should be to the newly created resource
+# [x] Post to /api/modules -> Create/update module
+# [x] Get to /api/modules -> list all modules
+# [/] DELETE to /api/modules -> Delete module
+# [x] Get to /api/modules/NewModule -> get info about module
+# [/] Post to /api/modules/NewModule -> create/update verison
+# [x] /api/modules/NewModule/latest -> Symlink to /xyz that is the latest version.
+# [o] Get to /api/modules/NewModule/<version> -> Info specific to that version
+# [o] Post to /api/modules/NewModule/<version> -> Create new version
+# [x] Get to /api/modules/NewModule/<version>/<file> -> Get path for that resource
+# [/] Post to /api/modules/NewModule/<version>/<file> -> Update/Create that resouce
+#
+# TODO: It would be possible to cache common queries for a short 
+# while to reduce load on cpu while maintaining quick updates
+# 
+# =============================================================================
+@module_api.route('/', methods=['GET'])
+def api_list():
+	'''List all modules in database.
+	'''
+	try:
+		modules = Module.query
+	except Exception:
+		return util.make_json_error()
+
+	data = [ module.get_public_short_info() for module in modules ]
+
+	return util.make_json_success(data=data)
+
+@module_api.route('/', methods=['POST'])
+def api_module():
+	'''Create a module.
+	Arguments
+		module_name - String - Required. Name of module. If module does not 
+		                       exist it will be created.
+		short_desc  - String - Short description of module. Will be included in
+		                       listings.
+		long_desc   - String - Longer description of module. Will not be 
+		                       included in listings.
+		picture     - String base64 - Icon to represent the module.
+	'''
 	if not g.user.is_authenticated:
 		return util.make_json_error(msg='Not authenticated.')
 
-	args = request.get_json()
-	args = collections.defaultdict(lambda:None, **args) if args is not None else collections.defaultdict(lambda:None)
+	args = util.parse_request_to_json(request)
 
-	module_name = werkzeug.utils.escape(args['name']) if args['name'] is not None else None
-	short_desc  = werkzeug.utils.escape(args['short_desc'])
-	long_desc   = werkzeug.utils.escape(args['long_desc'])
+	module_name = html_escape_or_none(args['name'])
+	short_desc  = html_escape_or_none(args['short_desc'])
+	long_desc   = html_escape_or_none(args['long_desc'])
 
 	picture        = args['picture']
 	latest_version = None
 
-	module = Module(
-		owner = g.user.id,
-		name  = module_name,
-		short_desc = short_desc,
-		long_desc  = long_desc,
+	try:
+		module = Module.get_by_name(name)
+	except ModuleNotFound:
+		module = Module(
+			owner = g.user.id,
+			name  = module_name,
+			short_desc = short_desc,
+			long_desc  = long_desc,
 
-		picture        = picture,
-		latest_version = latest_version,
-	)
+			picture        = picture,
+			latest_version = latest_version,
+		)
+
+	if short_desc is not None:
+		module.short_desc = short_desc
+	if long_desc is not None:
+		module.long_desc = long_desc
+	if picture is not None:
+		module.picture = picture
 
 	db.session.add(module)
 
@@ -110,59 +164,24 @@ def api_create_module():
 
 	return util.make_json_success(msg='Module created.')
 
-@module_api.route('/update/<name>/version', methods=['POST'])
-def api_update_version(name):
-	if not g.user.is_authenticated:
-		return util.make_json_error(msg='Not authenticated.')
+@module_api.route('/', methods=['DELETE'])
+def api_delete():
+	'''Delete a module. Requires user to be authenticated and the owner to 
+	complete successfully.
+	
+	Arguments
+		name - String - Required. Deletes the module with the given name.
 
-	try:
-		module = Module.get_by_name(name)
-	except ModuleNotFound:
-		return util.make_json_error(msg='Module {} not found.'.format(module_name))
-
-	return util.make_json_error(msg='Not implemented yet')
-
-@module_api.route('/update/<name>/short_desc', methods=['POST'])
-def api_update_short_desc(name):
-	if not g.user.is_authenticated:
-		return util.make_json_error(msg='Not authenticated.')
-
-	try:
-		module = Module.get_by_name(name)
-	except ModuleNotFound:
-		return util.make_json_error(msg='Module {} not found.'.format(module_name))
-
-	return util.make_json_error(msg='Not implemented yet')
-
-@module_api.route('/update/<name>/long_desc', methods=['POST'])
-def api_update_long_desc(name):
-	if not g.user.is_authenticated:
-		return util.make_json_error(msg='Not authenticated.')
-
-	try:
-		module = Module.get_by_name(name)
-	except ModuleNotFound:
-		return util.make_json_error(msg='Module {} not found.'.format(module_name))
-
-	return util.make_json_error(msg='Not implemented yet')
-
-@module_api.route('/update/<name>/picture', methods=['POST'])
-def api_update_picture(name):
-	if not g.user.is_authenticated:
-		return util.make_json_error(msg='Not authenticated.')
-
-	try:
-		module = Module.get_by_name(name)
-	except ModuleNotFound:
-		return util.make_json_error(msg='Module {} not found.'.format(module_name))
-
-	return util.make_json_error(msg='Not implemented yet')
-
-@module_api.route('/<name>/delete', methods=['POST'])
-def api_delete_module(name):
+	Returns
+		{status: ok} if operation successful.
+		{status: error, msg: '...'} otherwise.
+	'''
 	if not g.user.is_authenticated:
 		return util.make_json_error(msg='Not authenticated.')
 	
+	args = util.parse_request_to_json(request)
+	name = html_escape_or_none(args['name'])
+
 	try:
 		module = Module.get_by_name(name)
 	except ModuleNotFound:
@@ -173,24 +192,9 @@ def api_delete_module(name):
 
 	return util.make_json_error(msg='Not implemented yet')
 
-@module_api.route('/list')
-def api_list_modules():
-	'''List all modules in database'''
-	try:
-		modules = Module.query
-	except Exception:
-		return util.make_json_error()
-
-	# TODO: It would be possible to cache common queries for a short 
-	# while to reduce load on cpu while maintaining quick updates
-	data = [ module.get_public_short_info() for module in modules ]
-
-	return util.make_json_success(data=data)
-
-@module_api.route('/get/<name>', defaults={'version': None})
-@module_api.route('/get/<name>/<version>')
-def api_get_module_info(name, version):
-	'''Returns information for module with name+version.
+@module_api.route('/<module_name>', methods=['GET'])
+def api_info(name):
+	'''Get meta-data for a given module.
 	'''
 	try:
 		module = Module.get_by_name(name)
@@ -200,39 +204,78 @@ def api_get_module_info(name, version):
 	data = module.get_public_long_info()
 	return util.make_json_success(data=data)
 
-@module_api.route('/pic/<name>', defaults={'version': None})
-@module_api.route('/pic/<name>/<version>')
-def api_get_module_pic(name, version):
+@module_api.route('/<module_name>', methods=['POST'])
+def api_version(module_name):
+	'''Create a new version. Must be authenticated as owner.
+	Arguemnts
+		name - String - Required. Name of the new version.
+
+	Returns
+		{status: ok} if successful
+		{status: error, msg: '...'} if user not authenticated or not owner.
+	'''
+	if not g.user.is_authenticated:
+		return util.make_json_error(msg='Not authenticated.')
+
 	try:
-		module = Module.get_by_name(name)
+		module = Module.get_by_name(module_name)
 	except ModuleNotFound:
-		return util.make_json_error(msg='Module {} not found'.format(name))
+		return util.make_json_error(msg='Module {} not found.'.format(module_name))
 
-	if version is None:
-		return util.make_json_success(data=module.picture)
-	else:
-		try:
-			version = module.get_version(name=version)
-		except ModuleVersionNotFound:
-			return util.make_json_error(msg='Version {} not found'.format(version))
-		return util.make_json_error(msg='Pics are not stored by version currently')
+	if not module.is_owner(g.user):
+		return util.make_json_error(msg='You do not have the correct permissions.')
 
-@module_api.route('/js/<name>'            , defaults={'ext': 'js', 'version': None})
-@module_api.route('/css/<name>'           , defaults={'ext': 'css', 'version': None})
-@module_api.route('/html/<name>'          , defaults={'ext': 'html', 'version': None})
-@module_api.route('/js/<name>/<version>'  , defaults={'ext': 'js'})
-@module_api.route('/css/<name>/<version>' , defaults={'ext': 'css'})
-@module_api.route('/html/<name>/<version>', defaults={'ext': 'html'})
-def api_get_module_js(name=None, version=None, ext=None):
+	args = util.parse_request_to_json(request)
+	name = html_escape_or_none(args['name'])
+
+	return util.make_json_error(msg='Not implemented yet')
+
+# @module_api.route('/<module_name>/<version>', methods=['GET'])
+# def api_version_get(module_name, version):
+# 	return util.make_json_error(msg='Not implemented yet')
+
+# @module_api.route('/<module_name>/<version>', methods=['POST'])
+# def api_version_post(module_name, version):
+# 	return util.make_json_error(msg='Not implemented yet')
+
+@module_api.route('/<module_name>/<version>/<file>' methods=['GET'])
+def api_content_path_get(module_name, version, file):
+	if version == 'latest':
+		version = None
+
 	try:
-		module         = Module.get_by_name(name)
+		module         = Module.get_by_name(module_name)
 		module_version = module.get_version(version) if version is not None else None
-		data           = manager.get_path_for_module_content(ext, module, module_version)
+
+		if file in ['html', 'css', 'js', 'pic']:
+			data = manager.get_path_for_module_content(file, module, module_version)
+		else:
+			return make_json_error(msg='File {} not found.'.format(file))
 	except ModuleNotFound:
-		return util.make_json_error(msg='Module {} not found.'.format(name))
+		return util.make_json_error(msg='Module {} not found.'.format(module_name))
 	except ModuleVersionNotFound:
-		return util.make_json_error(msg='Version {} not found for module {}'.format(version, name))
+		return util.make_json_error(msg='Version {} not found for module {}'.format(version, module_name))
 	except ModuleHasNoData:
-		return util.make_json_error(msg='No version uploaded for module {} yet!'.format(name))
+		return util.make_json_error(msg='No version uploaded for module {} yet!'.format(module_name))
 	
 	return util.make_json_success(data=data)
+
+@module_api.route('/<module_name>/<version>/<file>', methods=['POST'])
+def api_content_path_post(name, version, file):
+	if version == 'latest':
+		version = None
+
+	try:
+		module         = Module.get_by_name(module_name)
+		module_version = module.get_version(version) if version is not None else None
+
+		# TODO: Implement upload here.
+
+	except ModuleNotFound:
+		return util.make_json_error(msg='Module {} not found.'.format(module_name))
+	except ModuleVersionNotFound:
+		return util.make_json_error(msg='Version {} not found for module {}'.format(version, module_name))
+	except ModuleHasNoData:
+		return util.make_json_error(msg='No version uploaded for module {} yet!'.format(module_name))
+
+	return util.make_json_error(msg='Not implemented yet')	

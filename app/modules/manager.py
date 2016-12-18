@@ -31,7 +31,7 @@ def ensure_module_path(module_name, escaped_version):
 	return os.makedirs(module_path, exist_ok=True)
 
 def get_path_for_module_content(ext, module, version=None):
-	ALLOWED_FILE_TYPES = ['html', 'css', 'js']
+	ALLOWED_FILE_TYPES = ['html', 'css', 'js', 'pic']
 
 	if ext not in ALLOWED_FILE_TYPES:
 		raise ValueError('Argument ext ({}) not in ALLOWED_FILE_TYPES ({})'.format(ext, ALLOWED_FILE_TYPES))

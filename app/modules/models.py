@@ -82,6 +82,11 @@ class Module(db.Model):
 	def get_owner(self):
 		return User.get_by_id(self.owner)
 
+	def is_owner(self, user):
+		if not isinstance(user, User):
+			user = User.get_by_name(user)
+		return self.owner == user.id
+
 	def get_version(self, name):
 		ModuleVersion.get_by_name(self.id, name)
 
