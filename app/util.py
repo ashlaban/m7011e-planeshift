@@ -1,4 +1,6 @@
 import json
+import collections
+import werkzeug
 
 def make_json_error(msg=''):
 	response = {
@@ -23,5 +25,5 @@ def parse_request_to_json(req):
 	args = collections.defaultdict(lambda:None, **args) if args is not None else collections.defaultdict(lambda:None)
 	return args
 
-def html_escape_or_none(item)
+def html_escape_or_none(item):
 	return werkzeug.utils.escape(item) if item is not None else None

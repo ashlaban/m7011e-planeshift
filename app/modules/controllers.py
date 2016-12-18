@@ -128,15 +128,15 @@ def api_module():
 
 	args = util.parse_request_to_json(request)
 
-	module_name = html_escape_or_none(args['name'])
-	short_desc  = html_escape_or_none(args['short_desc'])
-	long_desc   = html_escape_or_none(args['long_desc'])
+	module_name = util.html_escape_or_none(args['name'])
+	short_desc  = util.html_escape_or_none(args['short_desc'])
+	long_desc   = util.html_escape_or_none(args['long_desc'])
 
 	picture        = args['picture']
 	latest_version = None
 
 	try:
-		module = Module.get_by_name(name)
+		module = Module.get_by_name(module_name)
 	except ModuleNotFound:
 		module = Module(
 			owner = g.user.id,
@@ -179,11 +179,11 @@ def api_delete():
 	if not g.user.is_authenticated:
 		return util.make_json_error(msg='Not authenticated.')
 	
-	args = util.parse_request_to_json(request)
-	name = html_escape_or_none(args['name'])
+	args        = util.parse_request_to_json(request)
+	module_name = util.html_escape_or_none(args['name'])
 
 	try:
-		module = Module.get_by_name(name)
+		module = Module.get_by_name(module_name)
 	except ModuleNotFound:
 		return util.make_json_error(msg='Module {} not found.'.format(module_name))
 
@@ -226,7 +226,7 @@ def api_version(module_name):
 		return util.make_json_error(msg='You do not have the correct permissions.')
 
 	args = util.parse_request_to_json(request)
-	name = html_escape_or_none(args['name'])
+	name = util.html_escape_or_none(args['name'])
 
 	return util.make_json_error(msg='Not implemented yet')
 
@@ -238,7 +238,7 @@ def api_version(module_name):
 # def api_version_post(module_name, version):
 # 	return util.make_json_error(msg='Not implemented yet')
 
-@module_api.route('/<module_name>/<version>/<file>' methods=['GET'])
+@module_api.route('/<module_name>/<version>/<file>', methods=['GET'])
 def api_content_path_get(module_name, version, file):
 	if version == 'latest':
 		version = None
