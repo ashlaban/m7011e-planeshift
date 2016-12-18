@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block css %}
+{% endblock css %}
+
+{% block content %}
+	<form action="" method="post" name="authenticate" class="center-content top-padding-md">
+		{{ form.hidden_tag()  }}
+		{{ form.password(size=30, placeholder='password') }}
+		{% for error in form.password.errors %}
+		<span style="color: red;">[{{ error }}]</span>
+		{% endfor %}
+		<input type="submit" value="Authenticate">
+	</form>
+{% endblock content %}

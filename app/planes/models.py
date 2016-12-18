@@ -34,7 +34,12 @@ class Plane(db.Model):
 		return str(self.name)
 
 	def is_public(self):
-		if int((self.public)==1):
+		if int(self.public):
+			return True
+		return False
+
+	def has_password(self):
+		if self.password is not None:
 			return True
 		return False
 

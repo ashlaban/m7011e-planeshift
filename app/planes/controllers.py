@@ -1,10 +1,11 @@
 # Import flask dependencies
 from flask import Blueprint, render_template, flash, redirect, session, url_for, request, g
+from flask_login import login_required
 
 import uuid
 
 from app import db
-from app.planes.forms import CreatePlaneForm
+from app.planes.forms import CreatePlaneForm, PlanarAuthenticateForm
 from app.planes.models import Plane
 from app.modules.models import Module
 
@@ -14,11 +15,28 @@ from app.modules import manager
 planes = Blueprint('planes', __name__, url_prefix='/planes')
 api     = Blueprint('planes', __name__, url_prefix='/api')
 
+# Helper functions
+def join(plane):
+	if plane is None:
+		return render_template('planes/404.html', name=name)
+
+	module = plane.get_module()
+
+	paths = {}
+	paths['html'] = manager.get_path_for_module_content('html', module.name)
+	paths['css']  = manager.get_path_for_module_content('css' , module.name)
+	paths['js']   = manager.get_path_for_module_content('js'  , module.name)
+	return render_template('planes/plane.html', paths=paths)
+
 # Views
 @planes.route('/')
 def list_plane():
 	planes = Plane.get_planes()
-	return render_template('planes/index.html', planes=planes)
+	public = []
+	for plane in planes:
+		if plane.is_public():
+			public.append(plane)
+	return render_template('planes/index.html', planes=public)
 
 @planes.route('/create', methods=['GET', 'POST'])
 def create_plane():
@@ -41,28 +59,27 @@ def create_plane():
 			db.session.commit()
 
 			flash('Plane created')
-			return redirect(url_for('planes.join_plane', name=form.name.data))
+			return redirect(url_for('planes.join_plane', name=form.name.data, password=form.password.data))
 	else:
 		return redirect(url_for('login'))
 
 	return render_template('planes/create.html', title='Create Plane', form=form)
 
-@planes.route('/name/<name>')
+@planes.route('/name/<name>', methods=['GET', 'POST'])
+@login_required
 def join_plane(name):
 	plane = Plane.query.filter_by(name=name).first()
-	
-	if plane is None:
-		return render_template('planes/404.html', name=name)
 
-	module = plane.get_module()
-
-	paths = {}
-	paths['html'] = manager.get_path_for_module_content('html', module.name)
-	paths['css']  = manager.get_path_for_module_content('css' , module.name)
-	paths['js']   = manager.get_path_for_module_content('js'  , module.name)
-	return render_template('planes/plane.html', paths=paths)
+	if plane.has_password():
+		form = PlanarAuthenticateForm(plane_name=plane.name)
+		if form.validate_on_submit():
+			join(plane)
+		return render_template('planes/authenticate.html', title='Authenticate', form=form)
+	else:
+		join(plane)
 
 # API endpoints
 @api.route('/create')
 def api_create_plane():
 	pass
+
