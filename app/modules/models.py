@@ -1,7 +1,20 @@
 
 from app import db
+from app.models import User
 
-class ModuleVersions(db.Model):
+class ModuleNotFound(ValueError):
+	'''Raise when searching for a non-existant module.'''
+
+class ModuleVersionNotFound(ValueError):
+	'''Raise when searching for a non-existant version of a module.'''
+
+# NOTE: This is a more specific version of "ModuleVersionNotFound".
+class ModuleHasNoData(ValueError):
+	'''Raise when no data is uploaded for a module.'''
+
+# NOTE: Version strings needs to be secure (db_escaped) and url safe (url_escaped).
+#  It is possible that url_escape provides sufficient db escape.
+class ModuleVersion(db.Model):
 	__tablename__ = 'module_versions'
 	id             = db.Column(db.Integer   , primary_key=True)
 	module_id      = db.Column(db.Integer   , db.ForeignKey('module.id'), nullable=False)
@@ -10,40 +23,93 @@ class ModuleVersions(db.Model):
 
 	@staticmethod
 	def get_by_id(id):
-		return ModuleVersions.query.filter_by(id=id).first()
+		version = ModuleVersion.query.filter_by(id=id).first()
+		if version is None:
+			raise ModuleVersionNotFound()
+		return version
+
+	@staticmethod
+	def get_all_for_module_id(module_id):
+		lst = ModuleVersion.query.filter_by(module_id=module_id)
+		return lst
+
+	@staticmethod
+	def get_by_name(module_id, name):
+		version = ModuleVersion.query.filter_by(module_id=module_id, version_string=name).first()
+		if version is None:
+			raise ModuleVersionNotFound()
+		else:
+			return version
 
 	def get_escaped_version(self):
 		return str(self.version_string)
 
 class Module(db.Model):
 	id      = db.Column(db.Integer    , primary_key=True)
-	owner   = db.Column(db.Integer    , db.ForeignKey('user.id'))
+	owner   = db.Column(db.Integer    , db.ForeignKey('user.id'), nullable=False)
 	picture = db.Column(db.Text()) # TODO: size should be limited
 
-	name       = db.Column(db.String(64))
+	name       = db.Column(db.String(64) , nullable=False)
 	short_desc = db.Column(db.String(128))
-	long_desc  = db.Column(db.Text()     )
+	long_desc  = db.Column(db.Text())
 
 	latest_version     = db.Column(db.ForeignKey('module_versions.id'))
 
 	@staticmethod
+	def get_all(limit=None):
+		if limit is None:
+			return Module.query
+		return Module.query.limit(limit)
+
+	@staticmethod
 	def get_by_name(module_name):
-		return Module.query.filter_by(name=module_name).first()
+		module = Module.query.filter_by(name=module_name).first()
+		if module is None:
+			raise ModuleNotFound()
+		return module
 
 	@staticmethod
 	def get_versions(module_name):
-		module   = Module.get_module_by_name(module_name)
-		versions = ModuleVersions.query.filter_by(module_id=module.id)
+		module   = Module.get_by_name(module_name)
+		versions = ModuleVersion.query.filter_by(module_id=module.id)
 		return versions
 	
 	@staticmethod
 	def get_versions_for_module_id(module_id):
-		versions = ModuleVersions.query.filter_by(module_id=module_id)
+		versions = ModuleVersion.get_all_for_module_id(module_id)
 		return versions
 
-	def get_escaped_version(self):
-		module_versions = ModuleVersions.get_by_id(self.latest_version)
-		return module_versions.get_escaped_version()
+	def get_owner(self):
+		return User.get_by_id(self.owner)
+
+	def get_version(self, name):
+		ModuleVersion.get_by_name(self.id, name)
+
+	def get_latest_version(self):
+		module_version = ModuleVersion.get_by_id(self.latest_version)
+		return module_version
+
+	def get_public_short_info(self):
+		data = {
+			'name'      : self.name,
+			'short_desc': self.short_desc,
+			'long_desc' : self.long_desc,
+			'owner'     : self.get_owner().username,
+		}
+		return data
+
+	def get_public_long_info(self):
+		data = {
+			'name'      : self.name,
+			'short_desc': self.short_desc,
+			'long_desc' : self.long_desc,
+			'owner'     : self.get_owner().username,
+			
+			# 'picture'       : self.picture,
+			'latest_version': self.get_escaped_version(),
+		}
+		return data
+
 
 	def __repr__(self):
 		return '<Module %r>'.format(self.name)

@@ -1,24 +1,32 @@
 {% extends "base.html" %}
 
 {% block css %}
-<link rel="stylesheet" type="text/css" href="/static/css/modules/modules.css" />
+<link rel="stylesheet" type="text/css" href="/static/css/modules/module-base.css" />
+<link rel="stylesheet" type="text/css" href="/static/css/modules/module-info.css" />
 {% endblock css %}
 
 {% block content %}
-<section class="section-content center-content top-padding-md">
-	<div class="half center-content">
-		<img src="data:image/png;base64,{{module.picture}}">
-	</div>
-	<div class="half">
-		<h1>{{module.name}}</h1>
-		<h2>Version</h2>
-		<p>{{form.version_list}}</p>
-		<p>{{module.short_desc}}</p>
-		<h2>Long description</h2>
-		<p>{{module.long_desc}}</p>
-		{% if is_owner %}
-		<a href=/modules/upload/{{module.name}}>Upload new version</a>
-		{% endif %}
-	</div>
-</section>
+<div class="center-content">
+	<section id="module-info" class="section-content center-content">
+		<div class="half center-content">
+			<img src="data:image/png;base64,{{module.picture}}">
+		</div>
+		<div class="half">
+			<ul>
+				<h1>{{module.name}}</h1>
+				<div id="version-header">
+					<span>Version</span>
+					<span id="version-selector">{{form.version_list}}</span>
+				</div>
+				
+				<li id="short_desc">{{module.short_desc}}</li>
+				<li id="long_desc">{{module.long_desc}}</li>
+				
+				{% if is_owner %}
+				<a class="btn" href=/modules/upload/{{module.name}}>Upload new version</a>
+				{% endif %}
+			</ul>
+		</div>
+	</section>
+</div>
 {% endblock %}

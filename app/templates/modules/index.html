@@ -1,14 +1,15 @@
 {% extends "base.html" %}
 
 {% block css %}
-<link rel="stylesheet" type="text/css" href="/static/css/modules/modules.css" />
+<link rel="stylesheet" type="text/css" href="/static/css/modules/module-base.css" />
+<link rel="stylesheet" type="text/css" href="/static/css/modules/module-list.css" />
 {% endblock css %}
 
 {% block content %}
 
 <ul class=center-content>
 {% for module in modules %}
-<a href="/modules/name/{{module.name}}" class="section-content center-content">
+<a href="/modules/name/{{module.name}}" class="module section-content center-content">
 	<div class="half center-content">
 		<img src="data:image/png;base64,{{module.picture}}">
 	</div>

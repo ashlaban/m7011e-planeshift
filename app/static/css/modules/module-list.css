@@ -1,0 +1,27 @@
+ul > * {
+	margin-top: 2em;
+}
+
+ul > *:last-child {
+	margin-bottom: 2em;
+}
+
+.module {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+
+	width : 800px;
+	height: 200px;
+
+	background: #F8E4CC;
+
+	border-style: solid;
+	border-width: 0px;
+	border-radius: 1em;
+}
+
+.module:hover {
+	box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+}

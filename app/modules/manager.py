@@ -4,11 +4,11 @@ import sqlalchemy
 
 from app import app
 from app import db
-from app.modules.models import Module, ModuleVersions
+from app.modules.models import Module, ModuleVersion
+from app.modules.models import ModuleNotFound, ModuleHasNoData, ModuleVersionNotFound
 
-# TODO: Convert this to singleton object? Or are these package objects akin to python singletons?
-
-class ModuleDuplicateVersionError(Exception): pass
+class ModuleDuplicateVersionError(ValueError):
+	'''Raise when a module already has a version with the same name.'''
 
 def get_file_basename(module_name, escaped_version):
 	filebasename = '{}-{}'.format(module_name, escaped_version)
@@ -30,15 +30,18 @@ def ensure_module_path(module_name, escaped_version):
 	module_path = get_module_system_path(module_name, escaped_version)
 	return os.makedirs(module_path, exist_ok=True)
 
-def get_path_for_module_content(ext, module_name, escaped_version=None):
+def get_path_for_module_content(ext, module, version=None):
 	ALLOWED_FILE_TYPES = ['html', 'css', 'js']
 
 	if ext not in ALLOWED_FILE_TYPES:
 		raise ValueError('Argument ext ({}) not in ALLOWED_FILE_TYPES ({})'.format(ext, ALLOWED_FILE_TYPES))
 
-	if escaped_version is None:
-		module          = Module.get_by_name(module_name)
-		escaped_version = module.get_escaped_version()
+	if version is None:
+		try:
+			version        = module.get_latest_version()
+			version_string = version.get_escaped_version_string()
+		except ModuleVersionNotFound:
+			raise ModuleHasNoData()
 
 	module_path = get_module_path(module_name=module_name, escaped_version=escaped_version)
 	basename    = get_file_basename(module_name=module_name, escaped_version=escaped_version)
@@ -51,7 +54,7 @@ def upload_version(module, escaped_version, files_dict):
 	# session = db.create_session(options={})
 	session = db.session
 	try:
-		new_version = ModuleVersions(module_id=module.id, version_string=escaped_version)
+		new_version = ModuleVersion(module_id=module.id, version_string=escaped_version)
 		session.add(new_version)
 		session.commit()
 

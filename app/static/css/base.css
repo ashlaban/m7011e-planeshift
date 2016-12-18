@@ -55,8 +55,25 @@ nav > a:hover {
 	background: #F8E4CC;
 }
 
+nav #login-btn:hover #login-menu {
+
+}
+
 .nav-filler {
 	flex-grow: 1;
+}
+
+.right-menu {
+	float: right;
+	margin-top: 5em;
+}
+
+#signup-menu {
+
+}
+
+#login-menu {
+
 }
 
 #main {
@@ -99,4 +116,22 @@ footer {
 .top-margin-md { margin-top: 3em; }
 .top-margin-lg { margin-top: 4em; }
 .top-margin-xl { margin-top: 5em; }
+
+.btn {
+	background-color: #8FBCDB; /* Green */
+	border: none;
+	padding: 15px 32px;
+	text-align: center;
+	text-decoration: none;
+	display: inline-block;
+	font-size: 1em;
+}
+
+.btn:hover {
+	box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+}
+
+.error {
+	background: red;
+}
 

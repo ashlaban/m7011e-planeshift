@@ -1,0 +1,39 @@
+h1 {
+	margin-bottom: 0;
+}
+
+#module-info {
+	margin-top: 2em;
+	padding-bottom: 2em;
+}
+
+#version-header {
+	padding-bottom: 1em;
+}
+
+#version-selector {
+	padding-left: 5em;
+}
+
+#short_desc {
+	padding-bottom: 1em;
+}
+
+#long_desc {
+	padding-bottom: 1em;	
+}
+
+.section-content {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+
+	width : 800px;
+
+	background: #F8E4CC;
+
+	border-style: solid;
+	border-width: 0px;
+	border-radius: 1em;
+}

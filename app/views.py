@@ -5,7 +5,12 @@ from .forms import LoginForm, SignupForm
 from .models import User
 from .modules.models import Module
 
-#Not currently used, I think...
+from app import util
+from app.models import UserNotFoundError
+
+import collections
+import werkzeug
+
 @lm.user_loader
 def load_user(id):
 	return User.query.get(int(id))
@@ -17,8 +22,9 @@ def before_request():
 @app.route('/')
 @app.route('/index')
 def index():
-    return render_template('index.html', title='Home')
-
+	return render_template('index.html', title='Home')
+ 
+# TODO: Implement salted passwords: http://flask.pocoo.org/snippets/54/
 @app.route('/login', methods=['GET', 'POST'])
 def login():
 	if g.user is not None and g.user.is_authenticated:
@@ -34,11 +40,12 @@ def login():
 	return render_template('login.html', title='Login', form=form)
 
 @app.route('/logout')
+@login_required
 def logout():
 	logout_user()
 	return redirect(url_for('index'))
 
-@app.route('/signup', methods=['GET', 'POST'])
+@app.route('/signup', methods=['POST'])
 def signup():
 	form = SignupForm()
 	if form.validate_on_submit():
@@ -50,3 +57,20 @@ def signup():
 
 	return render_template('signup.html', title='Signup', form=form)
 
+@app.route('/api/login', methods=['POST'])
+def api_login():
+	request.get_json()
+
+	args = request.get_json()
+	args = collections.defaultdict(None, **args)
+
+	username = werkzeug.utils.escape(args['username'])
+	password = args['password']
+
+	if User.authenticate(username, password):
+		user = User.get_by_name(username)
+		login_user(user)
+		return util.make_json_success(msg='Logged in successfully.')
+	else:
+		return util.make_json_error(msg='Authentication failed.')
+	

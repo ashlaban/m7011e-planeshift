@@ -3,6 +3,8 @@ from wtforms import StringField, PasswordField, BooleanField, SelectField, valid
 from .models import User
 from .modules.models import Module
 
+from app.models import UserNotFoundError
+
 #If errors: check if adding 'validators.' before validators solves it...
 class LoginForm(Form):
 	username = StringField('username', [validators.InputRequired()])
@@ -17,16 +19,16 @@ class LoginForm(Form):
 		if not rv:
 			return False
 
-		user = User.query.filter_by(username=self.username.data).first()
-		if user is None:
+		try:
+			if User.authenticate(self.username.data, self.password.data):
+				user = User.get_by_name(self.username.data)
+				self.user = user
+				return True
+		except UserNotFoundError:
 			self.username.errors.append('Unknown username')
 			return False
-		if(user.password != self.password.data):	
-			self.password.errors.append('Invalid password')
-			return False
-
-		self.user = user
-		return True
+		self.password.errors.append('Wrong password')
+		return False
 
 class SignupForm(Form):
 	username = StringField('username', [validators.InputRequired()])
