@@ -104,6 +104,12 @@ class Module(db.Model):
 		return data
 
 	def get_public_long_info(self):
+
+		try:
+			version_string = self.get_latest_version().get_escaped_version()
+		except ModuleVersionNotFound:
+			version_string = ''	
+
 		data = {
 			'name'      : self.name,
 			'short_desc': self.short_desc,
@@ -111,7 +117,7 @@ class Module(db.Model):
 			'owner'     : self.get_owner().username,
 			
 			# 'picture'       : self.picture,
-			'latest_version': self.get_escaped_version(),
+			'latest_version': version_string,
 		}
 		return data
 

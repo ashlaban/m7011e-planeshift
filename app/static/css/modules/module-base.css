@@ -1,17 +1,17 @@
-h1 {
+#main h1 {
 	font-size: 2em;
 }
 
-h2 {
+#main h2 {
 	font-size: 1.5em;
 }
 
-h3 {
+#main h3 {
 	font-size: 1em;
 	font-weight: bold;
 }
 
-ul {
+#main ul {
 	display: inline;
 
 	padding: 0;
@@ -20,7 +20,7 @@ ul {
 	list-style-type: none;
 }
 
-a, a:visited, a:hover{
+#main a, a:visited, a:hover{
 	text-decoration: none;
 	color: inherit;
 }

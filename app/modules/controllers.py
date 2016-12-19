@@ -83,16 +83,15 @@ def info_module(name):
 # NOTE: If a resource is created, the correct response code should be returned
 # 	201 - Create
 # NOTE: Location reference should be to the newly created resource
-# [x] Post to /api/modules -> Create/update module
-# [x] Get to /api/modules -> list all modules
+# [x] GET    to /api/modules -> list all modules
+# [x] POST   to /api/modules -> Create/update module
 # [/] DELETE to /api/modules -> Delete module
-# [x] Get to /api/modules/NewModule -> get info about module
-# [/] Post to /api/modules/NewModule -> create/update verison
+# [x] GET  to /api/modules/NewModule -> get info about module
+# [/] POST to /api/modules/NewModule -> create/update verison
 # [x] /api/modules/NewModule/latest -> Symlink to /xyz that is the latest version.
-# [o] Get to /api/modules/NewModule/<version> -> Info specific to that version
-# [o] Post to /api/modules/NewModule/<version> -> Create new version
-# [x] Get to /api/modules/NewModule/<version>/<file> -> Get path for that resource
-# [/] Post to /api/modules/NewModule/<version>/<file> -> Update/Create that resouce
+# [o] GET to /api/modules/NewModule/<version> -> Info specific to that version
+# [x] GET  to /api/modules/NewModule/<version>/<file> -> Get path for that resource
+# [/] POST to /api/modules/NewModule/<version>/<file> -> Update/Create that resouce
 #
 # TODO: It would be possible to cache common queries for a short 
 # while to reduce load on cpu while maintaining quick updates
@@ -135,9 +134,15 @@ def api_module():
 	picture        = args['picture']
 	latest_version = None
 
+	create = False
+
 	try:
 		module = Module.get_by_name(module_name)
 	except ModuleNotFound:
+		was_created = True
+
+
+	if create:
 		module = Module(
 			owner = g.user.id,
 			name  = module_name,
@@ -162,7 +167,10 @@ def api_module():
 	except sqlalchemy.exc.IntegrityError as e:
 		return util.make_json_error(msg='Invalid arguments.')
 
-	return util.make_json_success(msg='Module created.')
+	if create:
+		return util.make_json_success(msg='Module created.')
+	else:
+		return util.make_json_success(msg='Module updated.')
 
 @module_api.route('/', methods=['DELETE'])
 def api_delete():
@@ -193,13 +201,13 @@ def api_delete():
 	return util.make_json_error(msg='Not implemented yet')
 
 @module_api.route('/<module_name>', methods=['GET'])
-def api_info(name):
+def api_info(module_name):
 	'''Get meta-data for a given module.
 	'''
 	try:
-		module = Module.get_by_name(name)
+		module = Module.get_by_name(module_name)
 	except ModuleNotFound:
-		return util.make_json_error(msg='Module {} not found'.format(name))
+		return util.make_json_error(msg='Module {} not found'.format(module_name))
 
 	data = module.get_public_long_info()
 	return util.make_json_success(data=data)

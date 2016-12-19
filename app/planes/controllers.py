@@ -8,6 +8,7 @@ from app import db
 from app.planes.forms import CreatePlaneForm, PlanarAuthenticateForm
 from app.planes.models import Plane
 from app.modules.models import Module
+from app.modules.models import ModuleHasNoData
 
 from app.modules import manager
 
@@ -23,9 +24,19 @@ def join(plane):
 	module = plane.get_module()
 
 	paths = {}
-	paths['html'] = manager.get_path_for_module_content('html', module.name)
-	paths['css']  = manager.get_path_for_module_content('css' , module.name)
-	paths['js']   = manager.get_path_for_module_content('js'  , module.name)
+	try:
+		paths['html'] = manager.get_path_for_module_content('html', module)
+	except ModuleHasNoData:
+		paths['html'] = ''
+	try:
+		paths['css'] = manager.get_path_for_module_content('css', module)
+	except ModuleHasNoData:
+		paths['css'] = ''
+	try:
+		paths['js'] = manager.get_path_for_module_content('js', module)
+	except ModuleHasNoData:
+		paths['js'] = ''
+
 	return render_template('planes/plane.html', paths=paths)
 
 # Views
@@ -73,10 +84,10 @@ def join_plane(name):
 	if plane.has_password():
 		form = PlanarAuthenticateForm(plane_name=plane.name)
 		if form.validate_on_submit():
-			join(plane)
+			return join(plane)
 		return render_template('planes/authenticate.html', title='Authenticate', form=form)
 	else:
-		join(plane)
+		return join(plane)
 
 # API endpoints
 @api.route('/create')

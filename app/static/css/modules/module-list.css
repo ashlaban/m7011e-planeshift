@@ -1,8 +1,8 @@
-ul > * {
+#main ul > * {
 	margin-top: 2em;
 }
 
-ul > *:last-child {
+#main ul > *:last-child {
 	margin-bottom: 2em;
 }
 
