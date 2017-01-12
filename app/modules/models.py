@@ -98,8 +98,9 @@ class Module(db.Model):
 		data = {
 			'name'      : self.name,
 			'short_desc': self.short_desc,
-			'long_desc' : self.long_desc,
 			'owner'     : self.get_owner().username,
+
+			'picture'   : self.picture,
 		}
 		return data
 

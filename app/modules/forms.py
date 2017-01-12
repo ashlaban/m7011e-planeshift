@@ -1,6 +1,6 @@
 from flask_wtf      import Form
-from flask_wtf.file import FileField, FileAllowed, FileRequired
-from wtforms import StringField, SelectField, validators
+from flask_wtf.file import FileAllowed, FileRequired
+from wtforms import FileField, StringField, SelectField, validators
 
 class VersionForm(Form):
 	version_list = SelectField('version', coerce=int);

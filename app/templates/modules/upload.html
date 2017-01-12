@@ -1,32 +1,47 @@
 {% extends "base.html" %}
 
 {% block css %}
-<link rel="stylesheet" type="text/css" href="/static/css/modules/modules.css" />
+<link rel="stylesheet" type="text/css" href="/static/css/modules/module-base.css" />
+
+<script src="http://code.jquery.com/jquery-3.1.1.min.js"></script>
 {% endblock css %}
 
 {% block content %}
 
+	<script type="text/javascript" charset="utf-8">
+		function uploadFile() {
+			// var xhr = new XMLHttpRequest();
+			var form = document.getElementById('upload-form');
+			var fd = new FormData(form);
+
+			// xhr.onload = function(data, error) {console.log(data, error)};
+
+			// xhr.open("POST", );
+			// xhr.send(fd);
+			
+			$.ajax({
+				url: "/api/modules/{{module_name}}",
+				error: function(response) {
+					console.log(response)
+					$('#info').html(response.responseJSON.msg);
+				},
+				data: fd,
+				processData: false,
+				dataType: 'json',
+				success: function(data) {
+					window.location = '/modules/name/{{module_name}}';
+				},
+				type: 'POST',
+			});
+		}
+	</script>
+
 	<section class="center-content top-padding-md">
 		<h1>{{module_name}}</h1>
 
-		{% with errors = get_flashed_messages(category_filter=["error"]) %}
-		{% if errors %}
-		<div class="alert-message block-message error">
-			<a class="close" href="#">×</a>
-		  	<ul>
-				{%- for msg in errors %}
-				<li>{{ msg }}</li>
-				{% endfor -%}
-		 	</ul>
-		</div>
-		{% endif %}
-		{% endwith %}
+		<p id="info" class="error"></p>
 
-		{% if error %}
-		<p class=error><strong>Error:</strong> {{ error }}
-		{% endif %}
-
-		<form action="" method="post" enctype="multipart/form-data" name="module_upload" class="center-content top-padding-md">
+		<form id="upload-form" action="" method="post" enctype="multipart/form-data" name="module_upload" class="center-content top-padding-md">
 			{{ form.hidden_tag()  }}
 		
 			{{ form.version(placeholder="version") }}

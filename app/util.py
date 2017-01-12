@@ -2,12 +2,12 @@ import json
 import collections
 import werkzeug
 
-def make_json_error(msg=''):
+def make_json_error(msg='', error_code=403):
 	response = {
 		'status': 'error',
 		'msg'   : msg,
 	}
-	return json.dumps(response)
+	return json.dumps(response), error_code
 
 def make_json_success(data=None, msg=''):
 	response = {
