@@ -4,9 +4,10 @@ from flask_login import login_required
 
 import uuid
 
-from app import db
+from app import db, util
+from app.models import User
 from app.planes.forms import CreatePlaneForm, PlanarAuthenticateForm
-from app.planes.models import Plane
+from app.planes.models import Plane, Session
 from app.modules.models import Module
 from app.modules.models import ModuleHasNoData
 
@@ -17,6 +18,18 @@ planes = Blueprint('planes', __name__, url_prefix='/planes')
 api     = Blueprint('planes', __name__, url_prefix='/api')
 
 # Helper functions
+def connect(user, plane):
+	if Session.get_session(user, plane) is None:
+		s = Session(user=user.id , plane=plane.get_id())
+		db.session.add(s)
+		db.session.commit()
+
+def disconnect(user, plane):
+	s = Session.get_session(user, plane)
+	if s is not None:
+		db.session.delete(s)
+		db.session.commit()
+
 def join(plane):
 	if plane is None:
 		return render_template('planes/404.html', name=name)
@@ -37,6 +50,7 @@ def join(plane):
 	except ModuleHasNoData:
 		paths['js'] = ''
 
+	connect(g.user, plane)
 	return render_template('planes/plane.html', paths=paths)
 
 # Views
@@ -90,7 +104,70 @@ def join_plane(name):
 		return join(plane)
 
 # API endpoints
-@api.route('/create')
+@api.route('/create', methods=['POST'])
 def api_create_plane():
 	pass
 
+@api.route('/connect', methods=['POST'])
+def api_connect():
+	'''Create a session between user and plane.
+	Arguments
+		plane - String - Required. Name of plane.
+	'''
+
+	if not g.user.is_authenticated:
+		return util.make_json_error(msg='Not authenticated.')
+
+	args = util.parse_request_to_json(request)
+
+	plane = Plane.get_plane(util.html_escape_or_none(args['plane']))
+
+	connect(g.user, plane)
+
+	return util.make_json_success(msg='Connected.')
+
+@api.route('/disconnect', methods=['POST'])
+def api_disconnect():
+	'''Remove a session between user and plane.
+	Arguments
+		plane - String - Required. Name of plane.
+	'''
+
+	if not g.user.is_authenticated:
+		return util.make_json_error(msg='Not authenticated.')
+
+	args = util.parse_request_to_json(request)
+
+	plane = Plane.get_plane(util.html_escape_or_none(args['plane']))
+
+	disconnect(g.user, plane)
+
+	return util.make_json_success(msg='Disconnected.')
+
+@api.route('/sessions', methods=['GET', 'POST'])
+def api_sessions():
+	'''Returns active sessions
+	Arguments
+		user - String - Name of user
+		plane - Name of plane
+	Returns
+		data - List of tuples containing user names and plane names.
+	'''
+	
+	args = util.parse_request_to_json(request)
+
+	user = User.get_by_name(util.html_or_none(args['name']))
+	plane = Plane.get_plane(util.html_escape_or_none(args['plane']))
+
+	if user is None and plane is None:
+		data = [(s.get_user().username, s.get_plane().get_name()) for s in Session.get_sessions()]
+		return util.make_json_success(data=data)
+	elif plane is None:
+		data = [(s.get_user().username, s.get_plane().get_name()) for s in Session.get_sessions(user)]
+		return util.make_json_success(data=data)
+	elif user is None:
+		data = [(s.get_user().username, s.get_plane().get_name()) for s in Session.get_sessions(plane)]
+		return util.make_json_success(data=data)
+	else:
+		data = [(s.get_user().username, s.get_plane().get_name()) for s in Session.get_session(user, plane)]
+		return util.make_json_success(data=data)
