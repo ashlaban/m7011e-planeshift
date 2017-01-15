@@ -217,6 +217,9 @@ def api_version(module_name):
 	'''Create a new version. Must be authenticated as owner.
 	Arguemnts
 		name - String - Required. Name of the new version.
+		js   - File   - JS file to associate.
+		css  - File   - CSS file to associate.
+		html - File   - HTML file to associate.
 
 	Returns
 		{status: ok} if successful

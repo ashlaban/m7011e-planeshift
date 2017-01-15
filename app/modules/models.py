@@ -117,7 +117,7 @@ class Module(db.Model):
 			'long_desc' : self.long_desc,
 			'owner'     : self.get_owner().username,
 			
-			# 'picture'       : self.picture,
+			'picture'       : self.picture,
 			'latest_version': version_string,
 		}
 		return data
