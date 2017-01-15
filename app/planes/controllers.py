@@ -201,6 +201,10 @@ def api_disconnect():
 
 	return util.make_json_success(msg='Disconnected.')
 
+@plane_api.route('/name/<plane>', methods=['GET'])
+def api_join(plane):
+	pass
+
 @plane_api.route('/sessions', methods=['GET'])
 def api_sessions():
 	'''Returns all active sessions
