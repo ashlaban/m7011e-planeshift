@@ -15,7 +15,7 @@ from app.modules import manager
 
 # Define the blueprint: 'auth', set its url prefix: app.url/auth
 planes = Blueprint('planes', __name__, url_prefix='/planes')
-api     = Blueprint('planes', __name__, url_prefix='/api')
+plane_api = Blueprint('planes', __name__, url_prefix='/api/planes')
 
 # Helper functions
 def connect(user, plane):
@@ -104,11 +104,68 @@ def join_plane(name):
 		return join(plane)
 
 # API endpoints
-@api.route('/create', methods=['POST'])
-def api_create_plane():
-	pass
+@plane_api.route('/', methods=['GET'])
+def api_list():
+	'''List all planes in database
+	'''
+	try:
+		planes = Plane.get_planes()
+	except Exception:
+		return util.make_json_error()
 
-@api.route('/connect', methods=['POST'])
+	data = [p.get_name() for p in planes]
+
+	return util.make_json_success(data=data)
+
+@plane_api.route('/create', methods=['POST'])
+def api_create_plane():
+	'''Create a plane.
+	Arguments
+		password - String - Password to join plane.
+		module - String - Required. Name of module to load.
+		name - String - Required. Name of plane to be created.
+		public - Boolean - True if plane should be public, False if not.
+	'''
+
+	if not g.user.is_authenticated:
+		return util.make_json_error(msg='Not authenticated.')
+
+	args = util.parse_request_to_json(request)
+
+	password = util.html_escape_or_none(args['password'])
+	module = util.html_escape_or_none(args['module'])
+	name = util.html_escape_or_none(args['name'])
+	public = util.html_escape_or_none(args['public'])
+	
+	if Module.query.filter_by(name=module).scalar() is None:
+		return util.make_json_error(msg='Module does not exist.')
+	if name is None:
+		return util.make_json_error(msg='No plane name submitted.')
+	if Plane.query.filter_by(name=name).scalar() is not None:
+		return util.make_json_error(msg='A plane with that name already exists.')
+	if public is None:
+		public = False
+
+	m = Module.query.filter_by(name=name).first()
+	plane = Plane(
+		owner=g.user.id, 
+		password=passford, 
+		module=m.id, 
+		data=None, 
+		name=name, 
+		public=public
+	)
+
+	db.session.add(plane)
+
+	try:
+		db.session.commit()
+	except sqlalchemy.exc.IntegrityError as e:
+		return util.make_json_error(msg='Invalid arguments.')
+
+	return util.make_json_success(msg='Plane created.')
+
+@plane_api.route('/connect', methods=['POST'])
 def api_connect():
 	'''Create a session between user and plane.
 	Arguments
@@ -126,7 +183,7 @@ def api_connect():
 
 	return util.make_json_success(msg='Connected.')
 
-@api.route('/disconnect', methods=['POST'])
+@plane_api.route('/disconnect', methods=['POST'])
 def api_disconnect():
 	'''Remove a session between user and plane.
 	Arguments
@@ -144,30 +201,38 @@ def api_disconnect():
 
 	return util.make_json_success(msg='Disconnected.')
 
-@api.route('/sessions', methods=['GET', 'POST'])
+@plane_api.route('/sessions', methods=['GET'])
 def api_sessions():
-	'''Returns active sessions
-	Arguments
-		user - String - Name of user
-		plane - Name of plane
+	'''Returns all active sessions
 	Returns
-		data - List of tuples containing user names and plane names.
+		data - List of tuples containing user names and plane names that are connected.
 	'''
-	
-	args = util.parse_request_to_json(request)
+	data = [(s.get_user().username, s.get_plane().get_name()) for s in Session.get_sessions()]
+	return util.make_json_success(data=data)
 
-	user = User.get_by_name(util.html_or_none(args['name']))
-	plane = Plane.get_plane(util.html_escape_or_none(args['plane']))
+@plane_api.route('/sessions/<plane>', methods=['GET'])
+def api_sessions_by_plane(plane):
+	'''Returns all active sessions related to plane
+	Returns
+		data - List of tuples containing user names and plane names that are connected.
+	'''
+	data = [(s.get_user().username, s.get_plane().get_name()) for s in Session.get_users_for_plane(plane)]
+	return util.make_json_success(data=data)
 
-	if user is None and plane is None:
-		data = [(s.get_user().username, s.get_plane().get_name()) for s in Session.get_sessions()]
-		return util.make_json_success(data=data)
-	elif plane is None:
-		data = [(s.get_user().username, s.get_plane().get_name()) for s in Session.get_sessions(user)]
-		return util.make_json_success(data=data)
-	elif user is None:
-		data = [(s.get_user().username, s.get_plane().get_name()) for s in Session.get_sessions(plane)]
-		return util.make_json_success(data=data)
-	else:
-		data = [(s.get_user().username, s.get_plane().get_name()) for s in Session.get_session(user, plane)]
-		return util.make_json_success(data=data)
+@plane_api.route('/sessions/<user>', methods=['GET'])
+def api_sessions_by_user(user):
+	'''Returns all active sessions related to user
+	Returns
+		data - List of tuples containing user names and plane names that are connected.
+	'''
+	data = [(s.get_user().username, s.get_plane().get_name()) for s in Session.get_sessions(user)]
+	return util.make_json_success(data=data)
+
+@plane_api.route('/sessions/<plane>/<user>', methods=['GET'])
+def api_get_session(plane, user):
+	'''Returns active session related to plane and user
+	Returns
+		data - List of tuples containing user names and plane names that are connected.
+	'''
+	data = [(s.get_user().username, s.get_plane().get_name()) for s in Session.get_session(user, plane)]
+	return util.make_json_success(data=data)

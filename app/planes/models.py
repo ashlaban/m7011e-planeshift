@@ -73,7 +73,7 @@ class Session(db.Model):
 		return Session.query.filter_by(user=user.id).all()
 
 	@staticmethod
-	def get_sessions(plane):
+	def get_users_for_plane(plane):
 		return Session.query.filter_by(plane=plane.id).all()
 
 	@staticmethod
