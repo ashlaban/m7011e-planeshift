@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<link rel="stylesheet type="text/css" href="catan.css">
+
+</head>
+<body>
+
+<h1>Settlers of Catan</h1>
+
+<h2>Settlers of Catan resource tracker module</h2>
+
+<div id="cards">
+	<div class="resource">
+		<img id="stone" src="stone.jpg">
+		<div class="counter">
+			<button class="cntObj" type="button" onclick="addStone()">+</button>
+			<div id="stoneNum" class="cntObj"></div>
+			<button class="cntObj" type="button" onclick="subStone()">-</button>
+		</div>
+	</div>
+	<div class="resource">
+		<img id="wheat" src="wheat.jpg">
+		<div class="counter">
+			<button class="cntObj" type="button" onclick="addWheat()">+</button>
+			<div id="wheatNum" class="cntObj"></div>
+			<button class="cntObj" type="button" onclick="subWheat()">-</button>
+		</div>
+	</div>
+	<div class="resource">
+		<img id="brick" src="brick.jpg">
+		<div class="counter">
+			<button class="cntObj" type="button" onclick="addBrick()">+</button>
+			<div id="brickNum" class="cntObj"></div>
+			<button class="cntObj" type="button" onclick="subBrick()">-</button>
+		</div>
+	</div>
+	<div class="resource">
+		<img id="wood" src="wood.jpg">
+		<div class="counter">
+			<button class="cntObj" type="button" onclick="addWood()">+</button>
+			<div id="woodNum" class="cntObj"></div>
+			<button class="cntObj" type="button" onclick="subWood()">-</button>
+		</div>
+	</div>
+	<div class="resource">
+		<img id="sheep" src="sheep.jpg">
+		<div class="counter">
+			<button class="cntObj" type="button" onclick="addSheep()">+</button>
+			<div id="sheepNum" class="cntObj"></div>
+			<button class="cntObj" type="button" onclick="subSheep()">-</button>
+		</div>
+	</div>
+</div>
+
+<script src="catan.js">
+</script>
+
+</body>
+</html>
