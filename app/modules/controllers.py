@@ -40,10 +40,10 @@ def upload_module(name):
 	if not g.user.is_authenticated:
 		return redirect(url_for('login'))
 
+	module = Module.get_by_name(name)
+
 	if not g.user.id == module.owner:
 		return render_template('modules/403.html', name=name)
-
-	module = Module.get_by_name(name)
 
 	form = UploadForm()
 	if form.validate_on_submit():
@@ -53,7 +53,7 @@ def upload_module(name):
 			manager.upload_version(module=module, escaped_version=escaped_version, files_dict=files_dict)
 
 			flash('Version {} uploaded successfully!'.format(escaped_version), 'message')
-			return redirect( url_for('modules.info_module', name=name) )
+			return redirect( url_for('modules_mod.info_module', name=name) )
 
 		except manager.ModuleDuplicateVersionError:
 			flash('Version {} already exists.'.format(escaped_version), 'error')
@@ -217,6 +217,9 @@ def api_version(module_name):
 	'''Create a new version. Must be authenticated as owner.
 	Arguemnts
 		name - String - Required. Name of the new version.
+		js   - File   - JS file to associate.
+		css  - File   - CSS file to associate.
+		html - File   - HTML file to associate.
 
 	Returns
 		{status: ok} if successful
@@ -230,13 +233,24 @@ def api_version(module_name):
 	except ModuleNotFound:
 		return util.make_json_error(msg='Module {} not found.'.format(module_name))
 
-	if not module.is_owner(g.user):
+	if not module.is_owner(g.user.username):
 		return util.make_json_error(msg='You do not have the correct permissions.')
 
-	args = util.parse_request_to_json(request)
-	name = util.html_escape_or_none(args['name'])
+	args         = util.parse_request_to_json(request)
+	version_name = util.html_escape_or_none(args['name'])
 
-	return util.make_json_error(msg='Not implemented yet')
+	form = UploadForm()
+	if form.validate_on_submit():
+		try:
+			escaped_version = werkzeug.utils.escape(form.version.data)
+			files_dict      = form.get_files_dict()
+			manager.upload_version(module=module, escaped_version=escaped_version, files_dict=files_dict)
+			return util.make_json_success(msg='Success.')
+
+		except manager.ModuleDuplicateVersionError:
+			return util.make_json_error(msg='Version name already exists.')
+
+	return util.make_json_error(msg='Malformed form data.')
 
 # @module_api.route('/<module_name>/<version>', methods=['GET'])
 # def api_version_get(module_name, version):

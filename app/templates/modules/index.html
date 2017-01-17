@@ -3,21 +3,25 @@
 {% block css %}
 <link rel="stylesheet" type="text/css" href="/static/css/modules/module-base.css" />
 <link rel="stylesheet" type="text/css" href="/static/css/modules/module-list.css" />
+
+<script src="http://code.jquery.com/jquery-3.1.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.1/knockout-debug.js"></script>
+<script src="/static/js/modules_index.js"></script>
 {% endblock css %}
 
 {% block content %}
 
-<ul class=center-content>
-{% for module in modules %}
-<a href="/modules/name/{{module.name}}" class="module section-content center-content">
-	<div class="half center-content">
-		<img src="data:image/png;base64,{{module.picture}}">
-	</div>
-	<div class="half">
-		<h1>{{module.name}}</h1>
-		<p>{{module.short_desc}}</p>
-	</div>
-</a>
-{% endfor %}
+<ul class=center-content data-bind="foreach: modules">
+	<a class="module center-content" 
+		data-bind="attr: { href: '/modules/name/' + name }">
+		<div class="half center-content">
+			<img data-bind="attr: { src: 'data:image/png;base64,' + picture }">
+		</div>
+		<div class="half">
+			<h1 data-bind="text: name"></h1>
+			<p data-bind="text: short_desc"></p>
+		</div>
+	</a>
 </ul>
+
 {% endblock %}
