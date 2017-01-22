@@ -1,10 +1,52 @@
 {% extends "base.html" %}
 
 {% block css %}
+<script src="http://code.jquery.com/jquery-3.1.1.min.js"></script>
 {% endblock css %}
 
-{% block content  %}
-	<form action="" method="post" name="signup" class="center-content top-padding-md">
+{% block content %}
+	<script type="text/javascript" charset="utf-8">
+		function signup(username, password, email, password_confirm) {
+			var data = {
+				username: username,
+				password: password,
+				email: email,
+				confirm: password_confirm,
+			};
+			
+			$.ajax({
+				type: 'POST',
+				url: "/api/signup",
+				data: JSON.stringify(data),
+				dataType: 'json',
+				processData: false,
+				contentType: 'application/json; charset=utf-8',
+				success: function(data) {
+					window.location = '/';
+				},
+				error: function(response) {
+					console.log(response)
+					$('#info').html(response.responseJSON.msg);
+				},
+			});
+		}
+
+		function signupForm(form) {
+			var fd = new FormData(form);
+			signup(fd.get('username'), fd.get('password'), fd.get('email'), fd.get('confirm'));
+		}
+
+		$(document).ready( function () {
+			var form = document.getElementById('signup-form');
+			form.addEventListener('submit', function(ev) {
+	  			ev.preventDefault();
+	  			signupForm(form);
+			}, false);
+		});
+		
+	</script>
+
+	<form id="signup-form" action="" method="post" name="signup" class="center-content top-padding-md">
 		{{ form.hidden_tag()  }}
 		{{ form.username(size=30, placeholder='username') }}
 		{% for error in form.username.errors %}

@@ -35,6 +35,14 @@ class User(db.Model):
 		is_validated = check_password_hash(user.password, password)
 		return is_validated
 
+	@staticmethod
+	def exists(name):
+		try:
+			user = User.get_by_name(name)
+		except UserNotFoundError:
+			return False
+		return True
+
 	def __init__(self, password, *args, **kwargs):
 		super(User, self).__init__(*args, **kwargs)
 		self.set_password(password)

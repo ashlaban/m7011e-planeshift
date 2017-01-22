@@ -10,6 +10,7 @@ from app.models import UserNotFoundError
 
 import collections
 import werkzeug
+import sqlalchemy
 
 @lm.user_loader
 def load_user(id):
@@ -24,52 +25,56 @@ def before_request():
 def index():
 	return render_template('index.html', title='Home')
  
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+	form = SignupForm()
+	return render_template('signup.html', title='Signup', form=form)
+
 # TODO: Implement salted passwords: http://flask.pocoo.org/snippets/54/
 @app.route('/login', methods=['GET', 'POST'])
 def login():
 	if g.user is not None and g.user.is_authenticated:
 		return redirect(url_for('index'))
 	form = LoginForm()
-	if form.validate_on_submit():
-		########################################################################################
-		#Confirmation and error handling implemented in login form. Much cleaner!
-		login_user(form.user)
-		flash('Successfully logged in as %s' % form.user.username)
-		return redirect(url_for('index'))
-		
 	return render_template('login.html', title='Login', form=form)
 
 @app.route('/logout')
-@login_required
+# @login_required
 def logout():
 	logout_user()
 	return redirect(url_for('index'))
 
-@app.route('/signup', methods=['GET', 'POST'])
-def signup():
-	form = SignupForm()
-	if form.validate_on_submit():
-		user = User(username=form.username.data, password=form.password.data, email=form.email.data)
-		db.session.add(user)
-		db.session.commit()
-		flash('Thanks for signing up')
-		return redirect(url_for('login'))
+@app.route('/api/signup', methods=['POST'])
+def api_signup():
+	# args = util.parse_request_to_json(request)
+	args = request.get_json()
+	form = SignupForm.from_json(args, csrf_enabled=False)
+	# username = werkzeug.utils.escape(args['username'])
+	# password = werkzeug.utils.escape(args['password'])
+	# email    = werkzeug.utils.escape(args['email'])
 
-	return render_template('signup.html', title='Signup', form=form)
+	if not form.validate():
+		return util.make_json_error(msg='Malformed data.')
+	
+	user = User(username=form.username.data, password=form.password.data, email=form.email.data)
+	db.session.add(user)
+	db.session.commit()
+
+	login_user(user)
+	return util.make_json_success(msg='Thanks for signing up.')
 
 @app.route('/api/login', methods=['POST'])
 def api_login():
-	print(request)
 	args = util.parse_request_to_json(request)
 
 	username = werkzeug.utils.escape(args['username'])
-	password = args['password']
+	password = werkzeug.utils.escape(args['password'])
 
 	if not User.authenticate(username, password):
 		return util.make_json_error(msg='Authentication failed.')
 	
 	user = User.get_by_name(username)
 	login_user(user)
-	return util.make_json_success(msg='Logged in successfully.')
+	return util.make_json_success(msg='Welcome.')
 		
 	

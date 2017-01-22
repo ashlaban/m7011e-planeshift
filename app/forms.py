@@ -31,24 +31,27 @@ class LoginForm(Form):
 		return False
 
 class SignupForm(Form):
-	username = StringField('username', [validators.InputRequired()])
-	email = StringField('email', [validators.InputRequired(), validators.Email(message='Must be an e-mail address')])
+	username = StringField('username'  , [validators.InputRequired()])
+	email    = StringField('email'     , [validators.InputRequired(), validators.Email(message='Must be an e-mail address')])
 	password = PasswordField('password', [validators.InputRequired(), validators.EqualTo('confirm', message='Passwords must match')])
-	confirm = PasswordField('confirm', [validators.InputRequired()])
+	confirm  = PasswordField('confirm' , [validators.InputRequired()])
 
 	def __init__(self, *args, **kwargs):
 		Form.__init__(self, *args, **kwargs)
 		self.user = None
 
 	def validate(self):
-		rv = Form.validate(self)
-		if not rv:
+		# TODO: Implement email validation check, we require it to be unique.
+		if not Form.validate(self):
 			return False
 
-		user = User.query.filter_by(username=self.username.data).first()
-		if user is not None:
+		if User.exists(self.username.data):
 			self.username.errors.append('Username taken')
 			return False
+
+		# if User.exists_email(self.email.data):
+		# 	self.username.errors.append('Email already taken')
+		# 	return False
 
 		return True
 
