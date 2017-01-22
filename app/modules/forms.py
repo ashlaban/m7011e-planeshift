@@ -12,19 +12,12 @@ class VersionForm(Form):
 
 class UploadForm(Form):
 	version = StringField('version', [validators.InputRequired()])
-	html = FileField('html', validators=[FileRequired(), FileAllowed(['html'], 'HTML only!')])
-	css  = FileField('css' , validators=[FileRequired(), FileAllowed(['css' ], 'CSS only!')])
-	js   = FileField('js'  , validators=[FileRequired(), FileAllowed(['js'  ], 'JS only!')])
+	html = FileField('html', validators=[FileAllowed(['html'], 'The HTML field takes HTML files only.')])
+	css  = FileField('css' , validators=[FileAllowed(['css' ], 'The CSS field takes CSS files only.')])
+	js   = FileField('js'  , validators=[FileRequired(), FileAllowed(['js'], 'The JS field takes JS files only.')])
 	
 	def __init__(self, *args, **kwargs):
 		Form.__init__(self, *args, **kwargs)
-
-	def validate(self):
-		rv = Form.validate(self)
-		if not rv:
-			return False
-
-		return True
 
 	def get_files_dict(self):
 		files_dict = {

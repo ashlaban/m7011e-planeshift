@@ -59,18 +59,17 @@ def signup():
 
 @app.route('/api/login', methods=['POST'])
 def api_login():
-	request.get_json()
-
-	args = request.get_json()
-	args = collections.defaultdict(None, **args)
+	print(request)
+	args = util.parse_request_to_json(request)
 
 	username = werkzeug.utils.escape(args['username'])
 	password = args['password']
 
-	if User.authenticate(username, password):
-		user = User.get_by_name(username)
-		login_user(user)
-		return util.make_json_success(msg='Logged in successfully.')
-	else:
+	if not User.authenticate(username, password):
 		return util.make_json_error(msg='Authentication failed.')
+	
+	user = User.get_by_name(username)
+	login_user(user)
+	return util.make_json_success(msg='Logged in successfully.')
+		
 	

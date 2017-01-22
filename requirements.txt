@@ -8,6 +8,7 @@ setproctitle
 
 flask
 flask_wtf
+wtforms-json
 flask_sqlalchemy
 flask_login
 

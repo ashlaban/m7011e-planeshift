@@ -28,7 +28,10 @@ class User(db.Model):
 
 	@staticmethod
 	def authenticate(name, password):
-		user = User.get_by_name(name)
+		try:
+			user = User.get_by_name(name)
+		except UserNotFoundError:
+			return False
 		is_validated = check_password_hash(user.password, password)
 		return is_validated
 

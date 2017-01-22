@@ -49,6 +49,16 @@ def get_path_for_module_content(ext, module, version=None):
 
 	return os.path.join(module_path, filename)
 
+def upload_file_helper(filetype, data, module_name, escaped_version):	
+	if data:
+		target_path = get_module_system_path(module_name=module_name, escaped_version=escaped_version)
+		ensure_module_path(module_name, escaped_version)
+
+		filebasename = get_file_basename(module_name=module_name, escaped_version=escaped_version)
+		filename     = os.path.join(target_path, '{}.{}'.format(filebasename, filetype))
+		with open(filename, 'wb+') as file:
+			file.write(data)
+
 def upload_version(module, escaped_version, files_dict):
 	# TODO: The from argument should be extracted
 	# session = db.create_session(options={})
@@ -61,21 +71,9 @@ def upload_version(module, escaped_version, files_dict):
 		module.latest_version = new_version.id
 		session.add(module)
 
-		module_path = get_module_system_path(module_name=module.name, escaped_version=escaped_version)
-		ensure_module_path(module.name, escaped_version)
-
-		filebasename = get_file_basename(module_name=module.name, escaped_version=escaped_version)
-
-		html_filename = os.path.join(module_path, '{}.{}'.format(filebasename, 'html'))
-		css_filename  = os.path.join(module_path, '{}.{}'.format(filebasename, 'css' ))
-		js_filename   = os.path.join(module_path, '{}.{}'.format(filebasename, 'js'  ))
-
-		with open(html_filename, 'wb+') as html_file:
-				html_file.write(files_dict['html'])
-		with open(css_filename, 'wb+') as css_file:
-				css_file.write(files_dict['css'])
-		with open(js_filename, 'wb+') as js_file:
-				js_file.write(files_dict['js'])
+		upload_file_helper('html', files_dict['html'], module.name, escaped_version)
+		upload_file_helper('css' , files_dict['css'] , module.name, escaped_version)
+		upload_file_helper('js'  , files_dict['js']  , module.name, escaped_version)
 
 		session.commit()
 

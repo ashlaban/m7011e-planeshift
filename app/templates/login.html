@@ -1,10 +1,50 @@
 {% extends "base.html" %}
 
 {% block css %}
+<script src="http://code.jquery.com/jquery-3.1.1.min.js"></script>
 {% endblock css %}
 
 {% block content %}
-	<form action="" method="post" name="login" class="center-content top-padding-md">
+	<script type="text/javascript" charset="utf-8">
+		function login(username, password) {
+			var data = {
+				username: username,
+				password: password,
+			};
+			
+			$.ajax({
+				type: 'POST',
+				url: "/api/login",
+				data: JSON.stringify(data),
+				dataType: 'json',
+				processData: false,
+				contentType: 'application/json; charset=utf-8',
+				success: function(data) {
+					window.location = '/';
+				},
+				error: function(response) {
+					console.log(response)
+					$('#info').html(response.responseJSON.msg);
+				},
+			});
+		}
+
+		function loginForm(form) {
+			var fd = new FormData(form);
+			login(fd.get('username'), fd.get('password'));
+		}
+
+		$(document).ready( function () {
+			var form = document.getElementById('login-form');
+			form.addEventListener('submit', function(ev) {
+	  			ev.preventDefault();
+	  			loginForm(form);
+			}, false);
+		});
+		
+	</script>
+
+	<form id="login-form" action="" method="post" name="login" class="center-content top-padding-md">
 		{{ form.hidden_tag()  }}
 		{{ form.username(size=30, placeholder='username') }}
 		{% for error in form.username.errors %}

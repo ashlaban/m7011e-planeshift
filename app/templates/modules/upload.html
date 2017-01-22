@@ -9,31 +9,33 @@
 {% block content %}
 
 	<script type="text/javascript" charset="utf-8">
-		function uploadFile() {
-			// var xhr = new XMLHttpRequest();
-			var form = document.getElementById('upload-form');
+		function uploadFile(form) {
 			var fd = new FormData(form);
-
-			// xhr.onload = function(data, error) {console.log(data, error)};
-
-			// xhr.open("POST", );
-			// xhr.send(fd);
 			
 			$.ajax({
+				type: 'POST',
 				url: "/api/modules/{{module_name}}",
+				data: fd,
+				processData: false,
+				contentType: false,
+				success: function(data) {
+					window.location = '/modules/name/{{module_name}}';
+				},
 				error: function(response) {
 					console.log(response)
 					$('#info').html(response.responseJSON.msg);
 				},
-				data: fd,
-				processData: false,
-				dataType: 'json',
-				success: function(data) {
-					window.location = '/modules/name/{{module_name}}';
-				},
-				type: 'POST',
 			});
 		}
+
+		$(document).ready( function () {
+			var form = document.getElementById('upload-form');
+			form.addEventListener('submit', function(ev) {
+	  			ev.preventDefault();
+	  			uploadFile(form);
+			}, false);
+		});
+
 	</script>
 
 	<section class="center-content top-padding-md">

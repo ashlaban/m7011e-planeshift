@@ -35,7 +35,7 @@ def create_module():
 
 # TODO: Should be protected. Only logged in owners should be able to modify.
 # NOTE: Stored filename will become modulename-versionstring.xxx
-@modules.route('/upload/<name>', methods=['GET', 'POST'])
+@modules.route('/upload/<name>', methods=['GET'])
 def upload_module(name):
 	if not g.user.is_authenticated:
 		return redirect(url_for('login'))
@@ -46,20 +46,8 @@ def upload_module(name):
 		return render_template('modules/403.html', name=name)
 
 	form = UploadForm()
-	if form.validate_on_submit():
-		try:
-			escaped_version = werkzeug.utils.escape(form.version.data)
-			files_dict      = form.get_files_dict()
-			manager.upload_version(module=module, escaped_version=escaped_version, files_dict=files_dict)
-
-			flash('Version {} uploaded successfully!'.format(escaped_version), 'message')
-			return redirect( url_for('modules_mod.info_module', name=name) )
-
-		except manager.ModuleDuplicateVersionError:
-			flash('Version {} already exists.'.format(escaped_version), 'error')
 
 	return render_template('modules/upload.html', module_name=name, form=form)
-
 
 @modules.route('/name/<name>')
 def info_module(name):
@@ -236,21 +224,24 @@ def api_version(module_name):
 	if not module.is_owner(g.user.username):
 		return util.make_json_error(msg='You do not have the correct permissions.')
 
-	args         = util.parse_request_to_json(request)
-	version_name = util.html_escape_or_none(args['name'])
-
 	form = UploadForm()
-	if form.validate_on_submit():
-		try:
-			escaped_version = werkzeug.utils.escape(form.version.data)
-			files_dict      = form.get_files_dict()
-			manager.upload_version(module=module, escaped_version=escaped_version, files_dict=files_dict)
-			return util.make_json_success(msg='Success.')
+	try:
+		form.validate_on_submit()
+	except:
+		return util.make_json_error(msg=form.errors)
 
-		except manager.ModuleDuplicateVersionError:
-			return util.make_json_error(msg='Version name already exists.')
+	try:		
+		escaped_version = werkzeug.utils.escape(form.version.data)
+		files_dict      = form.get_files_dict()
 
-	return util.make_json_error(msg='Malformed form data.')
+		manager.upload_version(module=module, escaped_version=escaped_version, files_dict=files_dict)
+		return util.make_json_success(msg='Success.')
+
+	except manager.ModuleDuplicateVersionError as e:
+		return util.make_json_error(msg='Version name already exists.')
+	# except:
+	# 	# TODO: Log internal error
+	# 	return util.make_json_error(msg='Unknown error.')
 
 # @module_api.route('/<module_name>/<version>', methods=['GET'])
 # def api_version_get(module_name, version):
