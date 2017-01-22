@@ -43,6 +43,14 @@ class Plane(db.Model):
 			return True
 		return False
 
+	def password_matching(self, password):
+		if self.password == password:
+			return True
+		return False
+
+	def set_data(self, data):
+		self.data = data
+
 	@staticmethod
 	def get_planes():
 		return Plane.query.all()
