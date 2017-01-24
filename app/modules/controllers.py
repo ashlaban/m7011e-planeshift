@@ -7,7 +7,7 @@ from app import app
 from app import db, util
 from app.modules.models import Module
 from app.modules.models import ModuleNotFound, ModuleHasNoData, ModuleVersionNotFound
-from app.modules.forms  import UploadForm, VersionForm
+from app.modules.forms  import UploadForm, VersionForm, CreateForm
 from app.modules import manager
 
 from app import util
@@ -31,7 +31,8 @@ def list_module():
 
 @modules.route('/create')
 def create_module():
-	render_template('modules/create.html')
+	form = CreateForm()
+	return render_template('modules/create.html', form=form)
 
 # TODO: Should be protected. Only logged in owners should be able to modify.
 # NOTE: Stored filename will become modulename-versionstring.xxx
@@ -46,7 +47,6 @@ def upload_module(name):
 		return render_template('modules/403.html', name=name)
 
 	form = UploadForm()
-
 	return render_template('modules/upload.html', module_name=name, form=form)
 
 @modules.route('/name/<name>')
@@ -86,7 +86,7 @@ def info_module(name):
 # 
 # =============================================================================
 @module_api.route('/', methods=['GET'])
-def api_list():
+def api_list_module():
 	'''List all modules in database.
 	'''
 	try:
@@ -99,7 +99,7 @@ def api_list():
 	return util.make_json_success(data=data)
 
 @module_api.route('/', methods=['POST'])
-def api_module():
+def api_create_module():
 	'''Create a module.
 	Arguments
 		module_name - String - Required. Name of module. If module does not 
@@ -122,15 +122,13 @@ def api_module():
 	picture        = args['picture']
 	latest_version = None
 
-	create = False
-
+	was_created = False
+	module      = None
 	try:
 		module = Module.get_by_name(module_name)
+		#TODO: Check ownership
 	except ModuleNotFound:
 		was_created = True
-
-
-	if create:
 		module = Module(
 			owner = g.user.id,
 			name  = module_name,
@@ -140,7 +138,7 @@ def api_module():
 			picture        = picture,
 			latest_version = latest_version,
 		)
-
+		
 	if short_desc is not None:
 		module.short_desc = short_desc
 	if long_desc is not None:
@@ -153,15 +151,17 @@ def api_module():
 	try:
 		db.session.commit()
 	except sqlalchemy.exc.IntegrityError as e:
+		print('yikes')
+		print(e)
 		return util.make_json_error(msg='Invalid arguments.')
 
-	if create:
+	if was_created:
 		return util.make_json_success(msg='Module created.')
 	else:
 		return util.make_json_success(msg='Module updated.')
 
 @module_api.route('/', methods=['DELETE'])
-def api_delete():
+def api_delete_module():
 	'''Delete a module. Requires user to be authenticated and the owner to 
 	complete successfully.
 	

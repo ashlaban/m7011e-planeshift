@@ -45,15 +45,8 @@
 	</script>
 
 	<form id="login-form" action="" method="post" name="login" class="center-content top-padding-md">
-		{{ form.hidden_tag()  }}
 		{{ form.username(size=30, placeholder='username') }}
-		{% for error in form.username.errors %}
-		<span style="color: red;">[{{ error }}]</span>
-		{% endfor %}
 		{{ form.password(size=30, placeholder='password') }}
-		{% for error in form.password.errors %}
-		<span style="color: red;">[{{ error }}]</span>
-		{% endfor %}
 		<input type="submit" value="Sign In">
 	</form>
 {% endblock content %}

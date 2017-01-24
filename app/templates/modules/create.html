@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block css %}
+<link rel="stylesheet" type="text/css" href="/static/css/modules/module-base.css" />
+
+<script src="/static/js/jquery-3.1.1.min.js"></script>
+{% endblock css %}
+
+{% block content %}
+
+	<script type="text/javascript" charset="utf-8">
+		function create_module(name, short_desc, long_desc, picture) {
+			var data = {
+				name: name,
+				short_desc: short_desc,
+				long_desc: long_desc,
+				picture: picture,
+			};
+			
+			$.ajax({
+				type: 'POST',
+				url: '/api/modules/',
+				data: JSON.stringify(data),
+				dataType: 'json',
+				processData: false,
+				contentType: 'application/json; charset=utf-8',
+				success: function(data) {
+					window.location = '/modules/name/'+name;
+				},
+				error: function(response) {
+					console.log(response)
+					$('#info').html(response.responseJSON.msg);
+				},
+			});
+		}
+
+		function create_module_form(form) {
+			var fd = new FormData(form);
+			create_module(fd.get('name'), fd.get('short_desc'), fd.get('long_desc'), fd.get('picture'));
+		}
+
+		$(document).ready( function () {
+			var form = document.getElementById('create-form');
+			form.addEventListener('submit', function(ev) {
+	  			ev.preventDefault();
+	  			create_module_form(form);
+			}, false);
+		});
+		
+	</script>
+
+	<section class="center-content top-padding-md">
+		<h1>{{module_name}}</h1>
+
+		<p id="info" class="error"></p>
+
+		<form id="create-form" action="" method="post" enctype="multipart/form-data" name="module_create" class="center-content top-padding-md">
+			{{ form.hidden_tag()  }}
+		
+			<span> {{ form.name(placeholder="name") }} </span>
+			<span> {{ form.short_desc(placeholder="short description") }} </span>
+			<span> {{ form.long_desc(placeholder="(optional) long description") }} </span>
+			<span> {{ form.picture(placeholder="(optional) picture, base64") }} </span>
+
+			<input type="submit" value="create">
+		</form>
+	</section>
+{% endblock content %}

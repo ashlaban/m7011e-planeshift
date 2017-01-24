@@ -1,6 +1,6 @@
 from flask_wtf      import Form
 from flask_wtf.file import FileAllowed, FileRequired
-from wtforms import FileField, StringField, SelectField, validators
+from wtforms import TextAreaField, FileField, StringField, SelectField, validators
 
 class VersionForm(Form):
 	version_list = SelectField('version', coerce=int);
@@ -27,3 +27,29 @@ class UploadForm(Form):
 		}
 		
 		return files_dict
+
+class CreateForm(Form):
+	'''Create a module.
+	Arguments
+		module_name - String - Required. Name of module. If module does not 
+		                       exist it will be created.
+		short_desc  - String - Short description of module. Will be included in
+		                       listings.
+		long_desc   - String - Longer description of module. Will not be 
+		                       included in listings.
+		picture     - String base64 - Icon to represent the module.
+	'''
+	name       = StringField('name', [validators.InputRequired()])
+	short_desc = TextAreaField('short_desc', [validators.InputRequired()])
+	long_desc  = TextAreaField('long_desc')
+	picture    = TextAreaField('picture')
+	
+	def __init__(self, *args, **kwargs):
+		Form.__init__(self, *args, **kwargs)
+
+	def validate(self):
+		if not Form.validate(self):
+			return False
+		# TODO: Custom validation.
+		return True
+
