@@ -1,34 +1,30 @@
 <nav>
 	<ul>
-		<li class="nav-item"><a href="/">PLANESHIFT</a></li>
-		<li class="nav-item"><a href="/about"  >About</a></li>
-		<li class="nav-item"><a href="/planes" >Planes</a></li>
-		<li class="nav-item"><a href="/planes/create" >Create plane</a></li>
-		<li class="nav-item"><a href="/modules">Modules</a></li>
+		<li id="logo"><a href="/">PLANESHIFT</a></li>
+		<li class="nav-button"><a href="/about"  >About</a></li>
+		<li class="nav-menu">
+			<a class="nav-sub-button" href="/planes" >Planes</a>
+			<ul>
+				<li><a class="nav-sub-button" href="/planes">List</a></li>
+				<li><a class="nav-sub-button" href="/planes/create">Create</a></li>
+			</ul>
+		</li>
+		<li class="nav-menu">
+			<a class="nav-sub-button" href="/modules">Modules</a>
+			<ul>
+				<li><a class="nav-sub-button" href="/modules">List</a></li>
+				<li><a class="nav-sub-button" href="/modules/create">Create</a></li>
+			</ul>
+		</li>
+		
 		<li class="nav-filler"></li>
 
 		{% if g.user.is_authenticated %}
-		<li class="nav-item"><a href="/profile">Profile</a></li>
-		<li class="nav-item"><a href="/logout" >Logout</a></li>
+		<li class="nav-button"><a href="/profile">Profile</a></li>
+		<li class="nav-button"><a href="/logout" >Logout</a></li>
 		{% else %}
-		<li class="nav-item">
-			<a href="/signup">Signup</a>
-			<ul class="nav-right-menu">
-				<li><input type="text" name="" value="" placeholder="username"></li>
-				<li><input type="text" name="" value="" placeholder="e-mail"></li>
-				<li><input type="password" name="" value="" placeholder="password"></li>
-				<li><input type="password" name="" value="" placeholder="confirm password"></li>
-				<li><input type="button" name="" value=""></li>
-			</ul>
-		</li>
-		<li class="nav-item">
-			<a href="/login" >Login</a>
-			<ul class="nav-right-menu">
-				<li><input type="text" name="" value="" placeholder="username"></li>
-				<li><input type="password" name="" value="" placeholder="password"></li>
-				<li><input type="button" name="" value=""></li>
-			</ul>
-		</li>
+		<li class="nav-button"><a href="/signup">Signup</a></li>
+		<li class="nav-button"><a href="/login" >Login</a></li>
 		{% endif %}
 	</ul>
 </nav>
