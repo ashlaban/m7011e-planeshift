@@ -46,8 +46,7 @@ def logout():
 
 @app.route('/api/signup', methods=['POST'])
 def api_signup():
-	# args = util.parse_request_to_json(request)
-	args = request.get_json()
+	args = util.parse_request_to_json(request)
 	form = SignupForm.from_json(args, csrf_enabled=False)
 	# username = werkzeug.utils.escape(args['username'])
 	# password = werkzeug.utils.escape(args['password'])
@@ -66,9 +65,12 @@ def api_signup():
 @app.route('/api/login', methods=['POST'])
 def api_login():
 	args = util.parse_request_to_json(request)
+	form = LoginForm.from_json(args, csrf_enabled=False)
+	# username = werkzeug.utils.escape(args['username'])
+	# password = werkzeug.utils.escape(args['password'])
 
-	username = werkzeug.utils.escape(args['username'])
-	password = werkzeug.utils.escape(args['password'])
+	if not form.validate():
+		return util.make_json_error(msg='Malformed data.')
 
 	if not User.authenticate(username, password):
 		return util.make_json_error(msg='Authentication failed.')
