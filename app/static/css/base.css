@@ -129,6 +129,14 @@ nav .nav-menu ul {
 	justify-content: center;
 }
 
+nav .nav-menu ul a {
+	visibility: hidden;
+}
+
+nav .nav-menu:hover ul a {
+	visibility: visible;
+}
+
 nav .nav-menu a:hover {
 	color: #447294;
 }
