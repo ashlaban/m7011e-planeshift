@@ -2,6 +2,7 @@
 
 {% block css %}
 <link rel="stylesheet" type="text/css" href="/static/css/modules/module-base.css" />
+<link rel="stylesheet" type="text/css" href="/static/css/modules/module-create.css" />
 
 <script src="/static/js/jquery-3.1.1.min.js"></script>
 {% endblock css %}
@@ -49,20 +50,22 @@
 		
 	</script>
 
-	<section class="center-content top-padding-md">
-		<h1>{{module_name}}</h1>
+	<section class="center-content">
 
-		<p id="info" class="error"></p>
+		<div id="create-box" class="rounded center-content">
+			<h1>Create new module</h1>
+			<!-- <p id="info" class="error"></p> -->
 
-		<form id="create-form" action="" method="post" enctype="multipart/form-data" name="module_create" class="center-content top-padding-md">
-			{{ form.hidden_tag()  }}
-		
-			<span> {{ form.name(placeholder="name") }} </span>
-			<span> {{ form.short_desc(placeholder="short description") }} </span>
-			<span> {{ form.long_desc(placeholder="(optional) long description") }} </span>
-			<span> {{ form.picture(placeholder="(optional) picture, base64") }} </span>
+			<form id="create-form" action="" method="post" enctype="multipart/form-data" name="module_create" class="center-content">
+				{{ form.hidden_tag()  }}
+			
+				{{ form.name(placeholder="Module name") }}
+				{{ form.short_desc(placeholder="Please, enter a short description") }}
+				{{ form.long_desc(placeholder="(Optional) Long description") }}
+				{{ form.picture(placeholder="(Optional) Picture, png encoded in base64") }}
 
-			<input type="submit" value="create">
-		</form>
+				<input class="btn" type="submit" value="create">
+			</form>
+		</div>
 	</section>
 {% endblock content %}

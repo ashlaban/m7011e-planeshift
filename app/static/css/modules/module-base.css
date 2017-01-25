@@ -24,3 +24,9 @@
 	text-decoration: none;
 	color: inherit;
 }
+
+.rounded {
+	border-style: solid;
+	border-width: 0px;
+	border-radius: 1em;
+}

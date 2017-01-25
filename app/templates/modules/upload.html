@@ -2,8 +2,9 @@
 
 {% block css %}
 <link rel="stylesheet" type="text/css" href="/static/css/modules/module-base.css" />
+<link rel="stylesheet" type="text/css" href="/static/css/modules/module-upload.css" />
 
-<script src="http://code.jquery.com/jquery-3.1.1.min.js"></script>
+<script src="/static/js/jquery-3.1.1.min.js"></script>
 {% endblock css %}
 
 {% block content %}
@@ -39,34 +40,25 @@
 	</script>
 
 	<section class="center-content top-padding-md">
-		<h1>{{module_name}}</h1>
 
-		<p id="info" class="error"></p>
+		<div id="upload-box" class="center-content rounded">
+			<h1>Upload new version</h1>
+			<span>Current module: {{module_name}}</span>
 
-		<form id="upload-form" action="" method="post" enctype="multipart/form-data" name="module_upload" class="center-content top-padding-md">
-			{{ form.hidden_tag()  }}
-		
-			{{ form.version(placeholder="version") }}
-			{% for error in form.version.errors %}
-			<span style="color: red;">[{{ error }}]</span>
-			{% endfor %}
-
-			<span> js {{ form.js() }} </span>
-			{% for error in form.js.errors %}
-			<span style="color: red;">[{{ error }}]</span>
-			{% endfor %}
+			<form id="upload-form" action="" method="post" enctype="multipart/form-data" name="module_upload" class="center-content">
+				{{ form.hidden_tag()  }}
 			
-			<span> html {{ form.html() }} </span>
-			{% for error in form.html.errors %}
-			<span style="color: red;">[{{ error }}]</span>
-			{% endfor %}
-
-			<span> css {{ form.css() }} </span>
-			{% for error in form.css.errors %}
-			<span style="color: red;">[{{ error }}]</span>
-			{% endfor %}
-
-			<input type="submit" value="Upload">
-		</form>
+				{{ form.version(placeholder="New version name") }}
+				<dl>
+					<dt>Javascript</dt>
+					<dd>{{ form.js() }}</dd>
+					<dt>HTML (optional)</dt>
+					<dd>{{ form.html() }}</dd>
+					<dt>CSS (optional)</dt>
+					<dd>{{ form.css() }}</dd>
+				</dl>
+				<input type="submit" class="btn" value="Upload">
+			</form>
+		</div>
 	</section>
 {% endblock content %}
