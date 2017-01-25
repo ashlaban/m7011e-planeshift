@@ -33,18 +33,23 @@ def ensure_module_path(module_name, escaped_version):
 def get_path_for_module_content(ext, module, version=None):
 	ALLOWED_FILE_TYPES = ['html', 'css', 'js', 'pic']
 
+	if module is None:
+		raise ValueError('Argument module must not be None')
+
 	if ext not in ALLOWED_FILE_TYPES:
 		raise ValueError('Argument ext ({}) not in ALLOWED_FILE_TYPES ({})'.format(ext, ALLOWED_FILE_TYPES))
+
+	module_name = module.name
 
 	if version is None:
 		try:
 			version        = module.get_latest_version()
-			version_string = version.get_escaped_version_string()
+			version_string = version.get_escaped_version()
 		except ModuleVersionNotFound:
 			raise ModuleHasNoData()
 
-	module_path = get_module_path(module_name=module_name, escaped_version=escaped_version)
-	basename    = get_file_basename(module_name=module_name, escaped_version=escaped_version)
+	module_path = get_module_path(module_name=module_name, escaped_version=version_string)
+	basename    = get_file_basename(module_name=module_name, escaped_version=version_string)
 	filename    = '{basename}.{ext}'.format(basename=basename, ext=ext)
 
 	return os.path.join(module_path, filename)
