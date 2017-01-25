@@ -156,7 +156,6 @@ def api_create_module():
 	try:
 		db.session.commit()
 	except sqlalchemy.exc.IntegrityError as e:
-		print('yikes')
 		print(e)
 		return util.make_json_error(msg='Invalid arguments.')
 
@@ -191,7 +190,15 @@ def api_delete_module():
 	if g.user.id != module.owner:
 		return util.make_json_error(msg='You do not own module {}.'.format(module_name))
 
-	return util.make_json_error(msg='Not implemented yet')
+	try:
+		for version in Module.get_versions(module_name):
+			db.session.delete(version)
+		db.session.delete(module)
+		db.session.commit()
+		return util.make_json_success(msg='Module ' + module_name + ' deleted.')
+	except:
+		db.session.rollback()
+		return util.make_json_error(msg='Error deleting module.')
 
 @module_api.route('/<module_name>', methods=['GET'])
 def api_info(module_name):

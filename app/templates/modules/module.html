@@ -3,9 +3,41 @@
 {% block css %}
 <link rel="stylesheet" type="text/css" href="/static/css/modules/module-base.css" />
 <link rel="stylesheet" type="text/css" href="/static/css/modules/module-info.css" />
+
+<script src="/static/js/jquery-3.1.1.min.js"></script>
+<script src="/static/js/ko.js"></script>
 {% endblock css %}
 
 {% block content %}
+<script type="text/javascript" charset="utf-8">
+	function delete_module(name) {
+		var data = {name: name};
+		
+		$.ajax({
+			type: 'DELETE',
+			url: '/api/modules/',
+			data: JSON.stringify(data),
+			dataType: 'json',
+			processData: false,
+			contentType: 'application/json; charset=utf-8',
+			success: function(data) {
+				window.location = '/modules';
+			},
+			error: function(response) {
+				$('#info').html(response.responseJSON.msg);
+			},
+		});
+	}
+
+	$(document).ready( function () {
+		var btn_delete = document.getElementById('btn-delete');
+		btn_delete.addEventListener('click', function(ev) {
+			ev.preventDefault();
+			delete_module("{{module.name}}");
+		}, false);
+	});		
+</script>
+
 <div class="center-content">
 	<section id="module-info" class="section-content center-content">
 		<div class="half center-content">
@@ -24,6 +56,8 @@
 				
 				{% if is_owner %}
 				<a class="btn" href=/modules/upload/{{module.name}}>Upload new version</a>
+				<!-- TODO: Move to suitable place and confimation modal or something. -->
+				<button id="btn-delete" class="btn">Delete</button>
 				{% endif %}
 			</ul>
 		</div>
