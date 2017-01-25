@@ -7,7 +7,7 @@ from app import app
 from app import db, util
 from app.modules.models import Module
 from app.modules.models import ModuleNotFound, ModuleHasNoData, ModuleVersionNotFound
-from app.modules.forms  import UploadForm, VersionForm, CreateForm
+from app.modules.forms  import UploadForm, CreateForm
 from app.modules import manager
 
 from app import util
@@ -34,12 +34,11 @@ def create_module():
 	form = CreateForm()
 	return render_template('modules/create.html', form=form)
 
-# TODO: Should be protected. Only logged in owners should be able to modify.
 # NOTE: Stored filename will become modulename-versionstring.xxx
 @modules.route('/upload/<name>', methods=['GET'])
 def upload_module(name):
 	if not g.user.is_authenticated:
-		return redirect(url_for('login'))
+		return render_template('modules/403.html', name=name)
 
 	module = Module.get_by_name(name)
 
@@ -52,24 +51,13 @@ def upload_module(name):
 @modules.route('/name/<name>')
 def info_module(name):
 	module   = Module.get_by_name(name)
-	versions = Module.get_versions_for_module_id(module.id)
-	versions = [(v.id, v.version_string) for v in versions]
 
 	is_owner = g.user.is_authenticated and g.user.id == module.owner
-
-	form = VersionForm(versions, module.latest_version)
-	if form.validate_on_submit():
-		pass
 	
 	if module is None:
 		return render_template('modules/404.html', name=name)
 
-	return render_template(
-		'modules/module.html',
-		module         = module,
-		form           = form,
-		is_owner       = is_owner,
-	)
+	return render_template('modules/module.html', module_name = module.name)
 
 # =============================================================================
 # API endpoints
@@ -205,12 +193,13 @@ def api_info(module_name):
 	'''Get meta-data for a given module.
 	'''
 	try:
-		module = Module.get_by_name(module_name)
+		module = Module.get_by_name(module_name);
 	except ModuleNotFound:
-		return util.make_json_error(msg='Module {} not found'.format(module_name))
+		return util.make_json_error(msg='Module {} not found'.format(module_name));
 
 	data = module.get_public_long_info()
-	return util.make_json_success(data=data)
+	data['is_owner'] = g.user.is_authenticated and g.user.id == module.owner;
+	return util.make_json_success(data=data);
 
 @module_api.route('/<module_name>', methods=['POST'])
 def api_version(module_name):

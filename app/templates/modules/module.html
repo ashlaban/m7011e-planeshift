@@ -29,36 +29,67 @@
 		});
 	}
 
+	var vm;
+
+	loadModuleInfoData = function (name) {
+		console.log('/api/modules/'+name);
+		$.ajax({
+			url: '/api/modules/'+name,
+			dataType: 'json',
+			success: function(data) {
+				console.log(data);
+				vm = new PlaneshiftViewModel(data.data);
+				ko.applyBindings(vm);
+			},
+			type: 'GET'
+		});
+	}
+
+	function PlaneshiftViewModel(info) {
+		this.info = info;
+	}
+
 	$(document).ready( function () {
+		{% if is_owner %}
 		var btn_delete = document.getElementById('btn-delete');
 		btn_delete.addEventListener('click', function(ev) {
 			ev.preventDefault();
-			delete_module("{{module.name}}");
+			delete_module("{{module_name}}");
 		}, false);
+		{% endif %}
+
+		loadModuleInfoData("{{module_name}}");
 	});		
 </script>
 
 <div class="center-content">
 	<section id="module-info" class="section-content center-content">
 		<div class="half center-content">
-			<img src="data:image/png;base64,{{module.picture}}">
+			<img data-bind="attr: { src: 'data:image/png;base64,' + info.picture }">
 		</div>
 		<div class="half">
 			<ul>
-				<h1>{{module.name}}</h1>
+				<h1 data-bind="text: info.name"></h1>
 				<div id="version-header">
 					<span>Version</span>
-					<span id="version-selector">{{form.version_list}}</span>
+					<select data-bind="
+						options: info.versions,
+						optionsText: function(item) {
+							return item[1]
+						},
+						value: info.versions.find(function(el){return el[0]==info.latest_version[0]})">
+					</select>
 				</div>
 				
-				<li id="short_desc">{{module.short_desc}}</li>
-				<li id="long_desc">{{module.long_desc}}</li>
+				<li id="short_desc" data-bind="text: info.short_desc"></li>
+				<li id="long_desc"  data-bind="text: info.long_desc"></li>
 				
-				{% if is_owner %}
-				<a class="btn" href=/modules/upload/{{module.name}}>Upload new version</a>
-				<!-- TODO: Move to suitable place and confimation modal or something. -->
-				<button id="btn-delete" class="btn">Delete</button>
-				{% endif %}
+				<!-- ko if: info.is_owner -->
+				<a class="btn"
+					data-bind="attr: {href: '/modules/upload/'+info.name }">Upload new version</a>
+				<!-- TODO: Move delete to suitable place and confimation modal or something. -->
+				<a id="btn-delete" class="btn" href="">Delete</a>
+				<!-- /ko -->
 			</ul>
 		</div>
 	</section>

@@ -1,16 +1,6 @@
 from flask_wtf      import Form
 from flask_wtf.file import FileAllowed, FileRequired
-from wtforms import TextAreaField, FileField, StringField, SelectField, validators
-
-class VersionForm(Form):
-	version_list = SelectField('version', coerce=int);
-
-	def __init__(self, version_list_data, default, *args, **kwargs):
-		Form.__init__(self, *args, **kwargs)
-
-		self.version_list.choices = version_list_data
-		self.version_list.default = default
-		self.process()
+from wtforms import TextAreaField, FileField, StringField, validators
 
 class UploadForm(Form):
 	version = StringField('version', [validators.InputRequired()])

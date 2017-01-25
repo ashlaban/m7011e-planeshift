@@ -105,11 +105,13 @@ class Module(db.Model):
 		return data
 
 	def get_public_long_info(self):
-
 		try:
 			version_string = self.get_latest_version().get_escaped_version()
 		except ModuleVersionNotFound:
 			version_string = ''	
+
+		versions = Module.get_versions_for_module_id(self.id)
+		versions = [(v.id, v.version_string) for v in versions]
 
 		data = {
 			'name'      : self.name,
@@ -118,10 +120,10 @@ class Module(db.Model):
 			'owner'     : self.get_owner().username,
 			
 			'picture'       : self.picture,
-			'latest_version': version_string,
+			'latest_version': (self.latest_version, version_string),
+			'versions'      : versions
 		}
 		return data
-
 
 	def __repr__(self):
 		return '<Module %r>'.format(self.name)

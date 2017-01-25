@@ -65,8 +65,6 @@ def upload_file_helper(filetype, data, module_name, escaped_version):
 			file.write(data)
 
 def upload_version(module, escaped_version, files_dict):
-	# TODO: The from argument should be extracted
-	# session = db.create_session(options={})
 	session = db.session
 	try:
 		new_version = ModuleVersion(module_id=module.id, version_string=escaped_version)
