@@ -57,14 +57,19 @@ def info_module(name):
 
 	is_owner = g.user.is_authenticated and g.user.id == module.owner
 
-	form = VersionForm(versions)
+	form = VersionForm(versions, module.latest_version)
 	if form.validate_on_submit():
 		pass
 	
 	if module is None:
 		return render_template('modules/404.html', name=name)
 
-	return render_template('modules/module.html', module=module, form=form, is_owner=is_owner)
+	return render_template(
+		'modules/module.html',
+		module         = module,
+		form           = form,
+		is_owner       = is_owner,
+	)
 
 # =============================================================================
 # API endpoints

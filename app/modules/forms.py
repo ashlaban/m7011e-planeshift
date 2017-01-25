@@ -5,10 +5,12 @@ from wtforms import TextAreaField, FileField, StringField, SelectField, validato
 class VersionForm(Form):
 	version_list = SelectField('version', coerce=int);
 
-	def __init__(self, version_list_data, *args, **kwargs):
+	def __init__(self, version_list_data, default, *args, **kwargs):
 		Form.__init__(self, *args, **kwargs)
 
 		self.version_list.choices = version_list_data
+		self.version_list.default = default
+		self.process()
 
 class UploadForm(Form):
 	version = StringField('version', [validators.InputRequired()])
