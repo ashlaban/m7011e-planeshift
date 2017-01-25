@@ -76,7 +76,7 @@ def api_login():
 	if not form.validate():
 		return util.make_json_error(msg='Malformed data.')
 	
-	user = User.get_by_name(username)
+	user = User.get_by_name(form.username.data)
 	login_user(user)
 	return util.make_json_success(msg='Welcome.')
 		
