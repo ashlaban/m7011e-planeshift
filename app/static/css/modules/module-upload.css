@@ -1,33 +1,9 @@
-#upload-box {
-	/*width: 600px;*/
-	background-color: #F8E4CC;
-
-	padding-left : 5em;
-	padding-right: 5em;
-
-	margin-top: 3em;
-	padding-bottom: 1em;
-	margin-bottom: 3em;
-}
-
-#upload-form {
-	margin-top: 1.5em;
-}
-
-#upload-form > input{
-	border-style: solid;
-	border-width: 0px;
-	border-radius: 0.3em;
+#version {
+	margin-top: 1em;
+	margin-bottom: 0em;
 }
 
 #upload-form dt {
 	margin-top: 0.5em;
 	margin-bottom: 0.5em;
-}
-
-#version {
-	width: 20em;
-	height: 2em;
-
-	/*font-size: 2em;*/
 }

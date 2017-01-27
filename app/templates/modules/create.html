@@ -52,17 +52,29 @@
 
 	<section class="center-content">
 
-		<div id="create-box" class="rounded center-content">
+		<div class="form-box rounded center-content">
 			<h1>Create new module</h1>
 			<!-- <p id="info" class="error"></p> -->
 
-			<form id="create-form" action="" method="post" enctype="multipart/form-data" name="module_create" class="center-content">
+			<form class="form center-content" action="" method="post" enctype="multipart/form-data" name="module_create">
 				{{ form.hidden_tag()  }}
 			
-				{{ form.name(placeholder="Module name") }}
-				{{ form.short_desc(placeholder="Please, enter a short description") }}
-				{{ form.long_desc(placeholder="(Optional) Long description") }}
-				{{ form.picture(placeholder="(Optional) Picture, png encoded in base64") }}
+				{{ form.name(
+					class="wide-form-field",
+					placeholder="Module name")
+				}}
+				{{ form.short_desc(
+					class='wide-form-area',
+					placeholder="Please, enter a short description")
+				}}
+				{{ form.long_desc(
+					class='wide-form-area',
+					placeholder="(Optional) Long description")
+				}}
+				{{ form.picture(
+					class='wide-form-area',
+					placeholder="(Optional) Picture, png encoded in base64")
+				}}
 
 				<input class="btn" type="submit" value="create">
 			</form>
