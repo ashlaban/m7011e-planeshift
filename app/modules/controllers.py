@@ -34,6 +34,9 @@ def list_module():
 
 @modules.route('/create')
 def create_module():
+	if not g.user.is_authenticated:
+		return render_template('/403.html')
+
 	form = CreateForm()
 	return render_template('modules/create.html', form=form)
 

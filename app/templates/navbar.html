@@ -6,14 +6,18 @@
 			<a class="nav-sub-button" href="/planes" >Planes</a>
 			<ul>
 				<li><a class="nav-sub-button" href="/planes">List</a></li>
+				{% if g.user.is_authenticated %}
 				<li><a class="nav-sub-button" href="/planes/create">Create</a></li>
+				{% endif %}
 			</ul>
 		</li>
 		<li class="nav-menu">
 			<a class="nav-sub-button" href="/modules">Modules</a>
 			<ul>
 				<li><a class="nav-sub-button" href="/modules">List</a></li>
+				{% if g.user.is_authenticated %}
 				<li><a class="nav-sub-button" href="/modules/create">Create</a></li>
+				{% endif %}
 			</ul>
 		</li>
 		
