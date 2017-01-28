@@ -8,6 +8,7 @@ notes/
 config.json
 uploads
 uwsgi.ini
+app.db
 .well-known/
 
 # macOS specific

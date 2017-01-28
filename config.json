@@ -1,0 +1,11 @@
+{
+	"web" : {
+		"port" : "8081",
+		"debug": "False"
+	},
+
+	"log": {
+		"logfile": "/var/log/planeshift.log",
+		"loglevel": "info"
+	}
+}
