@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block css %}
+<link rel="stylesheet" type="text/css" href="/static/css/profile/profile-base.css" />
+
+<script src="/static/js/jquery-3.1.1.min.js"></script>
+<script src="/static/js/ko.js"></script>
+{% endblock css %}
+
+{% block content %}
+<script type="text/javascript" charset="utf-8">
+	var vm;
+	var data;
+
+	function get_modules_for_user (username) {
+		$.ajax({
+			url: '/api/modules/',
+			data: {username: username},
+			dataType: 'json',
+			success: function(data) {
+				if (data.hasOwnProperty('data') ) {
+					vm.modules(data.data);
+				}
+			},
+			type: 'GET'
+		});
+	}
+
+	function PlaneshiftViewModel(modules) {
+		var self = this;
+
+		self.modules = ko.observableArray();
+		self.planes  = ko.observableArray();
+	}
+
+	document.addEventListener('DOMContentLoaded', function () {
+		vm = new PlaneshiftViewModel();
+		ko.applyBindings(vm);
+		get_modules_for_user("{{user.username}}");
+	});		
+</script>
+
+<section class="center-content">
+	<div class="form-box rounded center-content width-lg">
+		<h1><em>{{user.username}}</em>'s crib</h1>
+		<p>Check out your profile. Get a quick overview of what planes you can shift to and what modules you currently own. Be chill, stay cool.</p>
+
+		<h2>Your Planes</h2>
+		<em data-bind="if: planes().length==0">No currently active planes.</em>
+		<div data-bind="foreach: planes">
+			<a data-bind="attr: { href: '/planes/name/' + name }">
+			<li class="module-brief rounded">
+				<dt data-bind="text: name"></dt>
+			</li>
+			</a>
+		</div>
+
+		<h2>Your Modules</h2>
+		<em data-bind="if: modules().length==0">You have not created any modules.</em>
+		<dl data-bind="foreach: modules">
+			<a data-bind="attr: { href: '/modules/name/' + name }">
+			<li class="module-brief rounded">
+				<dt data-bind="text: name"></dt>
+				<dd data-bind="text: short_desc"></dd>
+			</li>
+			</a>
+		</dl>
+
+	</div>
+</section>
+
+{% endblock %}

@@ -10,6 +10,9 @@ from app.modules.models import ModuleNotFound, ModuleHasNoData, ModuleVersionNot
 from app.modules.forms  import UploadForm, CreateForm
 from app.modules import manager
 
+from app.models import User
+from app.models import UserNotFoundError
+
 from app import util
 
 import sqlalchemy
@@ -81,11 +84,25 @@ def info_module(name):
 @module_api.route('/', methods=['GET'])
 def api_list_module():
 	'''List all modules in database.
+	Arguments:
+
+	Optional arguments:
+		username - String - Returns only modules for given owner.
 	'''
-	try:
+
+	args     = util.parse_request_to_json(request)
+	# username = util.html_escape_or_none(args['username'])
+	username = util.html_escape_or_none(request.args.get('username'))
+
+	if username:
+		try:
+			user = User.get_by_name(username)
+		except UserNotFoundError:
+			return util.make_json_error(data='No user with that name.')
+
+		modules = Module.get_by_userid(user.id)
+	else:
 		modules = Module.query
-	except Exception:
-		return util.make_json_error()
 
 	data = [ module.get_public_short_info() for module in modules ]
 
@@ -94,9 +111,11 @@ def api_list_module():
 @module_api.route('/', methods=['POST'])
 def api_create_module():
 	'''Create a module.
-	Arguments
-		module_name - String - Required. Name of module. If module does not 
+	Arguments:
+		module_name - String - Name of module. If module does not 
 		                       exist it will be created.
+
+	Optional arguments:
 		short_desc  - String - Short description of module. Will be included in
 		                       listings.
 		long_desc   - String - Longer description of module. Will not be 

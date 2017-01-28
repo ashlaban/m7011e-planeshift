@@ -69,6 +69,10 @@ class Module(db.Model):
 		return module
 
 	@staticmethod
+	def get_by_userid(userid):
+		return Module.query.filter_by(owner=userid)
+
+	@staticmethod
 	def get_versions(module_name):
 		module   = Module.get_by_name(module_name)
 		versions = ModuleVersion.query.filter_by(module_id=module.id)

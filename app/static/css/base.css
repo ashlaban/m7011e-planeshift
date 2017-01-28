@@ -20,6 +20,17 @@
 	color: #294052;
 }
 
+h1 {
+	font-size: 2em;
+}
+h2 {
+	font-size: 1.5em;
+}
+h3 {
+	font-size: 1em;
+	font-weight: bold;
+}
+
 html, body {
 	background-color: #294052;
 
@@ -175,6 +186,12 @@ footer {
 .quarter { width: 25%   ; }
 .eigth   { width: 12.5% ; }
 
+.width-xs { width: 120px;}
+.width-sm { width: 200px;}
+.width-md { width: 400px;}
+.width-lg { width: 600px;}
+.width-xl { width: 800px;}
+
 .top-padding-xs { padding-top: 1em; }
 .top-padding-sm { padding-top: 2em; }
 .top-padding-md { padding-top: 3em; }
@@ -188,6 +205,8 @@ footer {
 .top-margin-xl { margin-top: 5em; }
 
 .btn {
+	/*background: -webkit-linear-gradient(left,  #F4D6BC 0%, #F8E4CC 100%);*/
+	/*background: -webkit-linear-gradient(right,  #447294 0%, #447294 120%);*/
 	background-color: #8FBCDB;
 	border: none;
 	padding: 15px 32px;
@@ -199,6 +218,8 @@ footer {
 	border-style: solid;
 	border-width: 0px;
 	border-radius: 1em;
+
+	transition: box-shadow 0.5s;
 }
 
 .btn:hover {
@@ -240,5 +261,11 @@ footer {
 .wide-form-field {
 	width: 20em;
 	height: 2em;
+}
+
+.rounded {
+	border-style: solid;
+	border-width: 0px;
+	border-radius: 1em;
 }
 /* === END FORM === */
