@@ -50,13 +50,13 @@
 	}
 
 	$(document).ready( function () {
-		{% if is_owner %}
 		var btn_delete = document.getElementById('btn-delete');
-		btn_delete.addEventListener('click', function(ev) {
-			ev.preventDefault();
-			delete_module("{{module_name}}");
-		}, false);
-		{% endif %}
+		if (btn_delete) {
+			btn_delete.addEventListener('click', function(ev) {
+				ev.preventDefault();
+				delete_module("{{module_name}}");
+			}, false);
+		}
 
 		loadModuleInfoData("{{module_name}}");
 	});		

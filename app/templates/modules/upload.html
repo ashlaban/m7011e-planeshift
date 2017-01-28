@@ -45,7 +45,7 @@
 			<h1>Upload new version</h1>
 			<span>Current module: {{module_name}}</span>
 
-			<form class="form center-content" action="" method="post" enctype="multipart/form-data" name="module_upload">
+			<form id="upload-form" class="form center-content" action="" method="post" enctype="multipart/form-data" name="module_upload">
 				{{ form.hidden_tag()  }}
 			
 				{{ form.version(class="wide-form-field", placeholder="New version name") }}

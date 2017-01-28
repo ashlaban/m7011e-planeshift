@@ -36,8 +36,16 @@
 		}
 
 		function create_module_form(form) {
-			var fd = new FormData(form);
-			create_module(fd.get('name'), fd.get('short_desc'), fd.get('long_desc'), fd.get('picture'));
+			// This is for modern browsers supporting the File API in HTML5.
+			// var fd = new FormData(form);
+			// create_module(fd.get('name'), fd.get('short_desc'), fd.get('long_desc'), fd.get('picture'));
+			
+			// This is for Safari
+			var name       = $('#name')[0].value;
+			var short_desc = $('#short_desc')[0].value;
+			var long_desc  = $('#long_desc')[0].value;
+			var picture    = $('#picture')[0].value;
+			create_module(name, short_desc, long_desc, picture);
 		}
 
 		$(document).ready( function () {
@@ -56,7 +64,7 @@
 			<h1>Create new module</h1>
 			<!-- <p id="info" class="error"></p> -->
 
-			<form class="form center-content" action="" method="post" enctype="multipart/form-data" name="module_create">
+			<form id="create-form" class="form center-content" action="" method="post" enctype="multipart/form-data" name="module_create">
 				{{ form.hidden_tag()  }}
 			
 				{{ form.name(
