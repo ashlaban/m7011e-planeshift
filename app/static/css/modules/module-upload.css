@@ -1,9 +1,37 @@
+ul {
+	list-style: none;
+}
+
+.delete-item:hover .fa-trash-o {opacity:0;}
+.delete-item:hover .fa-trash   {opacity:100;}
+.delete-item .fa-trash-o       {opacity:100;}
+.delete-item .fa-trash         {opacity:0;}
+
+p {
+	max-width: 25em;
+}
+
 #version {
-	margin-top: 1em;
-	margin-bottom: 0em;
+	margin-top: 2em;
+	margin-bottom: 1em;
 }
 
 #upload-form dt {
 	margin-top: 0.5em;
 	margin-bottom: 0.5em;
+}
+
+#dropzone {
+	padding: 2em 0 2em 0;
+	min-width: 25em;
+	min-height: 5em;
+}
+
+#dropzone-label {
+	color: #aaaaaa;
+}
+
+#files {
+	position: absolute;
+	top: -100em;
 }

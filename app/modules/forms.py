@@ -4,20 +4,23 @@ from wtforms import TextAreaField, FileField, StringField, validators
 
 class UploadForm(Form):
 	version = StringField('version', [validators.InputRequired()])
-	html = FileField('html', validators=[FileAllowed(['html'], 'The HTML field takes HTML files only.')])
-	css  = FileField('css' , validators=[FileAllowed(['css' ], 'The CSS field takes CSS files only.')])
-	js   = FileField('js'  , validators=[FileRequired(), FileAllowed(['js'], 'The JS field takes JS files only.')])
-	
+	# html = FileField('html', validators=[FileAllowed(['html'], 'The HTML field takes HTML files only.')])
+	# css  = FileField('css' , validators=[FileAllowed(['css' ], 'The CSS field takes CSS files only.')])
+	# js   = FileField('js'  , validators=[FileRequired(), FileAllowed(['js'], 'The JS field takes JS files only.')])
+	files  = FileField('files', render_kw={'multiple': True}, validators=[FileRequired()])
+
 	def __init__(self, *args, **kwargs):
 		Form.__init__(self, *args, **kwargs)
 
 	def get_files_dict(self):
-		files_dict = {
-			'html': self.html.data.read() if self.html.data else None,
-			'css' : self.css.data.read()  if self.css.data  else None,
-			'js'  : self.js.data.read()   if self.js.data   else None,
-		}
+		# files_dict = {
+		# 	'html': self.html.data.read() if self.html.data else None,
+		# 	'css' : self.css.data.read()  if self.css.data  else None,
+		# 	'js'  : self.js.data.read()   if self.js.data   else None,
+		# }
 		
+		print(self.files.data)
+
 		return files_dict
 
 class CreateForm(Form):

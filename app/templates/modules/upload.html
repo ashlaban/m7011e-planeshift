@@ -3,16 +3,25 @@
 {% block css %}
 <link rel="stylesheet" type="text/css" href="/static/css/modules/module-base.css" />
 <link rel="stylesheet" type="text/css" href="/static/css/modules/module-upload.css" />
+<link rel="stylesheet" href="/static/css/font-awesome.min.css">
 
 <script src="/static/js/jquery-3.1.1.min.js"></script>
+<script src="/static/js/ko.js"></script>
 {% endblock css %}
 
 {% block content %}
 
 	<script type="text/javascript" charset="utf-8">
 		function uploadFile(form) {
-			var fd = new FormData(form);
+			var fd = new FormData();
+			// TODO: Change flask to allow all files. Use, secure filename. Return the (possibly) new filename to the client. Allow listing of files. The modules system should expect a file called main.js that is the entry point.
 			
+			for (var file of vm.files()) {
+				console.log('Appending file ' + file.name + ' to form data.');
+				fd.append('file-'+file.name, file);
+			}
+			fd.append('version', form.version.value);
+
 			$.ajax({
 				type: 'POST',
 				url: "/api/modules/{{module_name}}",
@@ -29,35 +38,123 @@
 			});
 		}
 
+		function PlaneshiftViewModel(info) {
+			this.files = ko.observableArray();
+		}
+
+		PlaneshiftViewModel.prototype.addFile = function (file) {
+			this.files.push(file);
+		}
+
+		PlaneshiftViewModel.prototype.addFiles = function (files) {
+			var length = files.length;
+			for (var i = 0; i < length; ++i) {
+				var file = files[i];
+				this.addFile(file);
+			}
+		}
+
+		PlaneshiftViewModel.prototype.clearFiles = function () {
+			this.files.removeAll();
+		}
+
+		PlaneshiftViewModel.prototype.removeFile = function (name) {
+			for (var file of this.files()) {
+				if (file.name === name) {
+					return this.files.remove(file)
+				}
+			}
+		}
+
+		var vm = new PlaneshiftViewModel();
+
 		$(document).ready( function () {
-			var form = document.getElementById('upload-form');
-			form.addEventListener('submit', function(ev) {
-	  			ev.preventDefault();
+
+			// Drop zone
+			var uploadbtn = document.getElementById('upload-btn');
+			uploadbtn.addEventListener('click', function(ev) {
 	  			uploadFile(form);
 			}, false);
+
+			var form = document.getElementById('upload-form');
+			form.addEventListener('submit', function(ev) {
+				ev.preventDefault();
+			});
+
+			var box = document.getElementById('box');
+			var dropzone = document.getElementById('dropzone');
+			box.addEventListener('dragover', function(ev) {
+				ev.preventDefault()
+				document.getElementById('dropzone-label').innerHTML = 'Drop them!';
+				console.log('Enter dropzone');
+			}, false);
+			box.addEventListener('dragleave', function(ev) {
+				ev.preventDefault()
+				document.getElementById('dropzone-label').innerHTML = 'Drag files here';
+				console.log('Exit dropzone');
+			}, false);
+
+			box.addEventListener('drop', function(ev) {
+				ev.preventDefault()
+				document.getElementById('dropzone-label').innerHTML = 'Drag files here';
+				vm.addFiles(event.dataTransfer.files);
+			}, false);
+
+			// Update file field
+			var filefield = document.getElementById('files');
+			filefield.addEventListener('change', function (ev) {
+				vm.addFiles(ev.target.files);
+			});
+
+			// http://stackoverflow.com/questions/6756583/prevent-browser-from-loading-a-drag-and-dropped-file
+			window.addEventListener("drop",function(e){
+			  e = e || event;
+			  e.preventDefault();
+			},false);
+			window.addEventListener("dragover",function(e){
+			  e = e || event;
+			  e.preventDefault();
+			},false);
+
+			// Final init
+			ko.applyBindings(vm);
 		});
 
 	</script>
 
 	<section class="center-content top-padding-md">
 
-		<div class="form-box rounded center-content">
-			<h1>Upload new version</h1>
-			<span>Current module: {{module_name}}</span>
+		<div id="box" class="form-box rounded center-content">
+			<h1>{{module_name}} - New Version</h1>
+			<p>Upload your main.js module file and be good to go! You can also upload additional resources. See the module guide for more info.</p>
+			<p><em>Note: Modules that do not conform to the site guidelines are subject to deletion.</em></p>
+			<!-- TODO: Link to module info page. -->
+			<!-- TODO: Link to guidelines. -->
 
 			<form id="upload-form" class="form center-content" action="" method="post" enctype="multipart/form-data" name="module_upload">
 				{{ form.hidden_tag()  }}
 			
 				{{ form.version(class="wide-form-field", placeholder="New version name") }}
-				<dl>
-					<dt>Javascript</dt>
-					<dd>{{ form.js() }}</dd>
-					<dt>HTML (optional)</dt>
-					<dd>{{ form.html() }}</dd>
-					<dt>CSS (optional)</dt>
-					<dd>{{ form.css() }}</dd>
-				</dl>
-				<input type="submit" class="btn" value="Upload">
+				{{form.files}}
+
+				<div id="dropzone" class="center-content">
+					<span id="dropzone-label">Drag files here</span>
+					<ul data-bind="foreach: files">
+						<li>
+							<span class="delete-item fa-stack" data-bind="click: function(){vm.removeFile(name)}">
+								<span class="fa fa-trash-o fa-stack-1x"></span>
+								<span class="fa fa-trash fa-stack-1x"></span>
+							</span>
+							<span data-bind="text:name"></span>
+						</li>
+					</ul>
+				</div>
+
+				<div class="btn-list">
+					<button id="upload-btn" class="btn">Upload</button>
+					<button class="btn" onclick="document.getElementById('files').click()">Add files</button>
+					<button class="btn" onclick="vm.clearFiles();" href="">Clear</button>
+				</div>
 			</form>
 		</div>
 	</section>
