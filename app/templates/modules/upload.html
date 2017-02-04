@@ -10,17 +10,19 @@
 {% endblock css %}
 
 {% block content %}
-
 	<script type="text/javascript" charset="utf-8">
+		var fd;
 		function uploadFile(form) {
-			var fd = new FormData();
+			fd = new FormData();
 			// TODO: Change flask to allow all files. Use, secure filename. Return the (possibly) new filename to the client. Allow listing of files. The modules system should expect a file called main.js that is the entry point.
 			
 			for (var file of vm.files()) {
 				console.log('Appending file ' + file.name + ' to form data.');
-				fd.append('file-'+file.name, file);
+				fd.append('files', file);
 			}
 			fd.append('version', form.version.value);
+
+			console.log(fd);
 
 			$.ajax({
 				type: 'POST',
@@ -28,12 +30,15 @@
 				data: fd,
 				processData: false,
 				contentType: false,
+  				// contentType: 'multipart/form-data',
+  				// mimeType: 'multipart/form-data',
 				success: function(data) {
 					window.location = '/modules/name/{{module_name}}';
 				},
 				error: function(response) {
 					console.log(response)
-					$('#info').html(response.responseJSON.msg);
+					// var payload = JSON.parse(response.responseText);
+					$('#info').html(response.responeJSON.msg);
 				},
 			});
 		}
@@ -132,10 +137,8 @@
 			<!-- TODO: Link to guidelines. -->
 
 			<form id="upload-form" class="form center-content" action="" method="post" enctype="multipart/form-data" name="module_upload">
-				{{ form.hidden_tag()  }}
-			
-				{{ form.version(class="wide-form-field", placeholder="New version name") }}
-				{{form.files}}
+				<input type="text" name="version" id="version" class="wide-form-field", placeholder="New version name">
+				<input id="files" multiple="" name="files" type="file">
 
 				<div id="dropzone" class="center-content">
 					<span id="dropzone-label">Drag files here</span>

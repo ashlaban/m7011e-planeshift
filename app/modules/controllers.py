@@ -7,7 +7,7 @@ from app import app
 from app import db, util
 from app.modules.models import Module
 from app.modules.models import ModuleNotFound, ModuleHasNoData, ModuleVersionNotFound
-from app.modules.forms  import UploadForm, CreateForm
+from app.modules.forms  import CreateForm
 from app.modules import manager
 
 from app.models import User
@@ -51,8 +51,7 @@ def upload_module(name):
 	if not g.user.id == module.owner:
 		return render_template('modules/403.html', name=name)
 
-	form = UploadForm()
-	return render_template('modules/upload.html', module_name=name, form=form)
+	return render_template('modules/upload.html', module_name=name)
 
 @modules.route('/name/<name>')
 def info_module(name):
@@ -226,11 +225,11 @@ def api_info(module_name):
 @module_api.route('/<module_name>', methods=['POST'])
 def api_version(module_name):
 	'''Create a new version. Must be authenticated as owner.
-	Arguemnts
+	Arguments
 		name - String - Required. Name of the new version.
-		js   - File   - JS file to associate.
-		css  - File   - CSS file to associate.
-		html - File   - HTML file to associate.
+		
+		This function also takes and unspecified number of
+		form-data encoded files.
 
 	Returns
 		{status: ok} if successful
@@ -247,24 +246,16 @@ def api_version(module_name):
 	if not module.is_owner(g.user.username):
 		return util.make_json_error(msg='You do not have the correct permissions.')
 
-	form = UploadForm()
-	try:
-		form.validate_on_submit()
-	except:
-		return util.make_json_error(msg=form.errors)
-
 	try:		
-		escaped_version = werkzeug.utils.escape(form.version.data)
-		files_dict      = form.get_files_dict()
+		escaped_version = werkzeug.utils.escape(request.form['version'])
+		files           = sum( request.files.listvalues(), [])
 
-		manager.upload_version(module=module, escaped_version=escaped_version, files_dict=files_dict)
-		return util.make_json_success(msg='Success.')
+		manager.upload_version(module=module, sVersion=escaped_version, files=files)
 
 	except manager.ModuleDuplicateVersionError as e:
 		return util.make_json_error(msg='Version name already exists.')
-	# except:
-	# 	# TODO: Log internal error
-	# 	return util.make_json_error(msg='Unknown error.')
+
+	return util.make_json_success(msg='Success.')
 
 # @module_api.route('/<module_name>/<version>', methods=['GET'])
 # def api_version_get(module_name, version):
@@ -282,11 +273,7 @@ def api_content_path_get(module_name, version, file):
 	try:
 		module         = Module.get_by_name(module_name)
 		module_version = module.get_version(version) if version is not None else None
-
-		if file in ['html', 'css', 'js', 'pic']:
-			data = manager.get_path_for_module_content(file, module, module_version)
-		else:
-			return make_json_error(msg='File {} not found.'.format(file))
+		data           = manager.get_path_for_module_content(file, module, module_version)
 	except ModuleNotFound:
 		return util.make_json_error(msg='Module {} not found.'.format(module_name))
 	except ModuleVersionNotFound:

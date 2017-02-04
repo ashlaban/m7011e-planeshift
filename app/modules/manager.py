@@ -7,39 +7,34 @@ from app import db
 from app.modules.models import Module, ModuleVersion
 from app.modules.models import ModuleNotFound, ModuleHasNoData, ModuleVersionNotFound
 
+import werkzeug
+
 class ModuleDuplicateVersionError(ValueError):
 	'''Raise when a module already has a version with the same name.'''
 
-def get_file_basename(module_name, escaped_version):
-	filebasename = '{}-{}'.format(module_name, escaped_version)
+def get_file_basename(module_name, sVersion):
+	filebasename = '{}-{}'.format(module_name, sVersion)
 	return filebasename
 
-def get_module_path(module_name, escaped_version):
-	module_path  = os.path.join(module_name, escaped_version)
+def get_module_path(module_name, sVersion):
+	module_path  = os.path.join(module_name, sVersion)
 	full_path    = os.path.join( app.config['STATIC_UPLOAD_FOLDER'], module_path)
 
 	return full_path
 
-def get_module_system_path(module_name, escaped_version):
-	module_path  = os.path.join(module_name, escaped_version)
+def get_module_system_path(module_name, sVersion):
+	module_path  = os.path.join(module_name, sVersion)
 	full_path    = os.path.join( app.config['UPLOAD_FOLDER'], module_path)
 
 	return full_path
 
-def ensure_module_path(module_name, escaped_version):
-	module_path = get_module_system_path(module_name, escaped_version)
+def ensure_module_path(module_name, sVersion):
+	module_path = get_module_system_path(module_name, sVersion)
 	return os.makedirs(module_path, exist_ok=True)
 
-def get_path_for_module_content(ext, module, version=None):
-	ALLOWED_FILE_TYPES = ['html', 'css', 'js', 'pic']
-
+def get_path_for_module_content(filename, module, version=None):
 	if module is None:
 		raise ValueError('Argument module must not be None')
-
-	if ext not in ALLOWED_FILE_TYPES:
-		raise ValueError('Argument ext ({}) not in ALLOWED_FILE_TYPES ({})'.format(ext, ALLOWED_FILE_TYPES))
-
-	module_name = module.name
 
 	if version is None:
 		try:
@@ -48,41 +43,41 @@ def get_path_for_module_content(ext, module, version=None):
 		except ModuleVersionNotFound:
 			raise ModuleHasNoData()
 
-	module_path = get_module_path(module_name=module_name, escaped_version=version_string)
-	basename    = get_file_basename(module_name=module_name, escaped_version=version_string)
-	filename    = '{basename}.{ext}'.format(basename=basename, ext=ext)
-
+	module_path = get_module_path(module_name=module.name, sVersion=version_string)
 	return os.path.join(module_path, filename)
 
-def upload_file_helper(filetype, data, module_name, escaped_version):	
-	if data:
-		target_path = get_module_system_path(module_name=module_name, escaped_version=escaped_version)
-		ensure_module_path(module_name, escaped_version)
+def upload_file_helper(file, module_name, sVersion):
+	target_path = get_module_system_path(module_name=module_name, sVersion=sVersion)
+	ensure_module_path(module_name, sVersion)
 
-		filebasename = get_file_basename(module_name=module_name, escaped_version=escaped_version)
-		filename     = os.path.join(target_path, '{}.{}'.format(filebasename, filetype))
-		with open(filename, 'wb+') as file:
-			file.write(data)
+	sFilename = werkzeug.utils.secure_filename(file.filename)
+	path = os.path.join(target_path, sFilename)
+	with open(path, 'wb+') as file_handle:
+		file.save(file_handle)
 
-def upload_version(module, escaped_version, files_dict):
+def upload_version(module, sVersion, files):
 	session = db.session
 	try:
-		new_version = ModuleVersion(module_id=module.id, version_string=escaped_version)
+		new_version = ModuleVersion(module_id=module.id, version_string=sVersion)
 		session.add(new_version)
 		session.commit()
 
 		module.latest_version = new_version.id
 		session.add(module)
 
-		upload_file_helper('html', files_dict['html'], module.name, escaped_version)
-		upload_file_helper('css' , files_dict['css'] , module.name, escaped_version)
-		upload_file_helper('js'  , files_dict['js']  , module.name, escaped_version)
+		for file in files:
+			upload_file_helper(file, module.name, sVersion)
 
 		session.commit()
 
-	except sqlalchemy.exc.IntegrityError:
+	except sqlalchemy.exc.IntegrityError as e:
 		session.rollback()
-		raise ModuleDuplicateVersionError('Version {} already exists for module {}'.format(escaped_version, module.name))
+		raise ModuleDuplicateVersionError('Version {} already exists for module {}'.format(sVersion, module.name))
+	except Exception as e:
+		session.rollback()
+		db.session.delete(new_version)
+		session.commit()
+		raise e
 
 	return
 
