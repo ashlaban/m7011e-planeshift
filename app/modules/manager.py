@@ -72,6 +72,8 @@ def upload_version(module, sVersion, files):
 
 	except sqlalchemy.exc.IntegrityError as e:
 		session.rollback()
+		db.session.delete(new_version)
+		session.commit()
 		raise ModuleDuplicateVersionError('Version {} already exists for module {}'.format(sVersion, module.name))
 	except Exception as e:
 		session.rollback()
