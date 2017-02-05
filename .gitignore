@@ -10,6 +10,7 @@ uploads
 uwsgi.ini
 app.db
 .well-known/
+app/static/img/banners
 
 # macOS specific
 *.DS_Store

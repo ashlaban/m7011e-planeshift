@@ -3,7 +3,6 @@
 {% block css %}
 <link rel="stylesheet" type="text/css" href="/static/css/modules/module-base.css" />
 <link rel="stylesheet" type="text/css" href="/static/css/modules/module-upload.css" />
-<link rel="stylesheet" href="/static/css/font-awesome.min.css">
 
 <script src="/static/js/jquery-3.1.1.min.js"></script>
 <script src="/static/js/ko.js"></script>
@@ -154,9 +153,18 @@
 				</div>
 
 				<div class="btn-list">
-					<button id="upload-btn" class="btn">Upload</button>
-					<button class="btn" onclick="document.getElementById('files').click()">Add files</button>
-					<button class="btn" onclick="vm.clearFiles();" href="">Clear</button>
+					<button id="upload-btn" class="btn">
+						<i class="fa fa-upload" aria-hidden="true"></i>
+						Upload
+					</button>
+					<button class="btn" onclick="document.getElementById('files').click()">
+						<i class="fa fa-plus" aria-hidden="true"></i>
+						Add files
+					</button>
+					<button class="btn" onclick="vm.clearFiles();" href="">
+						<i class="fa fa-eraser" aria-hidden="true"></i>
+						Clear
+					</button>
 				</div>
 			</form>
 		</div>

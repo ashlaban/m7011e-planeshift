@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block css %}
+<link rel="stylesheet" type="text/css" href="/static/css/index.css" />
+
+<script src="/static/js/jquery-3.1.1.min.js"></script>
+<script src="/static/js/ko.js"></script>
+{% endblock css %}
+
+{% block content %}
+
+<section class="center-content">
+	<h1>Welcome to Planeshift</h1>
+	<p>A place to explore exciting worlds, discover danger, dream up stories. Take your friends and embark on journeys to different realities filled with adventure, loot and excitement. Or lean back for a chill evening with a game of Catan, Agricola, or anything, its your choice.</p>
+</section>
+
+<div class="banner-2 img-filler"></div>
+
+<section class="center-content">
+	<h1>Planes</h1>
+	<p>To get going, you need to create a plane. This is where you meet and where you keep your information. You can make many different kinds of planes. Create one for your session of Catan or why not Pathfinder. Find your game and game away!</p>
+
+	<h2>Creating planes</h2>
+	<p>To start up your adventurous gaming session, click the create button under Planes in the nav bar. Select the module you want to base it off, choose one appropriate for your game. You will now generate a plane where your friends can join. Send them the link or tell them to find your plane in the listing under the Planes nav bar menu.</p>
+	
+	<h2>Joining a plane</h2>
+	<p>Joining a plane is even eaiser. Just click the link your friend gives you, like this one <a href="/planes/test-plane">http://planeshift.ash.nu/planes/test-plane</a>. Or click the Planes button and find it in the list!</p>
+</section>
+
+<div class="banner-1 img-filler"></div>
+
+<section class="center-content">
+	<h1>Modules</h1>
+	<p>Modules are the magic behind the planes. They mainly contain some javascript for make one particluar game come to life, be it Powergrid or Dungeon and Dragons. You can create your own modules if you cannot find a suitable one when starting a new playing session.</p>
+
+	<h2>Creating a module</h2>
+	<p>To create a new module you need a name, and some javascript code. You then click the create button under Modules in the nav bar, fill in a description, and finally click the upload new version button. Here you can add a main.js file and extra resources to be displayed. The main.js and, the optional, index.html will be what others see when creating a plane with your module.</p>
+
+	<p><em>Be nice. Respect eachother. Have fun!</em></p>
+</section>
+
+<!-- <div class="banner-6 img-filler"></div> -->
+
+{% endblock content %}

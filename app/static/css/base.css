@@ -6,6 +6,8 @@
 	8FBCDB - light blue
 	F4D6BC - linen
 	F8E4CC - light linen
+
+	Site max-width: 950px;
 */
 
 @import url('https://fonts.googleapis.com/css?family=Open+Sans:300,400,600');
@@ -15,9 +17,9 @@
 
 	font-family: 'Open Sans', sans-serif;
 	font-weight: 300;
-	font-size: 1em;
+	/*font-size: 1em;*/
 
-	color: #294052;
+	/*color: #294052;*/
 }
 
 h1 {
@@ -32,14 +34,23 @@ h3 {
 }
 
 html, body {
-	background-color: #294052;
-
+	background-color: #F8E4CC;
 	margin: 0;
-
 	height: 100%;
+
+	overflow-x: hidden;
+}
+
+nav {
+	display: flex;
+	justify-content: center;
+
+	background: #8FBCDB;
 }
 
 nav ul {
+	width: 1000px;
+
 	padding: 0;
 	margin : 0;
 	list-style-type: none;
@@ -157,19 +168,42 @@ nav .nav-filler {
 	flex-grow: 1;
 }
 
-#main {
-	background: #F4D6BC;
+#main-wrapper {
+	display: flex;
+	justify-content: center;
 	
 	min-height: calc(100% - 10em);
+}
+
+#main {
+	background: #F8E4CC;
+
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+
+	width: 800px;
 }
 
 footer {
 	display: flex;
 	flex-direction: row;
+	align-items: center;
+	justify-content: center;
 
 	background: #294052;
 
 	height: 5em;
+
+	/*margin-top: 2em;*/
+}
+
+footer .fa-heart-o {
+	color: red;
+}
+
+footer .fa-magic {
+	color: darkgreen;
 }
 
 /* Utilities */
@@ -210,6 +244,22 @@ footer {
 	background-color: #8FBCDB;
 	border: none;
 	padding: 15px 32px;
+	text-align: center;
+	text-decoration: none;
+	display: inline-block;
+	font-size: 1em;
+
+	border-style: solid;
+	border-width: 0px;
+	border-radius: 1em;
+
+	transition: box-shadow 0.5s;
+}
+
+.btn-slim {
+	background-color: #8FBCDB;
+	border: none;
+	padding: 5px 10px;
 	text-align: center;
 	text-decoration: none;
 	display: inline-block;

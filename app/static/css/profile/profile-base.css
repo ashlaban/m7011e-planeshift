@@ -23,9 +23,27 @@ dd {
 	padding-bottom: 0.5em; 
 }
 
-a, a:visited, a:hover{
+#main a, #main a:visited, #main a:hover{
+	/*margin-top: 2em;
+	margin-bottom: 2em;*/
 	text-decoration: none;
 	color: inherit;
+}
+
+.heading {
+	width: 30em;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+em {
+	padding-top: 0.5em;
+	padding-bottom: 0.25em;
+	padding-left : 2em;
+	padding-right: 2em;
+
+	margin-bottom: 0.5em;
 }
 
 .module-brief {
