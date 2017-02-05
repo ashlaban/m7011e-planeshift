@@ -24,8 +24,14 @@ def before_request():
 @app.route('/')
 @app.route('/index')
 def index():
-	return render_template('index.html', title='Home')
- 
+	if g.user is not None and g.user.is_authenticated:
+		return redirect(url_for('profile_mod.show_profile_page'))
+	return render_template('about.html')
+
+@app.route('/about')
+def about():
+	return render_template('about.html')
+
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
 	form = SignupForm()

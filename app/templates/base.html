@@ -8,6 +8,7 @@
 		{% endif %}
 
 		<link rel="stylesheet" type="text/css" href="/static/css/base.css" />
+		<link rel="stylesheet" href="/static/css/font-awesome.min.css">
 		{% block css %}{% endblock css %}
 
 		{% block js %}{% endblock js %}
@@ -15,8 +16,10 @@
 	<body>
 		{% include 'navbar.html' %}
 
-		<div id="main">
-			{% block content %}{% endblock content %}
+		<div id="main-wrapper">
+			<div id="main">
+				{% block content %}{% endblock content %}
+			</div>
 		</div>
 
 		{% include 'footer.html' %}

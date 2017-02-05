@@ -86,9 +86,15 @@
 				
 				<!-- ko if: info.is_owner -->
 				<a class="btn"
-					data-bind="attr: {href: '/modules/upload/'+info.name }">Upload new version</a>
+					data-bind="attr: {href: '/modules/upload/'+info.name }">
+					<i class="fa fa-upload" aria-hidden="true"></i>
+					New version
+					</a>
 				<!-- TODO: Move delete to suitable place and confimation modal or something. -->
-				<a id="btn-delete" class="btn" href="">Delete</a>
+				<a id="btn-delete" class="btn" href="">
+					<i class="fa fa-trash-o" aria-hidden="true"></i>
+					Delete
+				</a>
 				<!-- /ko -->
 			</ul>
 		</div>
