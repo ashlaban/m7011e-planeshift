@@ -35,8 +35,16 @@
 		}
 
 		function signupForm(form) {
-			var fd = new FormData(form);
-			signup(fd.get('username'), fd.get('password'), fd.get('email'), fd.get('confirm'));
+			// This is for Safari
+			var username = $('#username')[0].value
+			var password = $('#password')[0].value
+			var email    = $('#email')[0].value
+			var confirm  = $('#confirm')[0].value
+			signup(username, password, email, confirm);
+
+			// This is for browsers conforming to the File API
+			// var fd = new FormData(form);
+			// signup(fd.get('username'), fd.get('password'), fd.get('email'), fd.get('confirm'));
 		}
 
 		$(document).ready( function () {
