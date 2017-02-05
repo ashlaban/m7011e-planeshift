@@ -11,6 +11,8 @@ class Plane(db.Model):
 	data = db.Column(db.LargeBinary, nullable=True, unique=False)
 	name = db.Column(db.String(64), index=True, unique=False)
 	public = db.Column(db.Boolean, index=True, unique=False)
+	#session_id = db.Column(db.integer, db.ForeignKey('user.id'), nullable=True)
+	#sessions = relationship("User")
 		
 	def get_id(self):
 		try:
@@ -25,6 +27,11 @@ class Plane(db.Model):
 
 	def get_owner(self):
 		return User.query.get(int(self.owner))
+
+	def is_owner(self, user):
+		if user is self.get_owner():
+			return True
+		return False
 
 	def get_module(self):
 		module = Module.query.get(int(self.module))
@@ -50,6 +57,9 @@ class Plane(db.Model):
 
 	def set_data(self, data):
 		self.data = data
+
+	def get_data(self):
+		return self.data
 
 	@staticmethod
 	def get_planes():

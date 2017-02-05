@@ -4,6 +4,7 @@ from app import app, db, lm
 from .forms import LoginForm, SignupForm
 from .models import User
 from .modules.models import Module
+from .planes.models import Session
 
 from app import util
 from app.models import UserNotFoundError
@@ -80,4 +81,14 @@ def api_login():
 	login_user(user)
 	return util.make_json_success(msg='Welcome.')
 		
-	
+@app.route('/api/sessions', methods=['GET'])
+def api_sessions_by_user():
+	'''Returns a list of planes current user is connected to
+	Returns
+		data - List of plane names for each plane current user is connected to.
+	'''
+	if not g.user.is_authenticated:
+		return util.make_json_error(msg='Not authenticated.')
+
+	data = [s.get_plane().get_name() for s in Session.get_sessions(g.user)]
+	return util.make_json_success(data=data)

@@ -52,6 +52,22 @@ def join(plane):
 
 	return render_template('planes/plane.html', paths=paths)
 
+def api_join(plane):
+	if plane is None:
+		return util.make_json_error(msg='Plane does not exist.')
+
+	data = {}
+
+	data['is_owner'] = plane.is_owner(g.user)
+	data['module_name'] = plane.get_module().name
+	data['module_version'] = plane.get_module().get_latest_version().get_escaped_version()
+	data['plane_data'] = plane.get_data()
+	data['name'] = plane.get_name()
+	data['public'] = plane.is_public()
+	data['users'] = [s.get_user.username for s in Session.get_users_for_plane(plane)]
+
+	return util.make_json_success(data=data)
+
 # Views
 @planes.route('/')
 def list_plane():
@@ -117,7 +133,7 @@ def api_list():
 
 	return util.make_json_success(data=data)
 
-@plane_api.route('/create', methods=['POST'])
+@plane_api.route('/', methods=['POST'])
 def api_create_plane():
 	'''Create a plane.
 	Arguments
@@ -165,7 +181,7 @@ def api_create_plane():
 
 	return util.make_json_success(msg='Plane created.')
 
-@plane_api.route('name/<plane>/connect', methods=['GET', 'POST'])
+@plane_api.route('/<plane>', methods=['POST'])
 def api_connect():
 	'''Create a session between user and plane.
 	Arguments
@@ -190,7 +206,7 @@ def api_connect():
 		connect(g.user, planar)
 		return util.make_json_success(msg='Connected.')
 
-@plane_api.route('/name/<plane>/disconnect', methods=['GET'])
+@plane_api.route('/<plane>', methods=['DELETE'])
 def api_disconnect(plane):
 	'''Remove a session between current user and <plane>.
 	'''
@@ -204,9 +220,17 @@ def api_disconnect(plane):
 
 	return util.make_json_success(msg='Disconnected.')
 
-@plane_api.route('/name/<plane>', methods=['GET'])
+@plane_api.route('/<plane>', methods=['GET'])
 def api_join(plane):
-	'''Get html for <plane> if connected.
+	'''Get information for plane.
+	Returns
+		is_owner - Boolean - True if current user is owner of plane, False if not.
+		module_name - String - Name of module related to plane.
+		module_version - String - Latest version of module related to plane. Note: the actual version when the plane is created and possibility to update should be added in the future.
+		plane_data - String - Data stored on plane.
+		name - String - Name of plane.
+		public - Boolean - True if plane is public, False if not.
+		users - List of String - List of names of users that are connected to plane.
 	'''
 	if not g.user.is_authenticated:
 		return util.make_json_error(msg='Not authenticated.')
@@ -214,11 +238,11 @@ def api_join(plane):
 	planar = Plane.get_plane(plane)
 
 	if Session.get_session(g.user, planar) is not None:
-		return join(planar)
+		return api_join(planar)
 	else:
 		return util.make_json_error(msg='No session to plane.')
 
-@plane_api.route('/name/<plane>/store', methods=['POST'])
+@plane_api.route('/<plane>/data', methods=['POST'])
 def api_store(plane):
 	'''Store data on plane.
 	Arguments
@@ -243,42 +267,42 @@ def api_store(plane):
 	else:	
 		return util.make_json_error(msg='Not owner of plane.')
 
-@plane_api.route('/sessions', methods=['GET'])
-def api_sessions():
-	'''Returns all active sessions
-	Returns
-		data - List of tuples containing user names and plane names that are connected.
-	'''
-	data = [(s.get_user().username, s.get_plane().get_name()) for s in Session.get_sessions()]
-	return util.make_json_success(data=data)
+#@plane_api.route('/sessions', methods=['GET'])
+#def api_sessions():
+#	'''Returns all active sessions
+#	Returns
+#		data - List of tuples containing user names and plane names that are connected.
+#	'''
+#	data = [(s.get_user().username, s.get_plane().get_name()) for s in Session.get_sessions()]
+#	return util.make_json_success(data=data)
 
-@plane_api.route('/sessions/<plane>', methods=['GET'])
-def api_sessions_by_plane(plane):
-	'''Returns all active sessions related to plane
-	Returns
-		data - List of tuples containing user names and plane names that are connected.
-	'''
-	planar = Plane.get_plane(plane)
-	data = [(s.get_user().username, s.get_plane().get_name()) for s in Session.get_users_for_plane(planar)]
-	return util.make_json_success(data=data)
+#@plane_api.route('/sessions/<plane>', methods=['GET'])
+#def api_sessions_by_plane(plane):
+#	'''Returns all active sessions related to plane
+#	Returns
+#		data - List of tuples containing user names and plane names that are connected.
+#	'''
+#	planar = Plane.get_plane(plane)
+#	data = [(s.get_user().username, s.get_plane().get_name()) for s in Session.get_users_for_plane(planar)]
+#	return util.make_json_success(data=data)
 
-@plane_api.route('/sessions/<user>', methods=['GET'])
-def api_sessions_by_user(user):
-	'''Returns all active sessions related to user
-	Returns
-		data - List of tuples containing user names and plane names that are connected.
-	'''
-	usr = User.get_by_name(user)
-	data = [(s.get_user().username, s.get_plane().get_name()) for s in Session.get_sessions(usr)]
-	return util.make_json_success(data=data)
+#@plane_api.route('/sessions/<user>', methods=['GET'])
+#def api_sessions_by_user(user):
+#	'''Returns all active sessions related to user
+#	Returns
+#		data - List of tuples containing user names and plane names that are connected.
+#	'''
+#	usr = User.get_by_name(user)
+#	data = [(s.get_user().username, s.get_plane().get_name()) for s in Session.get_sessions(usr)]
+#	return util.make_json_success(data=data)
 
-@plane_api.route('/sessions/<plane>/<user>', methods=['GET'])
-def api_get_session(plane, user):
-	'''Returns active session related to plane and user
-	Returns
-		data - List of tuples containing user names and plane names that are connected.
-	'''
-	planar = Plane.get_plane(plane)
-	usr = User.get_by_name(user)
-	data = [(s.get_user().username, s.get_plane().get_name()) for s in Session.get_session(usr, planar)]
-	return util.make_json_success(data=data)
+#@plane_api.route('/sessions/<plane>/<user>', methods=['GET'])
+#def api_get_session(plane, user):
+#	'''Returns active session related to plane and user
+#	Returns
+#		data - List of tuples containing user names and plane names that are connected.
+#	'''
+#	planar = Plane.get_plane(plane)
+#	usr = User.get_by_name(user)
+#	data = [(s.get_user().username, s.get_plane().get_name()) for s in Session.get_session(usr, planar)]
+#	return util.make_json_success(data=data)
