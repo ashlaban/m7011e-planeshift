@@ -13,7 +13,6 @@
 		var fd;
 		function uploadFile(form) {
 			fd = new FormData();
-			// TODO: Change flask to allow all files. Use, secure filename. Return the (possibly) new filename to the client. Allow listing of files. The modules system should expect a file called main.js that is the entry point.
 			
 			for (var file of vm.files()) {
 				console.log('Appending file ' + file.name + ' to form data.');
@@ -29,8 +28,6 @@
 				data: fd,
 				processData: false,
 				contentType: false,
-  				// contentType: 'multipart/form-data',
-  				// mimeType: 'multipart/form-data',
 				success: function(data) {
 					window.location = '/modules/name/{{module_name}}';
 				},

@@ -6,7 +6,7 @@ h3 {
 	display: inline;
 }
 
-dl {
+ul {
 	/*display: inline;*/
 
 	padding: 0;
@@ -15,11 +15,11 @@ dl {
 	list-style-type: none;
 }
 
-dt {
+.module-title {
 	font-weight: bold;
 }
 
-dd {
+.module-desc {
 	padding-bottom: 0.5em; 
 }
 
@@ -31,7 +31,7 @@ dd {
 }
 
 .heading {
-	width: 30em;
+	width: 600px;
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
@@ -49,15 +49,32 @@ em {
 .module-brief {
 	padding-top: 0.5em;
 	padding-bottom: 0.25em;
-	padding-left : 2em;
+	padding-left : 0.5em;
 	padding-right: 2em;
 
 	margin-bottom: 0.5em;
 
 	transition: box-shadow 0.5s;
+
+	width: 35em;
+	display: flex;
+	flex-direction: row;
+	justify-content: left;
+	align-items: center;
 }
 
 .module-brief:hover {
 	background: -webkit-linear-gradient(left,  #F4D6BC 0%, #F8E4CC 100%);
 	box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+}
+
+.description {
+	display: flex;
+	flex-direction: column;
+}
+
+img {
+	padding: 0.5em;
+	width: 3em;
+	height: 3em;
 }

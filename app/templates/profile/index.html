@@ -56,7 +56,7 @@
 		<div data-bind="foreach: planes">
 			<a data-bind="attr: { href: '/planes/name/' + name }">
 			<li class="module-brief rounded">
-				<dt data-bind="text: name"></dt>
+				<span data-bind="text: name"></span>
 			</li>
 			</a>
 		</div>
@@ -69,14 +69,17 @@
 			<a class="btn-slim" href="/modules/create"><i class="fa fa-plus" aria-hidden="true"></i> New module</a>
 		</div>
 		<em data-bind="if: modules().length==0">You have not created any modules.</em>
-		<dl data-bind="foreach: modules">
+		<ul data-bind="foreach: modules">
 			<a data-bind="attr: { href: '/modules/name/' + name }">
 			<li class="module-brief rounded">
-				<dt data-bind="text: name"></dt>
-				<dd data-bind="text: short_desc"></dd>
+				<img data-bind="attr: { src: 'data:image/png;base64,' + picture }">
+				<span class="description">
+					<span class="module-title" data-bind="text: name"></span>
+					<span class="module-desc"  data-bind="text: short_desc"></span>
+				</span>
 			</li>
 			</a>
-		</dl>
+		</ul>
 		
 
 	</div>
