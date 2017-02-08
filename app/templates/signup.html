@@ -1,8 +1,6 @@
 {% extends "base.html" %}
 
 {% block css %}
-<link rel="stylesheet" type="text/css" href="/static/css/modules/module-base.css" />
-
 <script src="/static/js/jquery-3.1.1.min.js"></script>
 <script src="/static/js/ko.js"></script>
 {% endblock css %}
@@ -28,7 +26,6 @@
 					window.location = '/';
 				},
 				error: function(response) {
-					console.log(response)
 					$('#info').html(response.responseJSON.msg);
 				},
 			});
@@ -60,6 +57,8 @@
 	<section class="center-content top-padding-md">
 		<div class="form-box rounded center-content">
 			<h1>Sign up</h1>
+
+			<div id="info"></div>
 
 			<form id="signup-form", class="form center-content" action="" method="post" name="signup" class="center-content top-padding-md">
 				{{ form.hidden_tag()  }}

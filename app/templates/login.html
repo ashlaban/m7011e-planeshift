@@ -1,8 +1,6 @@
 {% extends "base.html" %}
 
 {% block css %}
-<link rel="stylesheet" type="text/css" href="/static/css/modules/module-base.css" />
-
 <script src="/static/js/jquery-3.1.1.min.js"></script>
 <script src="/static/js/ko.js"></script>
 {% endblock css %}
@@ -56,6 +54,8 @@
 	<section class="center-content top-padding-md">
 		<div class="form-box rounded center-content">
 			<h1>Login</h1>
+
+			<div id="info"></div>
 
 			<form class="form center-content" id="login-form" action="" method="post" name="login" class="center-content top-padding-md">
 				{{ form.username(class='wide-form-field', placeholder='username') }}
