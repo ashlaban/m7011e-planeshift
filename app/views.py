@@ -59,7 +59,7 @@ def api_signup():
 	# email    = werkzeug.utils.escape(args['email'])
 
 	if not form.validate():
-		return util.make_json_error(msg='Malformed data.')
+		return util.make_json_error(msg=form.getErrors())
 	
 	user = User(username=form.username.data, password=form.password.data, email=form.email.data)
 	db.session.add(user)
@@ -80,7 +80,7 @@ def api_login():
 	form = LoginForm.from_json(args, csrf_enabled=False)
 
 	if not form.validate():
-		return util.make_json_error(msg='Malformed data.')
+		return util.make_json_error(msg=form.getErrors())
 	
 	user = User.get_by_name(form.username.data)
 	login_user(user)

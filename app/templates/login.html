@@ -25,7 +25,10 @@
 				},
 				error: function(response) {
 					console.log(response)
-					$('#info').html(response.responseJSON.msg);
+					$('#info').empty();
+					for (var i = response.responseJSON.msg.length - 1; i >= 0; i--) {
+						$('#info').append( '<li>' + response.responseJSON.msg[i] + '</li>');
+					}
 				},
 			});
 		}
@@ -55,7 +58,7 @@
 		<div class="form-box rounded center-content">
 			<h1>Login</h1>
 
-			<div id="info"></div>
+			<ul id="info"></ul>
 
 			<form class="form center-content" id="login-form" action="" method="post" name="login" class="center-content top-padding-md">
 				{{ form.username(class='wide-form-field', placeholder='username') }}
