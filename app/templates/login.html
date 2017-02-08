@@ -1,8 +1,6 @@
 {% extends "base.html" %}
 
 {% block css %}
-<link rel="stylesheet" type="text/css" href="/static/css/modules/module-base.css" />
-
 <script src="/static/js/jquery-3.1.1.min.js"></script>
 <script src="/static/js/ko.js"></script>
 {% endblock css %}
@@ -27,7 +25,10 @@
 				},
 				error: function(response) {
 					console.log(response)
-					$('#info').html(response.responseJSON.msg);
+					$('#info').empty();
+					for (var i = response.responseJSON.msg.length - 1; i >= 0; i--) {
+						$('#info').append( '<li>' + response.responseJSON.msg[i] + '</li>');
+					}
 				},
 			});
 		}
@@ -56,6 +57,8 @@
 	<section class="center-content top-padding-md">
 		<div class="form-box rounded center-content">
 			<h1>Login</h1>
+
+			<ul id="info"></ul>
 
 			<form class="form center-content" id="login-form" action="" method="post" name="login" class="center-content top-padding-md">
 				{{ form.username(class='wide-form-field', placeholder='username') }}

@@ -1,8 +1,6 @@
 {% extends "base.html" %}
 
 {% block css %}
-<link rel="stylesheet" type="text/css" href="/static/css/modules/module-base.css" />
-
 <script src="/static/js/jquery-3.1.1.min.js"></script>
 <script src="/static/js/ko.js"></script>
 {% endblock css %}
@@ -28,15 +26,25 @@
 					window.location = '/';
 				},
 				error: function(response) {
-					console.log(response)
-					$('#info').html(response.responseJSON.msg);
+					$('#info').empty();
+					for (var i = response.responseJSON.msg.length - 1; i >= 0; i--) {
+						$('#info').append( '<li>' + response.responseJSON.msg[i] + '</li>');
+					}
 				},
 			});
 		}
 
 		function signupForm(form) {
-			var fd = new FormData(form);
-			signup(fd.get('username'), fd.get('password'), fd.get('email'), fd.get('confirm'));
+			// This is for Safari
+			var username = $('#username')[0].value
+			var password = $('#password')[0].value
+			var email    = $('#email')[0].value
+			var confirm  = $('#confirm')[0].value
+			signup(username, password, email, confirm);
+
+			// This is for browsers conforming to the File API
+			// var fd = new FormData(form);
+			// signup(fd.get('username'), fd.get('password'), fd.get('email'), fd.get('confirm'));
 		}
 
 		$(document).ready( function () {
@@ -52,6 +60,8 @@
 	<section class="center-content top-padding-md">
 		<div class="form-box rounded center-content">
 			<h1>Sign up</h1>
+
+			<ul id="info"></ul>
 
 			<form id="signup-form", class="form center-content" action="" method="post" name="signup" class="center-content top-padding-md">
 				{{ form.hidden_tag()  }}

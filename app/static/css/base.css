@@ -281,6 +281,17 @@ footer .fa-magic {
 }
 
 /* === FORM === */
+/* Form feedback to user */
+#info {
+	display: flex;
+	flex-direction: column;
+
+	padding: 1em;
+
+	color: red;
+
+}
+
 .form-box {
 	/*width: 600px;*/
 	background-color: #F8E4CC;

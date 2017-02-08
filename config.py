@@ -1,7 +1,7 @@
 import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 
-WTF_CSRF_ENABLED = True
+WTF_CSRF_ENABLED = False
 #Change and place in untracked file on prod server!
 SECRET_KEY = 'very-secret'
 

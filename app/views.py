@@ -54,13 +54,13 @@ def logout():
 @app.route('/api/signup', methods=['POST'])
 def api_signup():
 	args = util.parse_request_to_json(request)
-	form = SignupForm.from_json(args, csrf_enabled=False)
+	form = SignupForm.from_json(args)
 	# username = werkzeug.utils.escape(args['username'])
 	# password = werkzeug.utils.escape(args['password'])
 	# email    = werkzeug.utils.escape(args['email'])
 
 	if not form.validate():
-		return util.make_json_error(msg='Malformed data.')
+		return util.make_json_error(msg=form.getErrors())
 	
 	user = User(username=form.username.data, password=form.password.data, email=form.email.data)
 	db.session.add(user)
@@ -78,10 +78,10 @@ def api_login():
 	# 	return util.make_json_error(msg='Authentication failed.')
 	
 	args = util.parse_request_to_json(request)
-	form = LoginForm.from_json(args, csrf_enabled=False)
+	form = LoginForm.from_json(args)
 
 	if not form.validate():
-		return util.make_json_error(msg='Malformed data.')
+		return util.make_json_error(msg=form.getErrors())
 	
 	user = User.get_by_name(form.username.data)
 	login_user(user)

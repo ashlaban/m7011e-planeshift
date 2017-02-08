@@ -7,8 +7,8 @@ from app.models import UserNotFoundError
 
 #If errors: check if adding 'validators.' before validators solves it...
 class LoginForm(Form):
-	username = StringField('username', [validators.InputRequired()])
-	password = PasswordField('password', [validators.InputRequired()])
+	username = StringField('username'  , [validators.InputRequired(message='Username required')])
+	password = PasswordField('password', [validators.InputRequired(message='Password required')])
 	
 	def __init__(self, *args, **kwargs):
 		Form.__init__(self, *args, **kwargs)
@@ -30,11 +30,14 @@ class LoginForm(Form):
 		self.password.errors.append('Wrong password')
 		return False
 
+	def getErrors(self):
+		return self.username.errors + self.password.errors
+
 class SignupForm(Form):
-	username = StringField('username'  , [validators.InputRequired()])
-	email    = StringField('email'     , [validators.InputRequired(), validators.Email(message='Must be an e-mail address')])
-	password = PasswordField('password', [validators.InputRequired(), validators.EqualTo('confirm', message='Passwords must match')])
-	confirm  = PasswordField('confirm' , [validators.InputRequired()])
+	username = StringField('username'  , [validators.InputRequired(message='Username required')])
+	email    = StringField('email'     , [validators.InputRequired(message='Please enter your email'), validators.Email(message='Email must be valid')])
+	password = PasswordField('password', [validators.InputRequired(message='Please choose a password'), validators.EqualTo('confirm', message='Passwords must match')])
+	confirm  = PasswordField('confirm' , [validators.InputRequired(message='You must confirm password')])
 
 	def __init__(self, *args, **kwargs):
 		Form.__init__(self, *args, **kwargs)
@@ -55,3 +58,5 @@ class SignupForm(Form):
 
 		return True
 
+	def getErrors(self):
+		return self.username.errors + self.password.errors + self.email.errors
