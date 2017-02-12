@@ -38,17 +38,13 @@ def join(plane):
 
 	paths = {}
 	try:
-		paths['html'] = manager.get_path_for_module_content('html', module)
+		paths['index.html'] = manager.get_path_for_module_content('index.html', module)
 	except ModuleHasNoData:
-		paths['html'] = ''
+		paths['index.html'] = ''
 	try:
-		paths['css'] = manager.get_path_for_module_content('css', module)
+		paths['main.js'] = manager.get_path_for_module_content('main.js', module)
 	except ModuleHasNoData:
-		paths['css'] = ''
-	try:
-		paths['js'] = manager.get_path_for_module_content('js', module)
-	except ModuleHasNoData:
-		paths['js'] = ''
+		paths['main.js'] = ''
 
 	return render_template('planes/plane.html', paths=paths)
 

@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
 {% block css %}
-<link rel="stylesheet" type="text/css" href="{{paths['css']}}" />
 {% endblock css %}
 
 {% block js %}
-<script src="{{paths['js']}}"></script>
+<script src="{{paths['main.js']}}"></script>
 {% endblock js %}
 
 {% block content %}
-{% include paths['html'] ignore missing %}
+
+{% include paths['index.html'] ignore missing %}
 {% endblock %}
