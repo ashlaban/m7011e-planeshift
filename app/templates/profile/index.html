@@ -72,7 +72,7 @@
 		<ul data-bind="foreach: modules">
 			<a data-bind="attr: { href: '/modules/name/' + name }">
 			<li class="module-brief rounded">
-				<img data-bind="attr: { src: 'data:image/png;base64,' + picture }">
+				<img data-bind="attr: { src: picture }">
 				<span class="description">
 					<span class="module-title" data-bind="text: name"></span>
 					<span class="module-desc"  data-bind="text: short_desc"></span>

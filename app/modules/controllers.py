@@ -122,7 +122,6 @@ def api_create_module():
 		                       listings.
 		long_desc   - String - Longer description of module. Will not be 
 		                       included in listings.
-		picture     - String base64 - Icon to represent the module.
 	'''
 	if not g.user.is_authenticated:
 		return util.make_json_error(msg='Not authenticated.')
@@ -133,7 +132,7 @@ def api_create_module():
 	short_desc  = util.html_escape_or_none(args['short_desc'])
 	long_desc   = util.html_escape_or_none(args['long_desc'])
 
-	picture        = args['picture']
+	# picture        = args['picture']
 	latest_version = None
 
 	was_created = False
@@ -149,7 +148,6 @@ def api_create_module():
 			short_desc = short_desc,
 			long_desc  = long_desc,
 
-			picture        = picture,
 			latest_version = latest_version,
 		)
 		
@@ -157,8 +155,8 @@ def api_create_module():
 		module.short_desc = short_desc
 	if long_desc is not None:
 		module.long_desc = long_desc
-	if picture is not None:
-		module.picture = picture
+	# if picture is not None:
+	# 	module.picture = picture
 
 	db.session.add(module)
 

@@ -16,10 +16,10 @@
 <ul class=center-content data-bind="foreach: modules">
 	<a class="module box rounded center-content" 
 		data-bind="attr: { href: '/modules/name/' + name }">
-		<div class="half center-content">
-			<img data-bind="attr: { src: 'data:image/png;base64,' + picture }">
-		</div>
-		<div class="half">
+		<!-- <div class="center-content"> -->
+			<img data-bind="attr: { src: picture }">
+		<!-- </div> -->
+		<div class="">
 			<h1 data-bind="text: name"></h1>
 			<p data-bind="text: short_desc"></p>
 		</div>

@@ -20,7 +20,7 @@ class CreatePlaneForm(Form):
 		return modules
 
 class PlanarAuthenticateForm(Form):
-	password = PasswordField('password', [validators.InputRequired()])
+	password = PasswordField('password')
 
 	
 	def __init__(self, plane_name, *args, **kwargs):

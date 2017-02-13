@@ -47,7 +47,7 @@ class ModuleVersion(db.Model):
 class Module(db.Model):
 	id      = db.Column(db.Integer    , primary_key=True)
 	owner   = db.Column(db.Integer    , db.ForeignKey('user.id'), nullable=False)
-	picture = db.Column(db.Text()) # TODO: size should be limited
+	# picture = db.Column(db.Text()) # TODO: size should be limited
 
 	name       = db.Column(db.String(64) , nullable=False)
 	short_desc = db.Column(db.String(128))
@@ -98,13 +98,21 @@ class Module(db.Model):
 		module_version = ModuleVersion.get_by_id(self.latest_version)
 		return module_version
 
+	def get_picture_path(self):
+		from app.modules.manager import get_path_for_module_content
+		try:
+			return get_path_for_module_content('icon.png', self)
+		except ModuleHasNoData:
+			return ''
+
 	def get_public_short_info(self):
+		
 		data = {
 			'name'      : self.name,
 			'short_desc': self.short_desc,
 			'owner'     : self.get_owner().username,
 
-			'picture'   : self.picture,
+			'picture'   : self.get_picture_path(),
 		}
 		return data
 
@@ -123,7 +131,7 @@ class Module(db.Model):
 			'long_desc' : self.long_desc,
 			'owner'     : self.get_owner().username,
 			
-			'picture'       : self.picture,
+			'picture'   : self.get_picture_path(),
 			'latest_version': (self.latest_version, version_string),
 			'versions'      : versions
 		}

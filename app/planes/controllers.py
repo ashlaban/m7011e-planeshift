@@ -30,7 +30,7 @@ def disconnect(user, plane):
 		db.session.delete(s)
 		db.session.commit()
 
-def join(plane):
+def show_plane_helper(plane):
 	if plane is None:
 		return render_template('planes/404.html', name=name)
 
@@ -48,7 +48,7 @@ def join(plane):
 
 	return render_template('planes/plane.html', paths=paths)
 
-def api_join(plane):
+def api_show_plane_helper(plane):
 	if plane is None:
 		return util.make_json_error(msg='Plane does not exist.')
 
@@ -95,7 +95,9 @@ def create_plane():
 			db.session.commit()
 
 			flash('Plane created')
-			return redirect(url_for('planes.join_plane', name=form.name.data, password=form.password.data))
+			connect(g.user, plane)
+
+			return redirect(url_for('planes.show_plane', name=form.name.data, password=form.password.data))
 	else:
 		return redirect(url_for('login'))
 
@@ -103,17 +105,17 @@ def create_plane():
 
 @planes.route('/name/<name>', methods=['GET', 'POST'])
 @login_required
-def join_plane(name):
+def show_plane(name):
 	plane = Plane.query.filter_by(name=name).first()
 
-	if plane.has_password():
+	if plane.has_password() and not plane.is_user_connected(g.user):
 		form = PlanarAuthenticateForm(plane_name=plane.name)
 		if form.validate_on_submit():
 			connect(g.user, plane)
-			return join(plane)
+			return show_plane_helper(plane)
 		return render_template('planes/authenticate.html', title='Authenticate', form=form)
 	else:
-		return join(plane)
+		return show_plane_helper(plane)
 
 # API endpoints
 @plane_api.route('/', methods=['GET'])
@@ -217,7 +219,7 @@ def api_disconnect(plane):
 	return util.make_json_success(msg='Disconnected.')
 
 @plane_api.route('/<plane>', methods=['GET'])
-def api_join(plane):
+def api_show_plane_helper(plane):
 	'''Get information for plane.
 	Returns
 		is_owner - Boolean - True if current user is owner of plane, False if not.

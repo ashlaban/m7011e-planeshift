@@ -44,7 +44,6 @@
 			var name       = $('#name')[0].value;
 			var short_desc = $('#short_desc')[0].value;
 			var long_desc  = $('#long_desc')[0].value;
-			var picture    = $('#picture')[0].value;
 			create_module(name, short_desc, long_desc, picture);
 		}
 
@@ -78,10 +77,6 @@
 				{{ form.long_desc(
 					class='wide-form-area',
 					placeholder="(Optional) Long description")
-				}}
-				{{ form.picture(
-					class='wide-form-area',
-					placeholder="(Optional) Picture, png encoded in base64")
 				}}
 
 				<input class="btn" type="submit" value="create">

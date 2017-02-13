@@ -5,12 +5,12 @@ from app.models import User
 class Plane(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	#uuid = db.Column(db.String(64), index=True, unique=True)
-	owner = db.Column(db.Integer, db.ForeignKey('user.id'))
+	owner    = db.Column(db.Integer, db.ForeignKey('user.id'))
 	password = db.Column(db.String(64), index=True, nullable=True, unique=False)
-	module = db.Column(db.Integer, db.ForeignKey('module.id'), nullable=True)
-	data = db.Column(db.LargeBinary, nullable=True, unique=False)
-	name = db.Column(db.String(64), index=True, unique=False)
-	public = db.Column(db.Boolean, index=True, unique=False)
+	module   = db.Column(db.Integer, db.ForeignKey('module.id'), nullable=True)
+	data     = db.Column(db.LargeBinary, nullable=True, unique=False)
+	name     = db.Column(db.String(64), index=True, unique=False)
+	public   = db.Column(db.Boolean, index=True, unique=False)
 	#session_id = db.Column(db.integer, db.ForeignKey('user.id'), nullable=True)
 	#sessions = relationship("User")
 		
@@ -46,7 +46,7 @@ class Plane(db.Model):
 		return False
 
 	def has_password(self):
-		if self.password is not None:
+		if self.password is not None and self.password != '':
 			return True
 		return False
 
@@ -60,6 +60,9 @@ class Plane(db.Model):
 
 	def get_data(self):
 		return self.data
+
+	def is_user_connected(self, user):
+		return (Session.get_session(user=user, plane=self) is not None)
 
 	@staticmethod
 	def get_planes():
