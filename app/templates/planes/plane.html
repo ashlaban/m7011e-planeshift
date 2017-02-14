@@ -4,6 +4,11 @@
 {% endblock css %}
 
 {% block js %}
+<script type="text/javascript" charset="utf-8">
+	plane_name = '{{name}}';
+</script>
+
+<script src="/static/js/jquery-3.1.1.min.js"></script>
 <script src="{{paths['main.js']}}"></script>
 {% endblock js %}
 

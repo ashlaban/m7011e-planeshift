@@ -11,12 +11,10 @@ class CreateForm(Form):
 		                       listings.
 		long_desc   - String - Longer description of module. Will not be 
 		                       included in listings.
-		picture     - String base64 - Icon to represent the module.
 	'''
 	name       = StringField('name', [validators.InputRequired()])
 	short_desc = TextAreaField('short_desc', [validators.InputRequired()])
 	long_desc  = TextAreaField('long_desc')
-	picture    = TextAreaField('picture')
 	
 	def __init__(self, *args, **kwargs):
 		Form.__init__(self, *args, **kwargs)

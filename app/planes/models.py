@@ -56,10 +56,14 @@ class Plane(db.Model):
 		return False
 
 	def set_data(self, data):
-		self.data = data
+		if data is None:
+			self.data = None
+		else:
+			self.data = data.encode('utf-8')
 
 	def get_data(self):
-		return self.data
+		data = self.data if self.data is not None else ''.encode('utf-8')
+		return data.decode('utf-8')
 
 	def is_user_connected(self, user):
 		return (Session.get_session(user=user, plane=self) is not None)
@@ -71,6 +75,18 @@ class Plane(db.Model):
 	@staticmethod
 	def get_plane(name):
 		return Plane.query.filter_by(name=name).first()
+
+	def get_public_info(self, user):
+		data = {
+			'is_owner'       : self.is_owner(user),
+			'module_name'    : self.get_module().name,
+			'module_version' : "Not implemented",
+			'name'           : self.get_name(),
+			'public'         : self.is_public(),
+			# 'users'          : Session.get_users_for_plane(self),
+			'users'          : "Not implemented",
+		}
+		return data
 	
 	def __repr__(self):
 		return '<Name %r>' % (self.name)

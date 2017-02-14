@@ -19,10 +19,12 @@ lm.login_view = 'login'
 from app.modules.controllers  import modules     as modules_mod
 from app.modules.controllers  import module_api  as modules_api
 from app.planes.controllers   import planes      as planes_mod
+from app.planes.controllers   import planes_api  as planes_api
 from app.profile.controllers  import profile     as profile_mod
 app.register_blueprint(modules_mod)
 app.register_blueprint(modules_api)
 app.register_blueprint(planes_mod)
+app.register_blueprint(planes_api)
 app.register_blueprint(profile_mod)
 
 from app import views, models

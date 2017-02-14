@@ -16,7 +16,15 @@ def get_file_basename(module_name, sVersion):
 	filebasename = '{}-{}'.format(module_name, sVersion)
 	return filebasename
 
-def get_module_path(module_name, sVersion):
+def get_module_path(module_name, sVersion=None):
+	if sVersion is None:
+		try:
+			module   = Module.get_by_name(module_name)
+			version  = module.get_latest_version()
+			sVersion = version.get_escaped_version()
+		except ModuleVersionNotFound:
+			raise ModuleHasNoData()
+
 	module_path  = os.path.join(module_name, sVersion)
 	full_path    = os.path.join( app.config['STATIC_UPLOAD_FOLDER'], module_path)
 
