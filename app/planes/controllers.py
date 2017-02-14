@@ -48,11 +48,16 @@ def show_plane_helper(plane):
 	except ModuleHasNoData:
 		paths['main.js'] = ''
 
+	try:
+		module_path=manager.get_module_path(module.name)
+	except:
+		module_path=''
+
 	return render_template('planes/plane.html', 
 		paths=paths,
 		name=plane.get_name(),
 		user=g.user.username,
-		module_path=manager.get_module_path(module.name),
+		module_path=module_path,
 	)
 
 # def api_show_plane_helper(plane):
