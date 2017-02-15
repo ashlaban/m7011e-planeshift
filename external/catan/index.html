@@ -1,19 +1,10 @@
-<!DOCTYPE html>
-<html>
-<head>
-
 <link rel="stylesheet type="text/css" href="catan.css">
-
-</head>
-<body>
 
 <h1>Settlers of Catan</h1>
 
-<h2>Settlers of Catan resource tracker module</h2>
-
 <div id="cards">
 	<div class="resource">
-		<img id="stone" src="stone.jpg">
+		<img id="stone" src="{{module_path}}/stone.jpg">
 		<div class="counter">
 			<button class="cntObj" type="button" onclick="addStone()">+</button>
 			<div id="stoneNum" class="cntObj"></div>
@@ -21,7 +12,7 @@
 		</div>
 	</div>
 	<div class="resource">
-		<img id="wheat" src="wheat.jpg">
+		<img id="wheat" src="{{module_path}}/wheat.jpg">
 		<div class="counter">
 			<button class="cntObj" type="button" onclick="addWheat()">+</button>
 			<div id="wheatNum" class="cntObj"></div>
@@ -29,7 +20,7 @@
 		</div>
 	</div>
 	<div class="resource">
-		<img id="brick" src="brick.jpg">
+		<img id="brick" src="{{module_path}}/brick.jpg">
 		<div class="counter">
 			<button class="cntObj" type="button" onclick="addBrick()">+</button>
 			<div id="brickNum" class="cntObj"></div>
@@ -37,7 +28,7 @@
 		</div>
 	</div>
 	<div class="resource">
-		<img id="wood" src="wood.jpg">
+		<img id="wood" src="{{module_path}}/wood.jpg">
 		<div class="counter">
 			<button class="cntObj" type="button" onclick="addWood()">+</button>
 			<div id="woodNum" class="cntObj"></div>
@@ -45,7 +36,7 @@
 		</div>
 	</div>
 	<div class="resource">
-		<img id="sheep" src="sheep.jpg">
+		<img id="sheep" src="{{module_path}}/sheep.jpg">
 		<div class="counter">
 			<button class="cntObj" type="button" onclick="addSheep()">+</button>
 			<div id="sheepNum" class="cntObj"></div>
@@ -53,9 +44,3 @@
 		</div>
 	</div>
 </div>
-
-<script src="catan.js">
-</script>
-
-</body>
-</html>

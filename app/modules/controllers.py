@@ -202,6 +202,9 @@ def api_delete_module():
 			db.session.delete(version)
 		db.session.delete(module)
 		db.session.commit()
+
+		manager.delete_module(module)
+
 		return util.make_json_success(msg='Module ' + module_name + ' deleted.')
 	except:
 		db.session.rollback()
@@ -247,6 +250,10 @@ def api_version(module_name):
 	try:		
 		escaped_version = werkzeug.utils.escape(request.form['version'])
 		files           = sum( request.files.listvalues(), [])
+
+		# TODO: Argument validation should be standardised.
+		if escaped_version == "":
+			return util.make_json_error(msg='Version name cannot be empty.')
 
 		manager.upload_version(module=module, sVersion=escaped_version, files=files)
 

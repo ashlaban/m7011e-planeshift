@@ -51,7 +51,7 @@ def show_plane_helper(plane):
 	try:
 		module_path=manager.get_module_path(module.name)
 	except:
-		module_path=''
+		return render_template('plane/module-not-found.html')
 
 	return render_template('planes/plane.html', 
 		paths=paths,
@@ -59,22 +59,6 @@ def show_plane_helper(plane):
 		user=g.user.username,
 		module_path=module_path,
 	)
-
-# def api_show_plane_helper(plane):
-# 	if plane is None:
-# 		return util.make_json_error(msg='Plane does not exist.')
-
-# 	data = {}
-
-# 	data['is_owner'] = plane.is_owner(g.user)
-# 	data['module_name'] = plane.get_module().name
-# 	data['module_version'] = plane.get_module().get_latest_version().get_escaped_version()
-# 	data['plane_data'] = plane.get_data()
-# 	data['name'] = plane.get_name()
-# 	data['public'] = plane.is_public()
-# 	data['users'] = [s.get_user.username for s in Session.get_users_for_plane(plane)]
-
-# 	return util.make_json_success(data=data)
 
 # Views
 @planes.route('/')

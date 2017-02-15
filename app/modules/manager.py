@@ -7,6 +7,10 @@ from app import db
 from app.modules.models import Module, ModuleVersion
 from app.modules.models import ModuleNotFound, ModuleHasNoData, ModuleVersionNotFound
 
+import shutil
+import os
+import os.path
+
 import werkzeug
 
 class ModuleDuplicateVersionError(ValueError):
@@ -16,55 +20,84 @@ def get_file_basename(module_name, sVersion):
 	filebasename = '{}-{}'.format(module_name, sVersion)
 	return filebasename
 
-def get_module_path(module_name, sVersion=None):
+def get_latest_ver_string(module_name):
+	try:
+		module   = Module.get_by_name(module_name)
+		version  = module.get_latest_version()
+		sVersion = version.get_escaped_version()
+	except ModuleVersionNotFound:
+		raise ModuleHasNoData()
+	return sVersion
+
+def get_mod_web_path(module_name):
+	return os.path.join( app.config['WEB_UPLOAD_FOLDER'], module_name)
+
+def get_mod_sys_path(module_name):
+	return os.path.join( app.config['SYS_UPLOAD_FOLDER'], module_name)
+	
+def get_modver_web_path(module_name, sVersion=None):
 	if sVersion is None:
-		try:
-			module   = Module.get_by_name(module_name)
-			version  = module.get_latest_version()
-			sVersion = version.get_escaped_version()
-		except ModuleVersionNotFound:
-			raise ModuleHasNoData()
+		sVersion = get_latest_ver_string(module_name)
 
-	module_path  = os.path.join(module_name, sVersion)
-	full_path    = os.path.join( app.config['STATIC_UPLOAD_FOLDER'], module_path)
-
+	module_path  = get_mod_web_path(module_name)
+	full_path    = os.path.join(module_path, sVersion)
 	return full_path
 
-def get_module_system_path(module_name, sVersion):
-	module_path  = os.path.join(module_name, sVersion)
-	full_path    = os.path.join( app.config['UPLOAD_FOLDER'], module_path)
+def get_modver_sys_path(module_name, sVersion=None):
+	if sVersion is None:
+		sVersion = get_latest_ver_string(module_name)
 
+	module_path  = get_mod_sys_path(module_name)
+	full_path    = os.path.join(module_path, sVersion)
 	return full_path
 
-def ensure_module_path(module_name, sVersion):
-	module_path = get_module_system_path(module_name, sVersion)
-	return os.makedirs(module_path, exist_ok=True)
+def ensure_module_path(path):
+	return os.makedirs(path, exist_ok=True)
 
 def get_path_for_module_content(filename, module, version=None):
 	if module is None:
 		raise ValueError('Argument module must not be None')
 
 	if version is None:
-		try:
-			version        = module.get_latest_version()
-			version_string = version.get_escaped_version()
-		except ModuleVersionNotFound:
-			raise ModuleHasNoData()
+		version_string = get_latest_ver_string(module.name)
 
-	module_path = get_module_path(module_name=module.name, sVersion=version_string)
+	module_path = get_modver_web_path(module_name=module.name, sVersion=version_string)
 	return os.path.join(module_path, filename)
 
-def upload_file_helper(file, module_name, sVersion):
-	target_path = get_module_system_path(module_name=module_name, sVersion=sVersion)
-	ensure_module_path(module_name, sVersion)
+def copy_prev_version(curr_version_path, prev_version_path, exclude_list=[]):
+	if prev_version_path is None:
+		return False
 
-	sFilename = werkzeug.utils.secure_filename(file.filename)
-	path = os.path.join(target_path, sFilename)
-	with open(path, 'wb+') as file_handle:
-		file.save(file_handle)
+	ensure_module_path(curr_version_path)
+	for dirpath, dirnames, filenames in os.walk(prev_version_path):
+		for filename in filenames:
+			src = os.path.join(prev_version_path, filename)
+			dst = os.path.join(curr_version_path, filename)
 
-def upload_version(module, sVersion, files):
+			if src in exclude_list:
+				continue
+
+			shutil.copyfile(src, dst)
+	return True
+
+def persist_files_to_disk(target_path, files):
+	ensure_module_path(target_path)
+
+	for file in files:
+		sFilename = werkzeug.utils.secure_filename(file.filename)
+		path = os.path.join(target_path, sFilename)
+		with open(path, 'wb+') as file_handle:
+			file.save(file_handle)
+
+def upload_version(module, sVersion, added_files, removed_file_paths):
 	session = db.session
+
+	try:
+		prev_version      = module.get_latest_version().version_string
+		prev_version_path = get_modver_sys_path(module.name, prev_version)
+	except ModuleVersionNotFound:
+		prev_version_path = None
+
 	try:
 		new_version = ModuleVersion(module_id=module.id, version_string=sVersion)
 		session.add(new_version)
@@ -73,23 +106,30 @@ def upload_version(module, sVersion, files):
 		module.latest_version = new_version.id
 		session.add(module)
 
-		for file in files:
-			upload_file_helper(file, module.name, sVersion)
+		curr_version      = module.get_latest_version().version_string
+		curr_version_path = get_modver_sys_path(module.name, curr_version)
 
 		session.commit()
+
+		copy_prev_version(curr_version_path, prev_version_path)
+		persist_files_to_disk(curr_version_path, added_files, removed_file_paths)
 
 	except sqlalchemy.exc.IntegrityError as e:
 		session.rollback()
 		db.session.delete(new_version)
 		session.commit()
+		# TODO: delete folder for version as well?
 		raise ModuleDuplicateVersionError('Version {} already exists for module {}'.format(sVersion, module.name))
 	except Exception as e:
 		session.rollback()
 		db.session.delete(new_version)
 		session.commit()
+		# TODO: delete folder for version as well?
 		raise e
 
 	return
 
-
-
+def delete_module(module):
+	module_path = get_mod_sys_path(module.name)
+	shutil.rmdirs(module_path)
+	return

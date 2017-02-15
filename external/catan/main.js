@@ -1,62 +1,40 @@
-var stone;
-var wheat;
-var brick;
-var wood;
-var sheep;
-
-stone = 0;
-wheat = 0;
-brick = 0;
-wood = 0;
-sheep = 0;
-
-document.getElementById("stoneNum").innerHTML = stone;
-document.getElementById("wheatNum").innerHTML = wheat;
-document.getElementById("brickNum").innerHTML = brick;
-document.getElementById("woodNum").innerHTML = wood;
-document.getElementById("sheepNum").innerHTML = sheep;
-
-function addStone(){
-	stone = stone+1;
-	document.getElementById("stoneNum").innerHTML = stone;
-}
-function subStone(){
-	stone = stone-1;
-	document.getElementById("stoneNum").innerHTML = stone;
+var data = {
+	stone: 0,
+	wheat: 0,
+	brick: 0,
+	wood : 0,
+	sheep: 0,
 }
 
-function addWheat(){
-	wheat = wheat+1;
-	document.getElementById("wheatNum").innerHTML = wheat;
-}
-function subWheat(){
-	wheat = wheat-1;
-	document.getElementById("wheatNum").innerHTML = wheat;
+function mod(amt, type, user, plane_name) {
+	data[type]+= amt;
+	document.getElementById(type).innerHTML = data[type];
+
+	$.ajax({
+			type: 'POST',
+			url: '/api/planes/'+plane_name+'/data',
+			data: JSON.stringify(data),
+			dataType: 'json',
+			processData: false,
+			contentType: 'application/json; charset=utf-8',
+		});
 }
 
-function addBrick(){
-	brick = brick+1;
-	document.getElementById("brickNum").innerHTML = brick;
-}
-function subBrick(){
-	brick = brick-1;
-	document.getElementById("brickNum").innerHTML = brick;
-}
-
-function addWood(){
-	wood = wood+1;
-	document.getElementById("woodNum").innerHTML = wood;
-}
-function subWood(){
-	wood = wood-1;
-	document.getElementById("woodNum").innerHTML = wood;
-}
-
-function addSheep(){
-	sheep = sheep+1;
-	document.getElementById("sheepNum").innerHTML = sheep;
-}
-function subSheep(){
-	sheep = sheep-1;
-	document.getElementById("sheepNum").innerHTML = sheep;
-}
+document.addEventListener("DOMContentLoaded", function(event) {
+	$.ajax({
+			type: 'GET',
+			url: '/api/planes/'+plane_name,
+			dataType: 'json',
+			processData: false,
+			contentType: 'application/json; charset=utf-8',
+			success: function (d) {
+				console.log(d)
+				data = d.;
+				document.getElementById("stone").innerHTML = data.stone;
+				document.getElementById("wheat").innerHTML = data.wheat;
+				document.getElementById("brick").innerHTML = data.brick;
+				document.getElementById("wood").innerHTML  = data.wood;
+				document.getElementById("sheep").innerHTML = data.sheep;
+			},
+		});	
+});
