@@ -77,9 +77,11 @@ class Plane(db.Model):
 		return Plane.query.filter_by(name=name).first()
 
 	def get_public_info(self, user):
+		module = self.get_module()
+		module_name = module.name if module else "No module"
 		data = {
 			'is_owner'       : self.is_owner(user),
-			'module_name'    : self.get_module().name,
+			'module_name'    : module_name,
 			'module_version' : "Not implemented",
 			'name'           : self.get_name(),
 			'public'         : self.is_public(),

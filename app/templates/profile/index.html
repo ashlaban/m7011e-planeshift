@@ -26,6 +26,20 @@
 		});
 	}
 
+	function get_planes_for_user (username) {
+		$.ajax({
+			url: '/api/planes/',
+			data: {username: username},
+			dataType: 'json',
+			success: function(data) {
+				if (data.hasOwnProperty('data') ) {
+					vm.planes(data.data);
+				}
+			},
+			type: 'GET'
+		});
+	}
+
 	function PlaneshiftViewModel(modules) {
 		var self = this;
 
@@ -37,6 +51,7 @@
 		vm = new PlaneshiftViewModel();
 		ko.applyBindings(vm);
 		get_modules_for_user("{{user.username}}");
+		get_planes_for_user("{{user.username}}");
 	});		
 </script>
 
@@ -56,7 +71,22 @@
 		<div data-bind="foreach: planes">
 			<a data-bind="attr: { href: '/planes/name/' + name }">
 			<li class="module-brief rounded">
-				<span data-bind="text: name"></span>
+				<img data-bind="">
+				<span class="description">
+					<span class="module-title" data-bind="text: name"></span>
+					<!-- <span class="module-desc"  data-bind="text: short_desc"></span> -->
+				</span>
+				<span class="filler"></span>
+				<!-- ko if: is_owner -->
+				<button class="btn-slim" onclick="" href="" >
+					<i class="fa fa-trash-o" aria-hidden="true"></i>
+					<!-- <span>Delete</span> -->
+				</button>
+				<!-- /ko -->
+				<button class="btn-slim" onclick="" href="">
+					<i class="fa fa-sign-out" aria-hidden="true"></i>
+					<!-- <span>Disconnect</span> -->
+				</button>
 			</li>
 			</a>
 		</div>
@@ -77,6 +107,15 @@
 					<span class="module-title" data-bind="text: name"></span>
 					<span class="module-desc"  data-bind="text: short_desc"></span>
 				</span>
+				<span class="filler"></span>
+				<button class="btn-slim" onclick="" href="" >
+					<i class="fa fa-trash-o" aria-hidden="true"></i>
+					<!-- <span>Delete</span> -->
+				</button>
+				<button class="btn-slim" onclick="" href="">
+					<i class="fa fa-upload" aria-hidden="true"></i>
+					<!-- <span>Disconnect</span> -->
+				</button>
 			</li>
 			</a>
 		</ul>

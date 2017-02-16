@@ -238,6 +238,10 @@ footer .fa-magic {
 .top-margin-lg { margin-top: 4em; }
 .top-margin-xl { margin-top: 5em; }
 
+.filler {
+	flex-grow: 1;
+}
+
 .btn {
 	/*background: -webkit-linear-gradient(left,  #F4D6BC 0%, #F8E4CC 100%);*/
 	/*background: -webkit-linear-gradient(right,  #447294 0%, #447294 120%);*/

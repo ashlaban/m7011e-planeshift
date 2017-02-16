@@ -37,6 +37,8 @@ def show_plane_helper(plane):
 		return render_template('planes/404.html', name=name)
 
 	module = plane.get_module()
+	if module is None:
+		return render_template('planes/module-not-found.html')
 
 	paths = {}
 	try:
@@ -51,7 +53,7 @@ def show_plane_helper(plane):
 	try:
 		module_path=manager.get_modver_web_path(module.name, None)
 	except:
-		return render_template('plane/module-not-found.html')
+		return render_template('planes/module-not-found.html')
 
 	return render_template('planes/plane.html', 
 		paths=paths,
@@ -111,6 +113,7 @@ def show_plane(name):
 			return show_plane_helper(plane)
 		return render_template('planes/authenticate.html', title='Authenticate', form=form)
 	else:
+		connect(g.user, plane)
 		return show_plane_helper(plane)
 
 # API endpoints
@@ -118,13 +121,28 @@ def show_plane(name):
 def api_list():
 	'''List all planes in database
 	'''
-	try:
-		planes = Plane.get_planes()
-	except Exception:
-		return util.make_json_error()
 
-	data = [p.get_name() for p in planes]
+	username = util.html_escape_or_none(request.args.get('username'))
+	if username and (g.user is None or not g.user.is_authenticated):
+		return util.make_json_error(msg='Not authenticated.')
 
+	if username != g.user.username:
+		return util.make_json_error(msg='No permission for this action.')
+
+	if username:
+		try:
+			user = User.get_by_name(username)
+		except UserNotFoundError:
+			return util.make_json_error(data='No user with that name.')
+
+		planes = list(map(lambda x: x.get_plane(), Session.get_sessions(user)))
+	else:
+		try:
+			planes = Plane.get_planes()
+		except Exception:
+			return util.make_json_error()
+	
+	data = [p.get_public_info(user) for p in planes]
 	return util.make_json_success(data=data)
 
 @planes_api.route('/', methods=['POST'])
