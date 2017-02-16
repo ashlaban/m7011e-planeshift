@@ -7,7 +7,7 @@ class CreatePlaneForm(Form):
 	name = StringField('name', [validators.InputRequired()])
 	password = PasswordField('password')
 	module = SelectField('module', coerce=int)
-	public = BooleanField('public', default=False)
+	hidden = BooleanField('hidden', default=False)
 
 	def __init__(self, *args, **kwargs):
 		Form.__init__(self, *args, **kwargs)

@@ -1,9 +1,86 @@
 {% extends "base.html" %}
 
 {% block css %}
+<link rel="stylesheet" type="text/css" href="/static/css/modules/module-base.css" />
+
+<script src="/static/js/jquery-3.1.1.min.js"></script>
 {% endblock css %}
 
-{% block content  %}
+{% block content %}
+
+	<script type="text/javascript" charset="utf-8">
+		function create_plane(name, short_desc, long_desc) {
+			var data = {
+				name: name,
+				short_desc: short_desc,
+				long_desc: long_desc,
+			};
+			
+			$.ajax({
+				type: 'POST',
+				url: '/api/planes/',
+				data: JSON.stringify(data),
+				dataType: 'json',
+				processData: false,
+				contentType: 'application/json; charset=utf-8',
+				success: function(data) {
+					window.location = '/modules/name/'+name;
+				},
+				error: function(response) {
+					console.log(response)
+					$('#info').html(response.responseJSON.msg);
+				},
+			});
+		}
+
+		function create_module_form(form) {
+			// This is for modern browsers supporting the File API in HTML5.
+			// var fd = new FormData(form);
+			// create_module(fd.get('name'), fd.get('short_desc'), fd.get('long_desc'));
+			
+			// This is for Safari
+			var name       = $('#name')[0].value;
+			var short_desc = $('#short_desc')[0].value;
+			var long_desc  = $('#long_desc')[0].value;
+			create_module(name, short_desc, long_desc);
+		}
+
+		$(document).ready( function () {
+			var form = document.getElementById('create-form');
+			form.addEventListener('submit', function(ev) {
+	  			// ev.preventDefault();
+	  			// create_module_form(form);
+			}, false);
+		});
+		
+	</script>
+
+	<section class="center-content">
+
+		<div class="form-box rounded center-content">
+			<h1>Create new module</h1>
+			<!-- <p id="info" class="error"></p> -->
+
+			<form id="create-form" class="form center-content" action="" method="post" enctype="multipart/form-data" name="plane-create">
+				{{ form.hidden_tag()  }}
+				{{ form.name(class="wide-form-field", placeholder='Plane name') }}
+				{{ form.password(class="wide-form-field", placeholder='(Optional) Password') }}
+				<div class="wide-form-field">
+					<span>Module</span>
+					{{ form.module(placeholder='none') }}
+					{#{{ form.version(placeholder='none') }}#}
+				</div>
+				<div class="wide-form-field">
+					{{ form.hidden }} Hide from public listing
+				</div>
+				<input type="submit" value="Create">
+			</form>
+		</div>
+	</section>
+{% endblock content %}
+
+<!-- {#
+
 	<form action="" method="post" name="Create_plane" class="center-content top-padding-md">
 		{{ form.hidden_tag()  }}
 		{{ form.name(size=30, placeholder='name') }}
@@ -24,4 +101,5 @@
 		{% endfor %}
 		<input type="submit" value="Create">
 	</form>
-{% endblock  content %}
+
+#} -->

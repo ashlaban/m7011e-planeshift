@@ -49,7 +49,7 @@ def show_plane_helper(plane):
 		paths['main.js'] = ''
 
 	try:
-		module_path=manager.get_module_path(module.name)
+		module_path=manager.get_modver_web_path(module.name, None)
 	except:
 		return render_template('plane/module-not-found.html')
 
@@ -86,7 +86,7 @@ def create_plane():
 				uid = uuid.uuid4()
 			'''
 
-			plane = Plane(owner=g.user.id, password=form.password.data, module=m.id, data=None, name=form.name.data, public=form.public.data)
+			plane = Plane(owner=g.user.id, password=form.password.data, module=m.id, data=None, name=form.name.data, public=not form.hidden.data)
 			db.session.add(plane)
 			db.session.commit()
 
