@@ -3,99 +3,71 @@
 {% block css %}
 <link rel="stylesheet" type="text/css" href="/static/css/modules/module-base.css" />
 <link rel="stylesheet" type="text/css" href="/static/css/modules/module-info.css" />
-
-<script src="/static/js/jquery-3.1.1.min.js"></script>
-<script src="/static/js/ko.js"></script>
 {% endblock css %}
+
+{% block js %}
+<script src="/static/js/planeshift-api.js"></script>
+<script src="/static/js/planeshift-viewmodel.js"></script>
+{% endblock js %}
 
 {% block content %}
 <script type="text/javascript" charset="utf-8">
-	function delete_module(name) {
-		var data = {name: name};
-		
-		$.ajax({
-			type: 'DELETE',
-			url: '/api/modules/',
-			data: JSON.stringify(data),
-			dataType: 'json',
-			processData: false,
-			contentType: 'application/json; charset=utf-8',
-			success: function(data) {
-				window.location = '/modules';
-			},
-			error: function(response) {
-				$('#info').html(response.responseJSON.msg);
-			},
-		});
-	}
+	var planeshift_view_model = new PlaneshiftViewModel();
+	
+	function delete_button_callback (ev) {
+		ev.preventDefault();
+		planeshift_view_model.remove_module('{{module_name}}');
+	};
+	planeshift_view_model.add_button_callback('btn-delete', delete_button_callback);
 
-	var vm;
-
-	loadModuleInfoData = function (name) {
-		console.log('/api/modules/'+name);
-		$.ajax({
-			url: '/api/modules/'+name,
-			dataType: 'json',
-			success: function(data) {
-				console.log(data);
-				vm = new PlaneshiftViewModel(data.data);
-				ko.applyBindings(vm);
-			},
-			type: 'GET'
-		});
-	}
-
-	function PlaneshiftViewModel(info) {
-		this.info = info;
-	}
-
-	$(document).ready( function () {
-		var btn_delete = document.getElementById('btn-delete');
-		if (btn_delete) {
-			btn_delete.addEventListener('click', function(ev) {
-				ev.preventDefault();
-				delete_module("{{module_name}}");
-			}, false);
-		}
-
-		loadModuleInfoData("{{module_name}}");
-	});		
+	document.addEventListener('DOMContentLoaded', function () {
+		ko.applyBindings(planeshift_view_model);
+		planeshift_view_model.get_module('{{module_name}}');
+	});
 </script>
 
 <div class="center-content">
 	<section id="module-info" class="section-content center-content">
 		<div class="half center-content">
-			<img data-bind="attr: { src: info.picture }">
+			<img data-bind="attr: { src: current_module().picture }">
 		</div>
 		<div class="half">
 			<ul>
-				<h1 data-bind="text: info.name"></h1>
-				<div id="version-header">
-					<span>Version</span>
-					<select data-bind="
-						options: info.versions,
+				<h1 data-bind="text: current_module().name"></h1>
+				<div class="container">
+					<span class="version-label">Version</span>
+					<!-- ko if: current_module().versions.length -->
+					<select class="version-select" data-bind="
+						options: current_module().versions,
 						optionsText: function(item) {
 							return item[1]
 						},
-						value: info.versions.find(function(el){return el[0]==info.latest_version[0]})">
+						value: current_module().versions.find(function(el){return el[0]==current_module().latest_version[0]})">
 					</select>
+					<!-- /ko -->
+					<!-- ko ifnot: current_module().versions.length -->
+					<em class="version-select" >No versions yet</em>
+					<!-- /ko -->
 				</div>
 				
-				<li id="short_desc" data-bind="text: info.short_desc"></li>
-				<li id="long_desc"  data-bind="text: info.long_desc"></li>
+				<li id="short_desc" data-bind="text: current_module().short_desc"></li>
+				<li id="long_desc"  data-bind="text: current_module().long_desc"></li>
 				
-				<!-- ko if: info.is_owner -->
-				<a class="btn"
-					data-bind="attr: {href: '/modules/upload/'+info.name }">
-					<i class="fa fa-upload" aria-hidden="true"></i>
-					New version
+				<div class="container">
+					<!-- ko if: current_module().is_owner -->
+					<a class="btn"
+						data-bind="attr: {href: '/modules/upload/'+current_module().name }">
+						<i class="fa fa-upload" aria-hidden="true"></i>
+						New version
+						</a>
+					<!-- TODO: Move delete to suitable place and confimation modal or something. -->
+					<a id="btn-delete" class="btn" href="">
+						<i class="fa fa-trash-o" aria-hidden="true"></i>
+						Delete
 					</a>
-				<!-- TODO: Move delete to suitable place and confimation modal or something. -->
-				<a id="btn-delete" class="btn" href="">
-					<i class="fa fa-trash-o" aria-hidden="true"></i>
-					Delete
-				</a>
-				<!-- /ko -->
+					<!-- /ko -->
+				</div>
+
 			</ul>
 		</div>
 	</section>

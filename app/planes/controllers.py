@@ -55,6 +55,7 @@ def show_plane_helper(plane):
 	except:
 		return render_template('planes/module-not-found.html')
 
+	# TODO: This should be rendered in a jinja sandbox environment.
 	return render_template('planes/plane.html', 
 		paths=paths,
 		name=plane.get_name(),

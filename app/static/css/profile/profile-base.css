@@ -30,8 +30,21 @@ ul {
 	color: inherit;
 }
 
+.flex-row {
+	display: flex;
+	flex-direction: row;
+
+	align-items: flex-end;
+	justify-content: flex-end;
+}
+
 .heading {
-	width: 600px;
+	padding-top: 0.5em;
+	padding-bottom: 0.25em;
+	padding-left : 0.5em;
+	padding-right: 2em;
+	
+	width: 40em;
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
@@ -56,11 +69,13 @@ em {
 
 	transition: box-shadow 0.5s;
 
-	width: 35em;
+	width: 40em;
 	display: flex;
 	flex-direction: row;
 	justify-content: left;
 	align-items: center;
+
+	align-self: flex-end;
 }
 
 .module-brief:hover {

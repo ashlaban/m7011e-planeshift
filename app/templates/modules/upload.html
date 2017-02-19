@@ -11,61 +11,7 @@
 {% block content %}
 	<script type="text/javascript" charset="utf-8">
 		var fd;
-		function uploadFile(form) {
-			fd = new FormData();
-			
-			for (var file of vm.files()) {
-				console.log('Appending file ' + file.name + ' to form data.');
-				fd.append('files', file);
-			}
-			fd.append('version', form.version.value);
 
-			console.log(fd);
-
-			$.ajax({
-				type: 'POST',
-				url: "/api/modules/{{module_name}}",
-				data: fd,
-				processData: false,
-				contentType: false,
-				success: function(data) {
-					window.location = '/modules/name/{{module_name}}';
-				},
-				error: function(response) {
-					console.log(response)
-					// var payload = JSON.parse(response.responseText);
-					$('#info').html(response.responeJSON.msg);
-				},
-			});
-		}
-
-		function PlaneshiftViewModel(info) {
-			this.files = ko.observableArray();
-		}
-
-		PlaneshiftViewModel.prototype.addFile = function (file) {
-			this.files.push(file);
-		}
-
-		PlaneshiftViewModel.prototype.addFiles = function (files) {
-			var length = files.length;
-			for (var i = 0; i < length; ++i) {
-				var file = files[i];
-				this.addFile(file);
-			}
-		}
-
-		PlaneshiftViewModel.prototype.clearFiles = function () {
-			this.files.removeAll();
-		}
-
-		PlaneshiftViewModel.prototype.removeFile = function (name) {
-			for (var file of this.files()) {
-				if (file.name === name) {
-					return this.files.remove(file)
-				}
-			}
-		}
 
 		var vm = new PlaneshiftViewModel();
 

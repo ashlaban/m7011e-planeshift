@@ -131,5 +131,5 @@ def upload_version(module, sVersion, added_files, removed_file_paths):
 
 def delete_module(module):
 	module_path = get_mod_sys_path(module.name)
-	shutil.rmdirs(module_path)
+	shutil.rmtree(module_path)
 	return

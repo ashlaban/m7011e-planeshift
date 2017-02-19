@@ -30,7 +30,7 @@ module_api = Blueprint('modules_api', __name__, url_prefix='/api/modules')
 @modules.route('/')
 def list_module():
 	modules = db.session.query(Module)
-	return render_template('modules/index.html', modules=modules)
+	return render_template('modules/index.html')
 
 @modules.route('/create')
 def create_module():
@@ -55,13 +55,12 @@ def upload_module(name):
 
 @modules.route('/name/<name>')
 def info_module(name):
-	module   = Module.get_by_name(name)
-
-	is_owner = g.user.is_authenticated and g.user.id == module.owner
-	
-	if module is None:
+	try:
+		module = Module.get_by_name(name)
+	except ModuleNotFound:
 		return render_template('modules/404.html', name=name)
 
+	is_owner = g.user.is_authenticated and g.user.id == module.owner
 	return render_template('modules/module.html', module_name = module.name)
 
 # =============================================================================
@@ -184,7 +183,7 @@ def api_delete_module():
 		{status: error, msg: '...'} otherwise.
 	'''
 	if not g.user.is_authenticated:
-		return util.make_json_error(msg='Not authenticated.')
+		return util.make_json_error(msg='Not authenticated.', error_code=403)
 	
 	args        = util.parse_request_to_json(request)
 	module_name = util.html_escape_or_none(args['name'])
@@ -201,13 +200,14 @@ def api_delete_module():
 		for version in Module.get_versions(module_name):
 			db.session.delete(version)
 		db.session.delete(module)
-		db.session.commit()
 
 		manager.delete_module(module)
+		db.session.commit()
 
 		return util.make_json_success(msg='Module ' + module_name + ' deleted.')
-	except:
+	except Exception as e:
 		db.session.rollback()
+		print(e)
 		return util.make_json_error(msg='Error deleting module.')
 
 @module_api.route('/<module_name>', methods=['GET'])

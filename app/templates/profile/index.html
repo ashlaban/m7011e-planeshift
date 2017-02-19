@@ -52,24 +52,49 @@
 		ko.applyBindings(vm);
 		get_modules_for_user("{{user.username}}");
 		get_planes_for_user("{{user.username}}");
-	});		
+	});
+
+	function delete_module(name) {
+		var data = {name: name};
+		
+		$.ajax({
+			type: 'DELETE',
+			url: '/api/modules/',
+			data: JSON.stringify(data),
+			dataType: 'json',
+			processData: false,
+			contentType: 'application/json; charset=utf-8',
+			success: function(data) {
+				window.location = '/modules';
+			},
+			error: function(response) {
+				$('#info').html(response.responseJSON.msg);
+			},
+		});
+	}
+
 </script>
 
 <section class="center-content">
 	<div class="form-box rounded center-content">
 		<!-- <h1><em>{{user.username}}</em>'s crib</h1> -->
 		<p>Welcome to Planeshift. Get a quick overview of what planes you can shift to and what modules you currently own. Be chill, stay cool.</p>
-
+		
 		<div class="heading">
 			<h2>
 				<i class="fa fa-globe" aria-hidden="true"></i>
 				Your Planes
 			</h2>
-			<a class="btn-slim" href="/planes/create"><i class="fa fa-plus" aria-hidden="true"></i> New plane</a>
+			<a href="/planes/create">
+				<button class="btn-slim" >
+				<i class="fa fa-plus" aria-hidden="true"></i>
+				<span>New plane</span>
+				</button>
+			</a>
 		</div>
 		<em data-bind="if: planes().length==0">No currently active planes.</em>
 		<div data-bind="foreach: planes">
-			<a data-bind="attr: { href: '/planes/name/' + name }">
+			<!-- <a data-bind="attr: { href: '/planes/name/' + name }"> -->
 			<li class="module-brief rounded">
 				<img data-bind="">
 				<span class="description">
@@ -77,18 +102,21 @@
 					<!-- <span class="module-desc"  data-bind="text: short_desc"></span> -->
 				</span>
 				<span class="filler"></span>
+				<!-- ko if: has_password -->
+				<!-- <i class="fa fa-unlock-alt" aria-hidden="true"></i> -->
+				<!-- /ko -->
 				<!-- ko if: is_owner -->
-				<button class="btn-slim" onclick="" href="" >
-					<i class="fa fa-trash-o" aria-hidden="true"></i>
-					<!-- <span>Delete</span> -->
+				<button class="btn-slim" data-bind="attr:{ onclick: delete_plane(name) }">
+					<i class="fa fa-trash-o" aria-hidden="true" ></i>
+					<span>Delete</span>
 				</button>
 				<!-- /ko -->
-				<button class="btn-slim" onclick="" href="">
+				<button class="btn-slim" data-bind="attr:{ onclick: disconnect_plane(name) }">
 					<i class="fa fa-sign-out" aria-hidden="true"></i>
-					<!-- <span>Disconnect</span> -->
+					<span>Disconnect</span>
 				</button>
 			</li>
-			</a>
+			<!-- </a> -->
 		</div>
 
 		<div class="heading">
@@ -96,7 +124,12 @@
 				<i class="fa fa-microchip" aria-hidden="true"></i>
 				Your Modules
 			</h2>
-			<a class="btn-slim" href="/modules/create"><i class="fa fa-plus" aria-hidden="true"></i> New module</a>
+			<a href="/modules/create">
+				<button class="btn-slim">
+					<i class="fa fa-plus" aria-hidden="true"></i>
+					<span>New module</span>
+				</button>
+			</a>
 		</div>
 		<em data-bind="if: modules().length==0">You have not created any modules.</em>
 		<ul data-bind="foreach: modules">
@@ -108,13 +141,13 @@
 					<span class="module-desc"  data-bind="text: short_desc"></span>
 				</span>
 				<span class="filler"></span>
-				<button class="btn-slim" onclick="" href="" >
+				<button class="btn-slim" data-bind="attr:{ onclick: delete_module(name) }">
 					<i class="fa fa-trash-o" aria-hidden="true"></i>
-					<!-- <span>Delete</span> -->
+					<span>Delete</span>
 				</button>
-				<button class="btn-slim" onclick="" href="">
+				<button class="btn-slim" data-bind="attr:{ onclick: new_version_plane(name) }">
 					<i class="fa fa-upload" aria-hidden="true"></i>
-					<!-- <span>Disconnect</span> -->
+					<span>New Version</span>
 				</button>
 			</li>
 			</a>

@@ -3,17 +3,24 @@
 {% block css %}
 <link rel="stylesheet" type="text/css" href="/static/css/modules/module-base.css" />
 <link rel="stylesheet" type="text/css" href="/static/css/modules/module-list.css" />
-
-<!-- <script src="http://code.jquery.com/jquery-3.1.1.min.js"></script> -->
-<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.1/knockout-debug.js"></script> -->
-<script src="/static/js/jquery-3.1.1.min.js"></script>
-<script src="/static/js/ko.js"></script>
-<script src="/static/js/modules_index.js"></script>
 {% endblock css %}
 
-{% block content %}
+{% block js %}
+<script src="/static/js/planeshift-api.js"></script>
+<script src="/static/js/planeshift-viewmodel.js"></script>
+{% endblock js %}
 
-<ul class=center-content data-bind="foreach: modules">
+{% block content %}
+<script type="text/javascript" charset="utf-8">
+	var planeshift_view_model = new PlaneshiftViewModel();
+	
+	document.addEventListener('DOMContentLoaded', function () {
+		ko.applyBindings(planeshift_view_model);
+		planeshift_view_model.get_module_list();
+	});
+</script>
+
+<ul class=center-content data-bind="foreach: module_list">
 	<a class="module box rounded center-content" 
 		data-bind="attr: { href: '/modules/name/' + name }">
 		<!-- <div class="center-content"> -->

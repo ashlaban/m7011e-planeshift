@@ -8,11 +8,23 @@
 
 <ul class=center-content>
 {% for plane in planes %}
-<a href="/planes/name/{{plane.name}}" class="section-content center-content">
-	<div class="half">
-		<h1>{{plane.name}}</h1>
-		<p>Owner: {{plane.get_owner().username}}</p>
-		<p>Module: {{plane.get_module().name}}</p>
+<a href="/planes/name/{{plane.name}}" class="center-content">
+	<div class="module-brief rounded">
+		{% if plane.get_module() %}
+		<img src="{{plane.get_module().get_picture_path()}}">
+		{% else %}
+		<img src="">
+		{% endif %}
+		<span class="description">
+			<h1>{{plane.name}}</h1>
+			<!-- <span class="filler"></span> -->
+			<p>{{plane.get_module().name}}</p>
+			<span class="filler"></span>
+			{% if plane.has_password() %}
+			<i class="fa fa-unlock-alt fa-lg" aria-hidden="true"></i>
+			{% endif %}
+			
+		</span>
 	</div>
 </a>
 {% endfor %}

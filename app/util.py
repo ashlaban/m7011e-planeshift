@@ -2,7 +2,7 @@ import json
 import collections
 import werkzeug
 
-def make_json_error(msg='', error_code=403):
+def make_json_error(msg='', error_code=400):
 	response = {
 		'status': 'error',
 		'msg'   : msg,
