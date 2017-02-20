@@ -15,6 +15,11 @@ ul {
 	list-style-type: none;
 }
 
+.btn-slim {
+	position: relative;
+	z-index: 100;
+}
+
 .module-title {
 	font-weight: bold;
 }

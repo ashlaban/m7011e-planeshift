@@ -2,50 +2,54 @@
 
 {% block css %}
 <link rel="stylesheet" type="text/css" href="/static/css/modules/module-base.css" />
-<link rel="stylesheet" type="text/css" href="/static/css/modules/module-create.css" />
-
-<script src="/static/js/jquery-3.1.1.min.js"></script>
 {% endblock css %}
 
+{% block js %}
+<script src="/static/js/planeshift-api.js"></script>
+<script src="/static/js/planeshift-viewmodel.js"></script>
+
+<script type="text/javascript" charset="utf-8">
+	var planeshift_view_model = new PlaneshiftViewModel();
+
+	document.addEventListener('DOMContentLoaded', function () {
+		ko.applyBindings(planeshift_view_model);
+		planeshift_view_model.get_module('{{module_name}}');
+
+		var form = document.getElementById('create-form');
+		form.addEventListener('submit', function(ev) {
+			ev.preventDefault();
+			planeshift_view_model.create_module_from_form(form);
+		}, false);
+
+	});
+</script>
+{% endblock %}
+
 {% block content %}
+<section class="center-content">
 
-	<script type="text/javascript" charset="utf-8">
+	<div class="form-box rounded center-content">
+		<h1>Create new module</h1>
+		<!-- <p id="info" class="error"></p> -->
+
+		<form id="create-form" class="form center-content" action="" method="post" enctype="multipart/form-data" name="module_create">
+			{{ form.hidden_tag()  }}
 		
+			{{ form.name(
+				class="wide-form-field",
+				placeholder="Module name")
+			}}
+			{{ form.short_desc(
+				class='wide-form-area',
+				placeholder="Please, enter a short description")
+			}}
+			{{ form.long_desc(
+				class='wide-form-area',
+				placeholder="(Optional) Long description")
+			}}
 
-		$(document).ready( function () {
-			var form = document.getElementById('create-form');
-			form.addEventListener('submit', function(ev) {
-	  			ev.preventDefault();
-	  			create_module_form(form);
-			}, false);
-		});
-		
-	</script>
-
-	<section class="center-content">
-
-		<div class="form-box rounded center-content">
-			<h1>Create new module</h1>
-			<!-- <p id="info" class="error"></p> -->
-
-			<form id="create-form" class="form center-content" action="" method="post" enctype="multipart/form-data" name="module_create">
-				{{ form.hidden_tag()  }}
-			
-				{{ form.name(
-					class="wide-form-field",
-					placeholder="Module name")
-				}}
-				{{ form.short_desc(
-					class='wide-form-area',
-					placeholder="Please, enter a short description")
-				}}
-				{{ form.long_desc(
-					class='wide-form-area',
-					placeholder="(Optional) Long description")
-				}}
-
-				<input class="btn" type="submit" value="create">
-			</form>
-		</div>
-	</section>
+			<input class="btn" type="submit" value="create">
+		</form>
+	</div>
+</section>
 {% endblock content %}

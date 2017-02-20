@@ -2,79 +2,27 @@
 
 {% block css %}
 <link rel="stylesheet" type="text/css" href="/static/css/profile/profile-base.css" />
-
-<script src="/static/js/jquery-3.1.1.min.js"></script>
-<script src="/static/js/ko.js"></script>
 {% endblock css %}
 
-{% block content %}
+{% block js %}
+<script src="/static/js/planeshift-api.js"></script>
+<script src="/static/js/planeshift-viewmodel.js"></script>
+
 <script type="text/javascript" charset="utf-8">
-	var vm;
-	var data;
-
-	function get_modules_for_user (username) {
-		$.ajax({
-			url: '/api/modules/',
-			data: {username: username},
-			dataType: 'json',
-			success: function(data) {
-				if (data.hasOwnProperty('data') ) {
-					vm.modules(data.data);
-				}
-			},
-			type: 'GET'
-		});
-	}
-
-	function get_planes_for_user (username) {
-		$.ajax({
-			url: '/api/planes/',
-			data: {username: username},
-			dataType: 'json',
-			success: function(data) {
-				if (data.hasOwnProperty('data') ) {
-					vm.planes(data.data);
-				}
-			},
-			type: 'GET'
-		});
-	}
-
-	function PlaneshiftViewModel(modules) {
-		var self = this;
-
-		self.modules = ko.observableArray();
-		self.planes  = ko.observableArray();
-	}
+	var planeshift_view_model = new PlaneshiftViewModel();
 
 	document.addEventListener('DOMContentLoaded', function () {
-		vm = new PlaneshiftViewModel();
-		ko.applyBindings(vm);
-		get_modules_for_user("{{user.username}}");
-		get_planes_for_user("{{user.username}}");
+		ko.applyBindings(planeshift_view_model);
+
+		var username = '{{user.username}}';
+		planeshift_view_model.get_plane_list_for_user(username);
+		planeshift_view_model.get_module_list_for_user(username);
 	});
 
-	function delete_module(name) {
-		var data = {name: name};
-		
-		$.ajax({
-			type: 'DELETE',
-			url: '/api/modules/',
-			data: JSON.stringify(data),
-			dataType: 'json',
-			processData: false,
-			contentType: 'application/json; charset=utf-8',
-			success: function(data) {
-				window.location = '/modules';
-			},
-			error: function(response) {
-				$('#info').html(response.responseJSON.msg);
-			},
-		});
-	}
-
 </script>
+{% endblock %}
 
+{% block content %}
 <section class="center-content">
 	<div class="form-box rounded center-content">
 		<!-- <h1><em>{{user.username}}</em>'s crib</h1> -->
@@ -83,7 +31,7 @@
 		<div class="heading">
 			<h2>
 				<i class="fa fa-globe" aria-hidden="true"></i>
-				Your Planes
+				<span>Your Planes</span>
 			</h2>
 			<a href="/planes/create">
 				<button class="btn-slim" >
@@ -92,8 +40,8 @@
 				</button>
 			</a>
 		</div>
-		<em data-bind="if: planes().length==0">No currently active planes.</em>
-		<div data-bind="foreach: planes">
+		<em data-bind="if: plane_list().length==0">No currently active planes.</em>
+		<div data-bind="foreach: plane_list()">
 			<!-- <a data-bind="attr: { href: '/planes/name/' + name }"> -->
 			<li class="module-brief rounded">
 				<img data-bind="">
@@ -102,18 +50,25 @@
 					<!-- <span class="module-desc"  data-bind="text: short_desc"></span> -->
 				</span>
 				<span class="filler"></span>
-				<!-- ko if: has_password -->
-				<!-- <i class="fa fa-unlock-alt" aria-hidden="true"></i> -->
-				<!-- /ko -->
 				<!-- ko if: is_owner -->
-				<button class="btn-slim" data-bind="attr:{ onclick: delete_plane(name) }">
+				<button class="btn-slim" data-bind="event: { click: function (data, event) {
+					 planeshift_view_model.delete_plane(name);
+				}}">
 					<i class="fa fa-trash-o" aria-hidden="true" ></i>
 					<span>Delete</span>
 				</button>
 				<!-- /ko -->
-				<button class="btn-slim" data-bind="attr:{ onclick: disconnect_plane(name) }">
+				<button class="btn-slim" data-bind="event: { click: function (data, event) {
+					 planeshift_view_model.enter_plane(name);
+				}}">
+					<i class="fa fa-sign-in" aria-hidden="true"></i>
+					<span>Enter</span>
+				</button>
+				<button class="btn-slim" data-bind="event: { click: function (data, event) {
+					 planeshift_view_model.leave_plane(name);
+				}}">
 					<i class="fa fa-sign-out" aria-hidden="true"></i>
-					<span>Disconnect</span>
+					<span>Leave</span>
 				</button>
 			</li>
 			<!-- </a> -->
@@ -131,25 +86,32 @@
 				</button>
 			</a>
 		</div>
-		<em data-bind="if: modules().length==0">You have not created any modules.</em>
-		<ul data-bind="foreach: modules">
+		<em data-bind="if: module_list().length==0">You have not created any modules.</em>
+		<ul data-bind="foreach: module_list">
 			<a data-bind="attr: { href: '/modules/name/' + name }">
-			<li class="module-brief rounded">
-				<img data-bind="attr: { src: picture }">
-				<span class="description">
-					<span class="module-title" data-bind="text: name"></span>
-					<span class="module-desc"  data-bind="text: short_desc"></span>
-				</span>
-				<span class="filler"></span>
-				<button class="btn-slim" data-bind="attr:{ onclick: delete_module(name) }">
-					<i class="fa fa-trash-o" aria-hidden="true"></i>
-					<span>Delete</span>
-				</button>
-				<button class="btn-slim" data-bind="attr:{ onclick: new_version_plane(name) }">
-					<i class="fa fa-upload" aria-hidden="true"></i>
-					<span>New Version</span>
-				</button>
-			</li>
+				<li class="module-brief rounded">
+					<img data-bind="attr: { src: picture }">
+					<span class="description">
+						<span class="module-title" data-bind="text: name"></span>
+						<span class="module-desc"  data-bind="text: short_desc"></span>
+					</span>
+					<span class="filler"></span>
+					<button class="btn-slim" data-bind="event: { click: function(data, event) {
+						event.stopPropagation();
+						var success = planeshift.redirect.to.profile();
+						planeshift_view_model.remove_module(name, success);
+					}}">
+						<i class="fa fa-trash-o" aria-hidden="true"></i>
+						<span>Delete</span>
+					</button>
+					<button class="btn-slim" data-bind="event: { click: function (data, event) {
+						event.stopPropagation();
+						planeshift.redirect.to.module_new_version(name)();
+					}}">
+						<i class="fa fa-upload" aria-hidden="true"></i>
+						<span>New Version</span>
+					</button>
+				</li>
 			</a>
 		</ul>
 		

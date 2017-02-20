@@ -5,28 +5,25 @@ var planeshift = (function () {
 	// ========================================================================
 	// === LOW LEVEL API
 	// ========================================================================
-	var api_get = function (url, success, error) {
+	var api_get = function (url, data, success, error) {
 		console.log('GET call to', url);
-		var wrapped_success = function (json) {
-			console.log(json);
-			success(json);
-		};
-		error = error | default_error;
+		error = error || default_error;
 		$.ajax({
 			type     : 'GET'  ,
 			url      : url    ,
+			data     : data,
 			dataType : 'json' ,
-			success  : wrapped_success,
+			success  : success,
 			error    : error  ,
 		});
 	}
 
 	var api_post = function (url, data, success, error) {
 		console.log('POST call to', url, data);
-		error = error | default_error;
+		error = error || default_error;
 		$.ajax({
 			type        : 'POST'  ,
-			url         : url    ,
+			url         : url     ,
 			data        : JSON.stringify(data),
 			dataType    : 'json',
 			processData : false,
@@ -38,7 +35,7 @@ var planeshift = (function () {
 
 	var api_post_files = function (url, data, success, error) {
 		console.log('POST (file) call to', url, data);
-		error = error | default_error;
+		error = error || default_error;
 		$.ajax({
 			type        : 'POST' ,
 			url         : url    ,
@@ -52,7 +49,7 @@ var planeshift = (function () {
 
 	var api_delete = function (url, data, success, error) {
 		console.log('DELETE call to', url, data);
-		// error = error | default_error;
+		error = error || default_error;
 		$.ajax({
 			type        : 'DELETE'  ,
 			url         : url    ,
@@ -72,12 +69,32 @@ var planeshift = (function () {
 		return function () { window.location = url; };
 	}
 
+	var redirect_to_plane_list = function () {
+		return redirect('/plane');
+	}
+
+	var redirect_to_plane = function (name) {
+		return redirect('/planes/name/'+name);
+	}
+
 	var redirect_to_module_list = function () {
 		return redirect('/modules');
 	}
 
 	var redirect_to_module = function (name) {
 		return redirect('/modules/name/'+name);
+	}
+
+	var redirect_to_module_new_version = function (name) {
+		return redirect('/modules/upload/'+name);
+	}
+
+	var redirect_to_profile = function () {
+		return redirect('/profile');
+	}
+
+	var redirect_to_dashboard = function () {
+		return redirect('/dashboard');
 	}
 
 	var default_error = function () {
@@ -91,12 +108,28 @@ var planeshift = (function () {
 	// === HIGH LEVEL API
 	// ========================================================================
 
-	function get_module_list (success, error) {
-		api_get('/api/modules', success, error)
+	function get_plane_list (data, success, error) {
+		var url = '/api/planes';
+		var data = data || {};
+		api_get(url, data, success, error);
 	}
 
-	function get_module_info (name, success, error) {
-		api_get('/api/modules/'+name, success, error);
+	function get_plane (name, success, error) {
+		var url = '/api/planes/name/'+name;
+		var data = data || {};
+		api_get(url, data, success, error);
+	}
+
+	function get_module_list (data, success, error) {
+		var url = '/api/modules';
+		var data = data || {};
+		api_get(url, data, success, error);
+	}
+
+	function get_module (name, success, error) {
+		var url = '/api/modules/'+name;
+		var data = {};
+		api_get(url, data, success, error);
 	}
 
 	function delete_module(name, success, error) {
@@ -104,19 +137,20 @@ var planeshift = (function () {
 		var url  = '/api/modules/';
 		api_delete(url, data, success, error);
 	}
-	function create_module(name, short_desc, long_desc) {
+
+	function create_module(name, short_desc, long_desc, success, error) {
 		var url  = '/api/modules/'
 		var data = {
-			name: name,
-			short_desc: short_desc,
-			long_desc: long_desc,
+			name       : name,
+			short_desc : short_desc,
+			long_desc  : long_desc,
 		};
 		
 		api_post(url, data, success, error);
 	}
 
-	function uploadFiles(form_data, success, error) {
-		var url   = "/api/modules/{{module_name}}";
+	function upload_files(module_name, form_data, success, error) {
+		var url   = "/api/modules/"+module_name;
 		var data  = form_data;
 		api_post_files(url, data, success, error);
 	}
@@ -127,7 +161,6 @@ var planeshift = (function () {
 
 	return {
 		// Low level api with signature fn(url, data, success, error)
-		// (Get lacks data).
 		api: {
 			get        : api_get,
 			post       : api_post,
@@ -136,19 +169,26 @@ var planeshift = (function () {
 		},
 
 		// Helpers for success and error callbacks.
-		redirect: {
-			to             : redirect,
-			to_module_list : redirect_to_module_list,
-			to_module      : redirect_to_module,
-		},
+		redirect: { to : {
+			// to             : redirect,
+			plane_list  : redirect_to_plane_list,
+			plane       : redirect_to_plane,
+			module_list : redirect_to_module_list,
+			module      : redirect_to_module,
+			module_new_version: redirect_to_module_new_version,
+			profile     : redirect_to_profile,
+			dashboard   : redirect_to_dashboard, // Not implemented yet
+		}},
 		error: {
 			default: default_error,
 		},
 
 		// High level get and post requests. Uses the low level api internally.
 		fetch: {
+			plane_list: get_plane_list,
+			plane     : get_plane,
 			module_list: get_module_list,
-			module     : get_module_info,
+			module     : get_module,
 		},
 		create: {
 			module: create_module,
@@ -157,7 +197,7 @@ var planeshift = (function () {
 			module: delete_module,
 		},
 		upload: {
-			files: uploadFiles
+			files: upload_files
 		}
 	}
 })();

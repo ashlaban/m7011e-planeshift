@@ -40,13 +40,16 @@ def create_module():
 	form = CreateForm()
 	return render_template('modules/create.html', form=form)
 
-# NOTE: Stored filename will become modulename-versionstring.xxx
 @modules.route('/upload/<name>', methods=['GET'])
 def upload_module(name):
 	if not g.user.is_authenticated:
 		return render_template('modules/403.html', name=name)
 
-	module = Module.get_by_name(name)
+	try:
+		name   = util.html_escape_or_none(name)
+		module = Module.get_by_name(name)
+	except ModuleNotFound:
+		return render_template('modules/404.html', name=name)
 
 	if not g.user.id == module.owner:
 		return render_template('modules/403.html', name=name)
@@ -56,6 +59,7 @@ def upload_module(name):
 @modules.route('/name/<name>')
 def info_module(name):
 	try:
+		name   = util.html_escape_or_none(name)
 		module = Module.get_by_name(name)
 	except ModuleNotFound:
 		return render_template('modules/404.html', name=name)
@@ -83,7 +87,7 @@ def info_module(name):
 # 
 # =============================================================================
 @module_api.route('/', methods=['GET'])
-def api_list_module():
+def api_list_modules():
 	'''List all modules in database.
 	Arguments:
 
@@ -201,8 +205,8 @@ def api_delete_module():
 			db.session.delete(version)
 		db.session.delete(module)
 
-		manager.delete_module(module)
 		db.session.commit()
+		manager.delete_module(module)
 
 		return util.make_json_success(msg='Module ' + module_name + ' deleted.')
 	except Exception as e:
@@ -255,7 +259,7 @@ def api_version(module_name):
 		if escaped_version == "":
 			return util.make_json_error(msg='Version name cannot be empty.')
 
-		manager.upload_version(module=module, sVersion=escaped_version, files=files)
+		manager.upload_version(module=module, sVersion=escaped_version, added_files=files)
 
 	except manager.ModuleDuplicateVersionError as e:
 		return util.make_json_error(msg='Version name already exists.')

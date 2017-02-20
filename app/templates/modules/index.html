@@ -13,8 +13,8 @@
 {% block content %}
 <script type="text/javascript" charset="utf-8">
 	var planeshift_view_model = new PlaneshiftViewModel();
-	
-	document.addEventListener('DOMContentLoaded', function () {
+
+	document.addEventListener('DOMContentLoaded', function () {	
 		ko.applyBindings(planeshift_view_model);
 		planeshift_view_model.get_module_list();
 	});

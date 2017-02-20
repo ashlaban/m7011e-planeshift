@@ -80,16 +80,16 @@ def copy_prev_version(curr_version_path, prev_version_path, exclude_list=[]):
 			shutil.copyfile(src, dst)
 	return True
 
-def persist_files_to_disk(target_path, files):
+def persist_files_to_disk(target_path, added_files, removed_file_paths):
 	ensure_module_path(target_path)
 
-	for file in files:
+	for file in added_files:
 		sFilename = werkzeug.utils.secure_filename(file.filename)
 		path = os.path.join(target_path, sFilename)
 		with open(path, 'wb+') as file_handle:
 			file.save(file_handle)
 
-def upload_version(module, sVersion, added_files, removed_file_paths):
+def upload_version(module, sVersion, added_files, removed_file_paths=[]):
 	session = db.session
 
 	try:
@@ -130,6 +130,10 @@ def upload_version(module, sVersion, added_files, removed_file_paths):
 	return
 
 def delete_module(module):
+	"""Delete a given module.
+	Precondition: The database entry should already be removed.
+	Postcondition: Best-effort removal of the underlying files.
+	"""
 	module_path = get_mod_sys_path(module.name)
-	shutil.rmtree(module_path)
+	shutil.rmtree(module_path, ignore_errors=True)
 	return
