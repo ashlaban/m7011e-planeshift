@@ -1,67 +1,6 @@
 // Requires: jquery
 
 var planeshift = (function () {
-
-	// ========================================================================
-	// === LOW LEVEL API
-	// ========================================================================
-	var api_get = function (url, data, success, error) {
-		console.log('GET call to', url);
-		error = error || default_error;
-		$.ajax({
-			type     : 'GET'  ,
-			url      : url    ,
-			data     : data,
-			dataType : 'json' ,
-			success  : success,
-			error    : error  ,
-		});
-	}
-
-	var api_post = function (url, data, success, error) {
-		console.log('POST call to', url, data);
-		error = error || default_error;
-		$.ajax({
-			type        : 'POST'  ,
-			url         : url     ,
-			data        : JSON.stringify(data),
-			dataType    : 'json',
-			processData : false,
-			contentType : 'application/json; charset=utf-8',
-			success     : success,
-			error       : error  ,
-		});
-	}
-
-	var api_post_files = function (url, data, success, error) {
-		console.log('POST (file) call to', url, data);
-		error = error || default_error;
-		$.ajax({
-			type        : 'POST' ,
-			url         : url    ,
-			data        : data   ,
-			processData : false  ,
-			contentType : false  ,
-			success     : success,
-			error       : error  ,
-		});
-	}
-
-	var api_delete = function (url, data, success, error) {
-		console.log('DELETE call to', url, data);
-		error = error || default_error;
-		$.ajax({
-			type        : 'DELETE'  ,
-			url         : url    ,
-			data        : JSON.stringify(data),
-			dataType    : 'json',
-			processData : false,
-			contentType : 'application/json; charset=utf-8',
-			success     : success,
-			error       : error  ,
-		});
-	}
-
 	// ========================================================================
 	// === REDIRECT
 	// ========================================================================
@@ -99,9 +38,73 @@ var planeshift = (function () {
 
 	var default_error = function () {
 		return function (response) {
-			console.log('Error message', response)
-			$('#info').html(response.responseJSON.msg);
+			console.log('Status', response.statusText)
+			if (response.responseJSON && response.responseJSON.msg) {
+				var msg = response.responseJSON.msg;
+				console.log('Error message', msg)
+				$('#info').html(msg);
+			}
 		};
+	}
+
+	// ========================================================================
+	// === LOW LEVEL API
+	// ========================================================================
+	var api_get = function (url, data, success, error) {
+		console.log('GET call to', url);
+		error = error || default_error();
+		$.ajax({
+			type     : 'GET'  ,
+			url      : url    ,
+			data     : data,
+			dataType : 'json' ,
+			success  : success,
+			error    : error  ,
+		});
+	}
+
+	var api_post = function (url, data, success, error) {
+		console.log('POST call to', url, data);
+		error = error || default_error();
+		$.ajax({
+			type        : 'POST'  ,
+			url         : url     ,
+			data        : JSON.stringify(data),
+			dataType    : 'json',
+			processData : false,
+			contentType : 'application/json; charset=utf-8',
+			success     : success,
+			error       : error  ,
+		});
+	}
+
+	var api_post_files = function (url, data, success, error) {
+		console.log('POST (file) call to', url, data);
+		error = error || default_error();
+		$.ajax({
+			type        : 'POST' ,
+			url         : url    ,
+			data        : data   ,
+			processData : false  ,
+			contentType : false  ,
+			success     : success,
+			error       : error  ,
+		});
+	}
+
+	var api_delete = function (url, data, success, error) {
+		console.log('DELETE call to', url, data);
+		error = error || default_error();
+		$.ajax({
+			type        : 'DELETE'  ,
+			url         : url    ,
+			data        : JSON.stringify(data),
+			dataType    : 'json',
+			processData : false,
+			contentType : 'application/json; charset=utf-8',
+			success     : success,
+			error       : error  ,
+		});
 	}
 
 	// ========================================================================

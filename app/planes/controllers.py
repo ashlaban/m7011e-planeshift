@@ -122,15 +122,14 @@ def show_plane(name):
 def api_list():
 	'''List all planes in database
 	'''
-
 	username = util.html_escape_or_none(request.args.get('username'))
-	if username and (g.user is None or not g.user.is_authenticated):
-		return util.make_json_error(msg='Not authenticated.')
-
-	if username != g.user.username:
-		return util.make_json_error(msg='No permission for this action.')
-
 	if username:
+		if username and (g.user is None or not g.user.is_authenticated):
+			return util.make_json_error(msg='Not authenticated.')
+
+		if username != g.user.username:
+			return util.make_json_error(msg='No permission for this action.')
+
 		try:
 			user = User.get_by_name(username)
 		except UserNotFoundError:
@@ -139,11 +138,11 @@ def api_list():
 		planes = list(map(lambda x: x.get_plane(), Session.get_sessions(user)))
 	else:
 		try:
-			planes = Plane.get_planes()
+			planes = Plane.get_public_planes()
 		except Exception:
 			return util.make_json_error()
 	
-	data = [p.get_public_info(user) for p in planes]
+	data = [p.get_public_info(g.user) for p in planes]
 	return util.make_json_success(data=data)
 
 @planes_api.route('/', methods=['POST'])

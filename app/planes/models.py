@@ -76,6 +76,10 @@ class Plane(db.Model):
 		return Plane.query.all()
 
 	@staticmethod
+	def get_public_planes():
+		return Plane.query.filter_by(public=True)
+
+	@staticmethod
 	def get_plane(name):
 		return Plane.query.filter_by(name=name).first()
 

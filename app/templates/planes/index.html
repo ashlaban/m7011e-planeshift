@@ -4,29 +4,32 @@
 <link rel="stylesheet" type="text/css" href="/static/css/planes/planes.css" />
 {% endblock css %}
 
-{% block content %}
+{% block js %}
+<script src="/static/js/planeshift-api.js"></script>
+<script src="/static/js/planeshift-viewmodel.js"></script>
+{% endblock js %}
 
-<ul class=center-content>
-{% for plane in planes %}
-<a href="/planes/name/{{plane.name}}" class="center-content">
-	<div class="module-brief rounded">
-		{% if plane.get_module() %}
-		<img src="{{plane.get_module().get_picture_path()}}">
-		{% else %}
-		<img src="">
-		{% endif %}
-		<span class="description">
-			<h1>{{plane.name}}</h1>
-			<!-- <span class="filler"></span> -->
-			<p>{{plane.get_module().name}}</p>
-			<span class="filler"></span>
-			{% if plane.has_password() %}
-			<i class="fa fa-unlock-alt fa-lg" aria-hidden="true"></i>
-			{% endif %}
-			
-		</span>
-	</div>
-</a>
-{% endfor %}
+{% block content %}
+<script type="text/javascript" charset="utf-8">
+	var planeshift_view_model = new PlaneshiftViewModel();
+
+	document.addEventListener('DOMContentLoaded', function () {	
+		ko.applyBindings(planeshift_view_model);
+		planeshift_view_model.get_plane_list();
+	});
+</script>
+
+
+<ul class=center-content data-bind="foreach: plane_list">
+	<a class="module-brief rounded"
+		data-bind="attr: { href: '/planes/name/' + name }">
+		<img data-bind="attr: { src: picture }">
+		<div class="">
+			<h1 data-bind="text: name"></h1>
+			<p data-bind="text: module_name"></p>
+		</div>
+		<!-- <i class="fa fa-unlock-alt fa-lg" aria-hidden="true"></i> -->
+	</a>
 </ul>
+
 {% endblock %}
