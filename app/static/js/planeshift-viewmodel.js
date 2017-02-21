@@ -38,7 +38,7 @@ function PlaneshiftViewModel() {
 PlaneshiftViewModel.prototype.get_plane_list = function () {
 	var self = this;
 	var data = {};
-	var error   = error   || planeshift.error.default();
+	var error   = error   || planeshift.callback.error.default();
 	var success = success || function (json) {
 		self.plane_list(json.data);
 	};
@@ -49,7 +49,7 @@ PlaneshiftViewModel.prototype.get_plane_list = function () {
 PlaneshiftViewModel.prototype.get_plane_list_for_user = function (username) {
 	var self = this;
 	var data = {username: username};
-	var error   = error   || planeshift.error.default();
+	var error   = error   || planeshift.callback.error.default();
 	var success = success || function (json) {
 		self.plane_list(json.data);
 	};
@@ -59,7 +59,7 @@ PlaneshiftViewModel.prototype.get_plane_list_for_user = function (username) {
 
 PlaneshiftViewModel.prototype.get_plane = function (name) {
 	var self = this;
-	var error   = error   || planeshift.error.default();
+	var error   = error   || planeshift.callback.error.default();
 	var success = success || function (json) {
 		self.current_plane(json.data);
 	};
@@ -67,26 +67,49 @@ PlaneshiftViewModel.prototype.get_plane = function (name) {
 	planeshift.fetch.plane(name, success, error);
 }
 
+PlaneshiftViewModel.prototype.create_plane = function (data, success, error) {
+	console.log('Createing plane')
+	var success = success || planeshift.callback.redirect.to.module_list();
+	var error   = error   || planeshift.callback.error.default()();
+	
+	planeshift.create.plane(name, success, error);
+}
+
+PlaneshiftViewModel.prototype.create_plane_from_form = function (form, success, error) {
+	console.log('Createing plane')
+	var data = {
+		name     : form.name.value,
+		password : form.password.value,
+		module   : form.module.value,
+		version  : form.version.value,
+		hidden   : form.hidden.value,
+	};
+	var success = success || planeshift.callback.redirect.to.module_list();
+	var error   = error   || planeshift.callback.error.default()();
+	
+	this.create_plane(data, success, error);
+}
+
 PlaneshiftViewModel.prototype.remove_plane = function (name, success, error) {
 	console.log('Deleteing plane')
-	var success = success || planeshift.redirect.to.module_list();
-	var error   = error   || planeshift.error.default()();
+	var success = success || planeshift.callback.redirect.to.module_list();
+	var error   = error   || planeshift.callback.error.default()();
 	
 	planeshift.remove.plane(name, success, error);
 }
 
 PlaneshiftViewModel.prototype.enter_plane = function (name, success, error) {
 	console.log('Deleteing plane')
-	var success = success || planeshift.redirect.to.module_list();
-	var error   = error   || planeshift.error.default()();
+	var success = success || planeshift.callback.redirect.to.module_list();
+	var error   = error   || planeshift.callback.error.default()();
 	
 	// planeshift.enter(name, success, error);
 }
 
 PlaneshiftViewModel.prototype.leave_plane = function (name, success, error) {
 	console.log('Deleteing plane')
-	var success = success || planeshift.redirect.to.module_list();
-	var error   = error   || planeshift.error.default()();
+	var success = success || planeshift.callback.redirect.to.module_list();
+	var error   = error   || planeshift.callback.error.default()();
 	
 	// planeshift.leave(name, success, error);
 }
@@ -136,8 +159,8 @@ PlaneshiftViewModel.prototype.get_files_as_form_data = function (version_name) {
 PlaneshiftViewModel.prototype.upload_files = function (version_name, success, error) {
 	var module_name = this.current_module().name;
 	var form_data   = this.get_files_as_form_data(version_name);
-	var error       = error   || planeshift.error.default()();
-	var success     = success || planeshift.redirect.to.module(module_name);
+	var error       = error   || planeshift.callback.error.default()();
+	var success     = success || planeshift.callback.redirect.to.module(module_name);
 
 	console.log('Uploading.');
 	planeshift.upload.files(module_name, form_data, success, error);
@@ -153,7 +176,7 @@ PlaneshiftViewModel.prototype.upload_files_from_form = function (form, success, 
 // ========================================================================
 PlaneshiftViewModel.prototype.get_module_list = function (success, error) {
 	var self = this;
-	var error   = error   || planeshift.error.default();
+	var error   = error   || planeshift.callback.error.default();
 	var success = success || function (json) {
 		self.module_list(json.data);
 	};
@@ -164,7 +187,7 @@ PlaneshiftViewModel.prototype.get_module_list = function (success, error) {
 PlaneshiftViewModel.prototype.get_module_list_for_user = function (username, success, error) {
 	var self = this;
 	var data = {username: username};
-	var error   = error   || planeshift.error.default();
+	var error   = error   || planeshift.callback.error.default();
 	var success = success || function (json) {
 		self.module_list(json.data);
 	};
@@ -174,7 +197,7 @@ PlaneshiftViewModel.prototype.get_module_list_for_user = function (username, suc
 
 PlaneshiftViewModel.prototype.get_module = function (name, success, error) {
 	var self = this;
-	var error   = error   || planeshift.error.default();
+	var error   = error   || planeshift.callback.error.default();
 	var success = success || function (json) {
 		self.current_module(json.data);
 	};
@@ -183,8 +206,8 @@ PlaneshiftViewModel.prototype.get_module = function (name, success, error) {
 }
 
 PlaneshiftViewModel.prototype.create_module = function (name, short_desc, long_desc, success, error) {
-	var error   = error   || planeshift.error.default()();
-	var success = success || planeshift.redirect.to.module(name);
+	var error   = error   || planeshift.callback.error.default();
+	var success = success || planeshift.callback.redirect.to.module(name);
 	
 	planeshift.create.module(name, short_desc, long_desc, success, error);
 }
@@ -199,8 +222,8 @@ PlaneshiftViewModel.prototype.create_module_from_form = function (form, success,
 
 PlaneshiftViewModel.prototype.remove_module = function (name, success, error) {
 	console.log('Deleteing module')
-	var success = success || planeshift.redirect.to.module_list();
-	var error   = error   || planeshift.error.default()();
+	var success = success || planeshift.callback.redirect.to.module_list();
+	var error   = error   || planeshift.callback.error.default();
 	
 	planeshift.remove.module(name, success, error);
 }

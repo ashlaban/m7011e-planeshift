@@ -2,7 +2,7 @@
 
 var planeshift = (function () {
 	// ========================================================================
-	// === REDIRECT
+	// === SUCCESS AND ERROR CALLBACKS
 	// ========================================================================
 	var redirect = function (url) {
 		return function () { window.location = url; };
@@ -44,6 +44,12 @@ var planeshift = (function () {
 				console.log('Error message', msg)
 				$('#info').html(msg);
 			}
+		};
+	}
+
+	var print_response = function () {
+		return function (response) {
+			console.log(response)
 		};
 	}
 
@@ -129,6 +135,12 @@ var planeshift = (function () {
 		api_get(url, data, success, error);
 	}
 
+	function create_plane(data, success, error) {
+		var url  = '/api/planes/'
+		var data = data || {};
+		api_post(url, data, success, error);
+	}
+
 	function get_module (name, success, error) {
 		var url = '/api/modules/'+name;
 		var data = {};
@@ -172,7 +184,7 @@ var planeshift = (function () {
 		},
 
 		// Helpers for success and error callbacks.
-		redirect: { to : {
+		callback: { redirect: { to : {
 			// to             : redirect,
 			plane_list  : redirect_to_plane_list,
 			plane       : redirect_to_plane,
@@ -182,8 +194,11 @@ var planeshift = (function () {
 			profile     : redirect_to_profile,
 			dashboard   : redirect_to_dashboard, // Not implemented yet
 		}},
-		error: {
+		callback: { error: {
 			default: default_error,
+		},
+		callback: { print: {
+			simple: print_response,
 		},
 
 		// High level get and post requests. Uses the low level api internally.

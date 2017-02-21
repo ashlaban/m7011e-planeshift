@@ -98,7 +98,7 @@
 					<span class="filler"></span>
 					<button class="btn-slim" data-bind="event: { click: function(data, event) {
 						event.stopPropagation();
-						var success = planeshift.redirect.to.profile();
+						var success = planeshift.callback.redirect.to.profile();
 						planeshift_view_model.remove_module(name, success);
 					}}">
 						<i class="fa fa-trash-o" aria-hidden="true"></i>
@@ -106,7 +106,7 @@
 					</button>
 					<button class="btn-slim" data-bind="event: { click: function (data, event) {
 						event.stopPropagation();
-						planeshift.redirect.to.module_new_version(name)();
+						planeshift.callback.redirect.to.module_new_version(name)();
 					}}">
 						<i class="fa fa-upload" aria-hidden="true"></i>
 						<span>New Version</span>
