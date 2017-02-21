@@ -115,7 +115,7 @@ var planeshift = (function () {
 	}
 
 	function get_plane (name, success, error) {
-		var url = '/api/planes/name/'+name;
+		var url = '/api/planes/'+name;
 		var data = data || {};
 		api_get(url, data, success, error);
 	}

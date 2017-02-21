@@ -37,6 +37,9 @@ class Plane(db.Model):
 		module = Module.query.get(int(self.module))
 		return module
 
+	def get_picture_path(self):
+		return self.get_module().get_picture_path()
+
 	def get_name(self):
 		return str(self.name)
 
@@ -83,6 +86,7 @@ class Plane(db.Model):
 			'is_owner'       : self.is_owner(user),
 			'module_name'    : module_name,
 			'module_version' : "Not implemented",
+			'picture'        : self.get_picture_path(),
 			'name'           : self.get_name(),
 			'public'         : self.is_public(),
 			# 'users'          : Session.get_users_for_plane(self),

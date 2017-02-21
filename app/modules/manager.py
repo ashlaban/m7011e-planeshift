@@ -12,6 +12,7 @@ import os
 import os.path
 
 import werkzeug
+import hashlib
 
 class ModuleDuplicateVersionError(ValueError):
 	'''Raise when a module already has a version with the same name.'''
@@ -28,6 +29,12 @@ def get_latest_ver_string(module_name):
 	except ModuleVersionNotFound:
 		raise ModuleHasNoData()
 	return sVersion
+
+def get_default_icon_path(module_name):
+	num_files = 4
+	i    = sum(ord(c) for c in module_name) % num_files
+	path = '/static/img/default/modules/{}.png'.format(i)
+	return path
 
 def get_mod_web_path(module_name):
 	return os.path.join( app.config['WEB_UPLOAD_FOLDER'], module_name)
@@ -58,8 +65,17 @@ def get_path_for_module_content(filename, module, version=None):
 	if module is None:
 		raise ValueError('Argument module must not be None')
 
+	if filename == 'icon.png':
+		try:
+			module_sys_path = get_modver_sys_path(module_name=module.name, sVersion=version)
+			full_sys_path   = os.path.join(module_sys_path, filename)
+			if not os.path.isfile(full_sys_path):
+				return get_default_icon_path(module.name)
+		except:
+			return get_default_icon_path(module.name) 
+	
 	if version is None:
-		version_string = get_latest_ver_string(module.name)
+		version = get_latest_ver_string(module.name)
 
 	module_path = get_modver_web_path(module_name=module.name, sVersion=version_string)
 	return os.path.join(module_path, filename)

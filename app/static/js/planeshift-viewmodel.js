@@ -4,6 +4,7 @@ var generate_empty_plane = function () {
 		has_password   : false,
 		module_name    : '',
 		module_version : '',
+		picture        : '',
 		name           : '',
 		public         : false,
 		users          : [],
@@ -63,7 +64,7 @@ PlaneshiftViewModel.prototype.get_plane = function (name) {
 		self.current_plane(json.data);
 	};
 
-	planeshift.fetch.plane_list(name, success, error);
+	planeshift.fetch.plane(name, success, error);
 }
 
 PlaneshiftViewModel.prototype.remove_plane = function (name, success, error) {
