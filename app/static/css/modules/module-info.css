@@ -11,6 +11,9 @@ h1 {
 }
 
 .version-select {
+	font-size: 1em;
+	min-width: 6em;
+	max-width: 15em;
 	margin-right: 1em;
 }
 

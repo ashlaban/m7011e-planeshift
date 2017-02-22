@@ -36,9 +36,6 @@
 					<!-- ko if: current_module().versions && current_module().versions.length -->
 					<select class="version-select" data-bind="
 						options: current_module().versions,
-						optionsText: function(item) {
-							return item[1]
-						},
 						value: current_module().versions.find(function(el){return el[0]==current_module().latest_version[0]})">
 					</select>
 					<!-- /ko -->
