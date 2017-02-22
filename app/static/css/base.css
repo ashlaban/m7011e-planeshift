@@ -335,13 +335,19 @@ footer .fa-magic {
 }
 
 .wide-form-area {
-	width: 20em;
-	height: 5em;
+	width: 20rem;
+	height: 5rem;
 }
 
 .wide-form-field {
-	width: 20em;
-	height: 2em;
+	width: 20rem;
+	height: 2rem;
+
+	margin: 0.5rem 0.5rem;
+}
+
+select.wide-form-field {
+	font-size : 1em;
 }
 
 .rounded {

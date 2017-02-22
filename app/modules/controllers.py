@@ -109,7 +109,7 @@ def api_list_modules():
 	else:
 		modules = Module.query
 
-	data = [ module.get_public_short_info() for module in modules ]
+	data = [ module.get_public_long_info() for module in modules ]
 
 	return util.make_json_success(data=data)
 

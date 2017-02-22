@@ -5,7 +5,7 @@ var planeshift = (function () {
 	// === SUCCESS AND ERROR CALLBACKS
 	// ========================================================================
 	var redirect = function (url) {
-		return function () { window.location = url; };
+		return function (response) { window.location = url; };
 	}
 
 	var redirect_to_plane_list = function () {
@@ -38,8 +38,10 @@ var planeshift = (function () {
 
 	var default_error = function () {
 		return function (response) {
-			console.log('Status', response.statusText)
-			if (response.responseJSON && response.responseJSON.msg) {
+			if (response && response.statusText) {
+				console.log('Status', response.statusText)
+			}
+			if (response && response.responseJSON && response.responseJSON.msg) {
 				var msg = response.responseJSON.msg;
 				console.log('Error message', msg)
 				$('#info').html(msg);
@@ -129,16 +131,22 @@ var planeshift = (function () {
 		api_get(url, data, success, error);
 	}
 
-	function get_module_list (data, success, error) {
-		var url = '/api/modules';
-		var data = data || {};
-		api_get(url, data, success, error);
-	}
-
 	function create_plane(data, success, error) {
 		var url  = '/api/planes/'
 		var data = data || {};
 		api_post(url, data, success, error);
+	}
+
+	function delete_plane(name, success, error) {
+		var data = {name: name};
+		var url  = '/api/modules/';
+		api_delete(url, data, success, error);
+	}
+
+	function get_module_list (data, success, error) {
+		var url = '/api/modules';
+		var data = data || {};
+		api_get(url, data, success, error);
 	}
 
 	function get_module (name, success, error) {
@@ -184,21 +192,23 @@ var planeshift = (function () {
 		},
 
 		// Helpers for success and error callbacks.
-		callback: { redirect: { to : {
-			// to             : redirect,
-			plane_list  : redirect_to_plane_list,
-			plane       : redirect_to_plane,
-			module_list : redirect_to_module_list,
-			module      : redirect_to_module,
-			module_new_version: redirect_to_module_new_version,
-			profile     : redirect_to_profile,
-			dashboard   : redirect_to_dashboard, // Not implemented yet
-		}},
-		callback: { error: {
-			default: default_error,
-		},
-		callback: { print: {
-			simple: print_response,
+		callback: {
+			redirect: { to : {
+				// to             : redirect,
+				plane_list  : redirect_to_plane_list,
+				plane       : redirect_to_plane,
+				module_list : redirect_to_module_list,
+				module      : redirect_to_module,
+				module_new_version: redirect_to_module_new_version,
+				profile     : redirect_to_profile,
+				dashboard   : redirect_to_dashboard, // Not implemented yet
+			}},
+			error: {
+				default: default_error,
+				},
+			print: {
+				simple: print_response,
+			}
 		},
 
 		// High level get and post requests. Uses the low level api internally.
@@ -210,9 +220,11 @@ var planeshift = (function () {
 		},
 		create: {
 			module: create_module,
+			plane : create_plane ,
 		},
 		remove: {
 			module: delete_module,
+			plane : delete_plane ,
 		},
 		upload: {
 			files: upload_files

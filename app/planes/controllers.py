@@ -6,7 +6,7 @@ import uuid
 
 from app import db, util
 from app.models import User
-from app.planes.forms import CreatePlaneForm, PlanarAuthenticateForm
+from app.planes.forms import PlaneCreateForm, PlanarAuthenticateForm
 from app.planes.models import Plane, Session
 from app.modules.models import Module
 from app.modules.models import ModuleHasNoData
@@ -76,8 +76,8 @@ def list_plane():
 @planes.route('/create', methods=['GET', 'POST'])
 def create_plane():
 	if g.user is not None and g.user.is_authenticated:
-		form = CreatePlaneForm()
-		form.module.choices = form.getModules()
+		form = PlaneCreateForm()
+		# form.module.choices = form.get_modules()
 		if form.validate_on_submit():
 			m = None
 			if Module.query.filter_by(id=form.module.data).scalar() is not None:
@@ -160,28 +160,29 @@ def api_create_plane():
 
 	args = util.parse_request_to_json(request)
 
-	password = util.html_escape_or_none(args['password'])
-	module = util.html_escape_or_none(args['module'])
-	name = util.html_escape_or_none(args['name'])
-	public = util.html_escape_or_none(args['public'])
-	
-	if Module.query.filter_by(name=module).scalar() is None:
+	password    = util.html_escape_or_none(args['password'])
+	module_name = util.html_escape_or_none(args['module'])
+	plane_name  = util.html_escape_or_none(args['name'])
+	public      = util.html_escape_or_none(args['public'])
+
+	module = Module.query.filter_by(name=module_name).first()
+
+	if module is None:
 		return util.make_json_error(msg='Module does not exist.')
-	if name is None:
+	if plane_name is None or plane_name == '':
 		return util.make_json_error(msg='No plane name submitted.')
-	if Plane.query.filter_by(name=name).scalar() is not None:
+	if Plane.query.filter_by(name=plane_name).scalar() is not None:
 		return util.make_json_error(msg='A plane with that name already exists.')
 	if public is None:
 		public = False
 
-	m = Module.query.filter_by(name=name).first()
 	plane = Plane(
-		owner=g.user.id, 
-		password=passford, 
-		module=m.id, 
-		data=None, 
-		name=name, 
-		public=public
+		owner    = g.user.id, 
+		password = password, 
+		module   = module.id,
+		data     = None, 
+		name     = plane_name, 
+		public   = not bool(public),
 	)
 
 	db.session.add(plane)
@@ -189,8 +190,10 @@ def api_create_plane():
 	try:
 		db.session.commit()
 	except sqlalchemy.exc.IntegrityError as e:
+		db.session.rollback()
 		return util.make_json_error(msg='Invalid arguments.')
 
+	connect(g.user, plane)
 	return util.make_json_success(msg='Plane created.')
 
 @planes_api.route('/<plane>', methods=['POST'])

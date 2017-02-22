@@ -77,7 +77,7 @@ def get_path_for_module_content(filename, module, version=None):
 	if version is None:
 		version = get_latest_ver_string(module.name)
 
-	module_path = get_modver_web_path(module_name=module.name, sVersion=version_string)
+	module_path = get_modver_web_path(module_name=module.name, sVersion=version)
 	return os.path.join(module_path, filename)
 
 def copy_prev_version(curr_version_path, prev_version_path, exclude_list=[]):

@@ -3,26 +3,26 @@ from wtforms import StringField, PasswordField, BooleanField, SelectField, valid
 from app.planes.models import Plane
 from app.modules.models import Module
 
-class CreatePlaneForm(Form):
-	name = StringField('name', [validators.InputRequired()])
+class PlaneCreateForm(Form):
+	name     = StringField('name', [validators.InputRequired()])
 	password = PasswordField('password')
-	module = SelectField('module', coerce=int)
-	hidden = BooleanField('hidden', default=False)
+	# module   = SelectField('module', coerce=str)
+	# version  = SelectField('version', coerce=int)
+	hidden   = BooleanField('hidden', default=False)
 
 	def __init__(self, *args, **kwargs):
 		Form.__init__(self, *args, **kwargs)
 
-	def getModules(self):
-		#modules = Module.query(Module.name).all()
-		modules = []
-		for m in Module.query.all():
-			modules.append((m.id, m.name))
-		return modules
+	# def get_modules(self):
+	# 	modules = []
+	# 	for m in Module.query.all():
+	# 		if m.has_version():
+	# 			modules.append((m.name, m.name))
+	# 	return modules
 
 class PlanarAuthenticateForm(Form):
 	password = PasswordField('password')
 
-	
 	def __init__(self, plane_name, *args, **kwargs):
 		Form.__init__(self, *args, **kwargs)
 		self.plane_name = plane_name
