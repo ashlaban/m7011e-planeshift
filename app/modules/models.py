@@ -95,7 +95,7 @@ class Module(db.Model):
 		return self.owner == user.id
 
 	def get_version(self, name):
-		ModuleVersion.get_by_name(self.id, name)
+		return ModuleVersion.get_by_name(self.id, name)
 
 	def get_latest_version(self):
 		module_version = ModuleVersion.get_by_id(self.latest_version)

@@ -31,9 +31,15 @@ def get_latest_ver_string(module_name):
 	return sVersion
 
 def get_default_icon_path(module_name):
-	num_files = 4
-	i    = sum(ord(c) for c in module_name) % num_files
-	path = '/static/img/default/modules/{}.png'.format(i)
+	sys_path = 'app/static/img/default/modules/'
+	web_path = '/static/img/default/modules/'
+	
+	from os import listdir
+	from os.path import isfile, join
+	onlyfiles = [f for f in listdir(sys_path) if isfile(join(sys_path, f)) and f != '.DS_Store']
+
+	i    = sum(ord(c) for c in module_name) % len(onlyfiles)
+	path = join(web_path, onlyfiles[i])
 	return path
 
 def get_mod_web_path(module_name):

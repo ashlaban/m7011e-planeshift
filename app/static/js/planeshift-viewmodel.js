@@ -26,7 +26,7 @@ var generate_empty_model = function () {
 
 function PlaneshiftViewModel() {
 	this.current_module = ko.observable(generate_empty_model());
-	this.current_module = ko.observable(generate_empty_plane());
+	this.current_plane = ko.observable(generate_empty_plane());
 	this.plane_list     = ko.observableArray();
 	this.module_list    = ko.observableArray();
 	this.file_list      = ko.observableArray();
@@ -40,7 +40,12 @@ PlaneshiftViewModel.prototype.get_plane_list = function () {
 	var data = {};
 	var error   = error   || planeshift.callback.error.default();
 	var success = success || function (json) {
-		self.plane_list(json.data);
+		var planes = json.data;
+		planes.sort(function(a, b) {
+			var x = a.name.toLowerCase(), y = b.name.toLowerCase();
+			return x < y ? -1 : x > y ? 1 : 0;
+		});
+		self.plane_list(planes);
 	};
 
 	planeshift.fetch.plane_list(data, success, error);
@@ -51,7 +56,12 @@ PlaneshiftViewModel.prototype.get_plane_list_for_user = function (username) {
 	var data = {username: username};
 	var error   = error   || planeshift.callback.error.default();
 	var success = success || function (json) {
-		self.plane_list(json.data);
+		var planes = json.data;
+		planes.sort(function(a, b) {
+			var x = a.name.toLowerCase(), y = b.name.toLowerCase();
+			return x < y ? -1 : x > y ? 1 : 0;
+		});
+		self.plane_list(planes);
 	};
 
 	planeshift.fetch.plane_list(data, success, error);
@@ -178,7 +188,12 @@ PlaneshiftViewModel.prototype.get_module_list = function (success, error) {
 	var self = this;
 	var error   = error   || planeshift.callback.error.default();
 	var success = success || function (json) {
-		self.module_list(json.data);
+		var modules = json.data;
+		modules.sort(function(a, b) {
+			var x = a.name.toLowerCase(), y = b.name.toLowerCase();
+			return x < y ? -1 : x > y ? 1 : 0;
+		});
+		self.module_list(modules);
 	};
 	
 	planeshift.fetch.module_list({}, success, error);
@@ -189,7 +204,12 @@ PlaneshiftViewModel.prototype.get_module_list_for_user = function (username, suc
 	var data = {username: username};
 	var error   = error   || planeshift.callback.error.default();
 	var success = success || function (json) {
-		self.module_list(json.data);
+		var modules = json.data;
+		modules.sort(function(a, b) {
+			var x = a.name.toLowerCase(), y = b.name.toLowerCase();
+			return x < y ? -1 : x > y ? 1 : 0;
+		});
+		self.module_list(modules);
 	};
 
 	planeshift.fetch.module_list(data, success, error);

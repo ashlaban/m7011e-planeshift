@@ -9,7 +9,7 @@ from app.models import User
 from app.planes.forms import PlaneCreateForm, PlanarAuthenticateForm
 from app.planes.models import Plane, Session
 from app.modules.models import Module
-from app.modules.models import ModuleHasNoData
+from app.modules.models import ModuleHasNoData, ModuleVersionNotFound
 
 from app.modules import manager
 
@@ -160,12 +160,18 @@ def api_create_plane():
 
 	args = util.parse_request_to_json(request)
 
-	password    = util.html_escape_or_none(args['password'])
-	module_name = util.html_escape_or_none(args['module'])
-	plane_name  = util.html_escape_or_none(args['name'])
-	public      = util.html_escape_or_none(args['public'])
+	password     = util.html_escape_or_none(args['password'])
+	module_name  = util.html_escape_or_none(args['module'])
+	version_name = util.html_escape_or_none(args['version'])
+	plane_name   = util.html_escape_or_none(args['name'])
+	public       = util.html_escape_or_none(args['public'])
 
-	module = Module.query.filter_by(name=module_name).first()
+	module  = Module.query.filter_by(name=module_name).first()
+
+	try:
+		version = module.get_version(version_name)
+	except ModuleVersionNotFound:
+		return util.make_json_error(msg='Module version does not exist.')
 
 	if module is None:
 		return util.make_json_error(msg='Module does not exist.')
@@ -180,6 +186,7 @@ def api_create_plane():
 		owner    = g.user.id, 
 		password = password, 
 		module   = module.id,
+		version  = version.id,
 		data     = None, 
 		name     = plane_name, 
 		public   = not bool(public),

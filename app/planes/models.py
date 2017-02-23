@@ -1,5 +1,5 @@
 from app import db
-from app.modules.models import Module
+from app.modules.models import Module, ModuleVersion
 from app.models import User
 
 class Plane(db.Model):
@@ -8,6 +8,7 @@ class Plane(db.Model):
 	owner    = db.Column(db.Integer, db.ForeignKey('user.id'))
 	password = db.Column(db.String(64), index=True, nullable=True, unique=False)
 	module   = db.Column(db.Integer, db.ForeignKey('module.id'), nullable=True)
+	version  = db.Column(db.Integer, db.ForeignKey('module_versions.id'), nullable=True)
 	data     = db.Column(db.LargeBinary, nullable=True, unique=False)
 	name     = db.Column(db.String(64), index=True, unique=False)
 	public   = db.Column(db.Boolean, index=True, unique=False)
@@ -34,8 +35,12 @@ class Plane(db.Model):
 		return False
 
 	def get_module(self):
-		module = Module.query.get(int(self.module))
+		module = Module.query.get(int(self.module)) if self.module is not None else None
 		return module
+
+	def get_version(self):
+		version = ModuleVersion.query.get(int(self.version)) if self.version is not None else None
+		return version
 
 	def get_picture_path(self):
 		return self.get_module().get_picture_path()
@@ -86,15 +91,22 @@ class Plane(db.Model):
 	def get_public_info(self, user):
 		module = self.get_module()
 		module_name = module.name if module else "No module"
+
+		version = self.get_version()
+		version_name = version.version_string if version else "No version"
+
+		users = map( (lambda item: item.user), Session.get_users_for_plane(self) )
+
 		data = {
 			'is_owner'       : self.is_owner(user),
+			'has_password'   : self.has_password(),
 			'module_name'    : module_name,
-			'module_version' : "Not implemented",
+			'module_version' : version_name,
 			'picture'        : self.get_picture_path(),
 			'name'           : self.get_name(),
 			'public'         : self.is_public(),
-			# 'users'          : Session.get_users_for_plane(self),
-			'users'          : "Not implemented",
+			'users'          : list(users),
+			# 'users'          : "Not implemented",
 		}
 		return data
 	

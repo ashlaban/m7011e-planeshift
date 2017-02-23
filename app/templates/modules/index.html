@@ -8,9 +8,7 @@
 {% block js %}
 <script src="/static/js/planeshift-api.js"></script>
 <script src="/static/js/planeshift-viewmodel.js"></script>
-{% endblock js %}
 
-{% block content %}
 <script type="text/javascript" charset="utf-8">
 	var planeshift_view_model = new PlaneshiftViewModel();
 
@@ -19,18 +17,30 @@
 		planeshift_view_model.get_module_list();
 	});
 </script>
+{% endblock js %}
+
+{% block content %}
+<h1 class="page-heading">Modules</h1>
+<div class="page-summary">
+	<p>Looking for a game to play? Browse our repository of wonderful ideas!</p>
+</div>
+
+<div class="divider"></div>
 
 <ul class=center-content data-bind="foreach: module_list">
 	<a class="module box rounded center-content" 
 		data-bind="attr: { href: '/modules/name/' + name }">
 		<!-- <div class="center-content"> -->
-			<img data-bind="attr: { src: picture }">
+			<img class="module-icon module-icon--lg" data-bind="attr: { src: picture }">
 		<!-- </div> -->
 		<div class="">
 			<h1 data-bind="text: name"></h1>
 			<p data-bind="text: short_desc"></p>
 		</div>
 	</a>
+
+	<div class="divider divider--sub"></div>
+
 </ul>
 
 {% endblock %}
