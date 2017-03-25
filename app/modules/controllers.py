@@ -138,13 +138,11 @@ def api_create_module():
 	# picture        = args['picture']
 	latest_version = None
 
-	was_created = False
 	module      = None
 	try:
 		module = Module.get_by_name(module_name)
-		#TODO: Check ownership
+		return util.make_json_error(msg='Module ' + module_name + ' already exists.')
 	except ModuleNotFound:
-		was_created = True
 		module = Module(
 			owner = g.user.id,
 			name  = module_name,
@@ -169,10 +167,7 @@ def api_create_module():
 		print(e)
 		return util.make_json_error(msg='Invalid arguments.')
 
-	if was_created:
-		return util.make_json_success(msg='Module created.')
-	else:
-		return util.make_json_success(msg='Module updated.')
+	return util.make_json_success(msg='Module created.')
 
 @module_api.route('/', methods=['DELETE'])
 def api_delete_module():
