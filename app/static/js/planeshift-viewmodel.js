@@ -78,7 +78,7 @@ PlaneshiftViewModel.prototype.get_plane = function (name) {
 }
 
 PlaneshiftViewModel.prototype.create_plane = function (data, success, error) {
-	console.log('Createing plane')
+	console.log('Creating plane')
 	var success = success || planeshift.callback.redirect.to.plane(data.name);
 	var error   = error   || planeshift.callback.error.default();
 	
@@ -86,13 +86,14 @@ PlaneshiftViewModel.prototype.create_plane = function (data, success, error) {
 }
 
 PlaneshiftViewModel.prototype.create_plane_from_form = function (form, success, error) {
-	console.log('Createing plane')
+	console.log('Creating plane')
 	var data = {
 		name     : form.name.value,
 		password : form.password.value,
 		module   : form.module.value,
-		hidden   : form.hidden.value,
+		hidden   : form.hidden.checked,
 	};
+
 	var success = success || planeshift.callback.redirect.to.plane(data.name);
 	var error   = error   || planeshift.callback.error.default();
 	
@@ -100,7 +101,7 @@ PlaneshiftViewModel.prototype.create_plane_from_form = function (form, success, 
 }
 
 PlaneshiftViewModel.prototype.remove_plane = function (name, success, error) {
-	console.log('Deleteing plane')
+	console.log('Deleting plane')
 	var success = success || planeshift.callback.redirect.to.module_list();
 	var error   = error   || planeshift.callback.error.default();
 	
@@ -108,7 +109,7 @@ PlaneshiftViewModel.prototype.remove_plane = function (name, success, error) {
 }
 
 PlaneshiftViewModel.prototype.enter_plane = function (name, success, error) {
-	console.log('Deleteing plane')
+	console.log('Deleting plane')
 	var success = success || planeshift.callback.redirect.to.module_list();
 	var error   = error   || planeshift.callback.error.default();
 	
@@ -116,7 +117,7 @@ PlaneshiftViewModel.prototype.enter_plane = function (name, success, error) {
 }
 
 PlaneshiftViewModel.prototype.leave_plane = function (name, success, error) {
-	console.log('Deleteing plane')
+	console.log('Deleting plane')
 	var success = success || planeshift.callback.redirect.to.module_list();
 	var error   = error   || planeshift.callback.error.default();
 	
@@ -240,7 +241,7 @@ PlaneshiftViewModel.prototype.create_module_from_form = function (form, success,
 }
 
 PlaneshiftViewModel.prototype.remove_module = function (name, success, error) {
-	console.log('Deleteing module')
+	console.log('Deleting module')
 	var success = success || planeshift.callback.redirect.to.module_list();
 	var error   = error   || planeshift.callback.error.default();
 	

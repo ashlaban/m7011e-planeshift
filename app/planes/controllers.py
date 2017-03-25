@@ -163,7 +163,7 @@ def api_create_plane():
 	password     = util.html_escape_or_none(args['password'])
 	module_name  = util.html_escape_or_none(args['module'])
 	plane_name   = util.html_escape_or_none(args['name'])
-	public       = util.html_escape_or_none(args['public'])
+	hidden       = util.html_escape_or_none(args['hidden'])
 
 	module = Module.query.filter_by(name=module_name).first()
 	
@@ -178,8 +178,8 @@ def api_create_plane():
 		return util.make_json_error(msg='No plane name submitted.')
 	if Plane.query.filter_by(name=plane_name).scalar() is not None:
 		return util.make_json_error(msg='A plane with that name already exists.')
-	if public is None:
-		public = False
+	
+	hidden = (hidden == 'True')
 
 	plane = Plane(
 		owner    = g.user.id, 
@@ -188,7 +188,7 @@ def api_create_plane():
 		version  = version.id,
 		data     = None, 
 		name     = plane_name, 
-		public   = not bool(public),
+		public   = not bool(hidden),
 	)
 
 	db.session.add(plane)
