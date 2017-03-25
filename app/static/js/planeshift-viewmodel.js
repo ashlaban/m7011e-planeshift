@@ -91,7 +91,6 @@ PlaneshiftViewModel.prototype.create_plane_from_form = function (form, success, 
 		name     : form.name.value,
 		password : form.password.value,
 		module   : form.module.value,
-		version  : form.version.value,
 		hidden   : form.hidden.value,
 	};
 	var success = success || planeshift.callback.redirect.to.plane(data.name);

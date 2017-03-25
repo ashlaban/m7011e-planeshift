@@ -162,16 +162,15 @@ def api_create_plane():
 
 	password     = util.html_escape_or_none(args['password'])
 	module_name  = util.html_escape_or_none(args['module'])
-	version_name = util.html_escape_or_none(args['version'])
 	plane_name   = util.html_escape_or_none(args['name'])
 	public       = util.html_escape_or_none(args['public'])
 
-	module  = Module.query.filter_by(name=module_name).first()
-
+	module = Module.query.filter_by(name=module_name).first()
+	
 	try:
-		version = module.get_version(version_name)
+		version = module.get_latest_version()
 	except ModuleVersionNotFound:
-		return util.make_json_error(msg='Module version does not exist.')
+		return util.make_json_error(msg='Module has no version attached.')
 
 	if module is None:
 		return util.make_json_error(msg='Module does not exist.')
