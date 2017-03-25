@@ -12,6 +12,7 @@ import os
 import os.path
 
 import werkzeug
+import hashlib
 
 class ModuleDuplicateVersionError(ValueError):
 	'''Raise when a module already has a version with the same name.'''
@@ -28,6 +29,18 @@ def get_latest_ver_string(module_name):
 	except ModuleVersionNotFound:
 		raise ModuleHasNoData()
 	return sVersion
+
+def get_default_icon_path(module_name):
+	sys_path = 'app/static/img/default/modules/'
+	web_path = '/static/img/default/modules/'
+	
+	from os import listdir
+	from os.path import isfile, join
+	onlyfiles = [f for f in listdir(sys_path) if isfile(join(sys_path, f)) and f != '.DS_Store']
+
+	i    = sum(ord(c) for c in module_name) % len(onlyfiles)
+	path = join(web_path, onlyfiles[i])
+	return path
 
 def get_mod_web_path(module_name):
 	return os.path.join( app.config['WEB_UPLOAD_FOLDER'], module_name)
@@ -58,10 +71,19 @@ def get_path_for_module_content(filename, module, version=None):
 	if module is None:
 		raise ValueError('Argument module must not be None')
 
+	if filename == 'icon.png':
+		try:
+			module_sys_path = get_modver_sys_path(module_name=module.name, sVersion=version)
+			full_sys_path   = os.path.join(module_sys_path, filename)
+			if not os.path.isfile(full_sys_path):
+				return get_default_icon_path(module.name)
+		except:
+			return get_default_icon_path(module.name) 
+	
 	if version is None:
-		version_string = get_latest_ver_string(module.name)
+		version = get_latest_ver_string(module.name)
 
-	module_path = get_modver_web_path(module_name=module.name, sVersion=version_string)
+	module_path = get_modver_web_path(module_name=module.name, sVersion=version)
 	return os.path.join(module_path, filename)
 
 def copy_prev_version(curr_version_path, prev_version_path, exclude_list=[]):
@@ -80,16 +102,16 @@ def copy_prev_version(curr_version_path, prev_version_path, exclude_list=[]):
 			shutil.copyfile(src, dst)
 	return True
 
-def persist_files_to_disk(target_path, files):
+def persist_files_to_disk(target_path, added_files, removed_file_paths):
 	ensure_module_path(target_path)
 
-	for file in files:
+	for file in added_files:
 		sFilename = werkzeug.utils.secure_filename(file.filename)
 		path = os.path.join(target_path, sFilename)
 		with open(path, 'wb+') as file_handle:
 			file.save(file_handle)
 
-def upload_version(module, sVersion, added_files, removed_file_paths):
+def upload_version(module, sVersion, added_files, removed_file_paths=[]):
 	session = db.session
 
 	try:
@@ -130,6 +152,10 @@ def upload_version(module, sVersion, added_files, removed_file_paths):
 	return
 
 def delete_module(module):
+	"""Delete a given module.
+	Precondition: The database entry should already be removed.
+	Postcondition: Best-effort removal of the underlying files.
+	"""
 	module_path = get_mod_sys_path(module.name)
-	shutil.rmdirs(module_path)
+	shutil.rmtree(module_path, ignore_errors=True)
 	return

@@ -6,100 +6,72 @@
 <script src="/static/js/jquery-3.1.1.min.js"></script>
 {% endblock css %}
 
+{% block js %}
+<script src="/static/js/planeshift-api.js"></script>
+<script src="/static/js/planeshift-viewmodel.js"></script>
+{% endblock js %}
+
 {% block content %}
+<script type="text/javascript" charset="utf-8">
+	var planeshift_view_model = new PlaneshiftViewModel();
 
-	<script type="text/javascript" charset="utf-8">
-		function create_plane(name, short_desc, long_desc) {
-			var data = {
-				name: name,
-				short_desc: short_desc,
-				long_desc: long_desc,
-			};
-			
-			$.ajax({
-				type: 'POST',
-				url: '/api/planes/',
-				data: JSON.stringify(data),
-				dataType: 'json',
-				processData: false,
-				contentType: 'application/json; charset=utf-8',
-				success: function(data) {
-					window.location = '/modules/name/'+name;
-				},
-				error: function(response) {
-					console.log(response)
-					$('#info').html(response.responseJSON.msg);
-				},
-			});
-		}
+	document.addEventListener('DOMContentLoaded', function () {	
+		ko.applyBindings(planeshift_view_model);
+		planeshift_view_model.get_module_list()
 
-		function create_module_form(form) {
-			// This is for modern browsers supporting the File API in HTML5.
-			// var fd = new FormData(form);
-			// create_module(fd.get('name'), fd.get('short_desc'), fd.get('long_desc'));
-			
-			// This is for Safari
-			var name       = $('#name')[0].value;
-			var short_desc = $('#short_desc')[0].value;
-			var long_desc  = $('#long_desc')[0].value;
-			create_module(name, short_desc, long_desc);
-		}
-
-		$(document).ready( function () {
-			var form = document.getElementById('create-form');
-			form.addEventListener('submit', function(ev) {
-	  			// ev.preventDefault();
-	  			// create_module_form(form);
-			}, false);
-		});
+		var module_select = document.getElementById('module');
+		module_select.addEventListener('change', function(ev) {
+			console.log(ev.target.value)
+			planeshift_view_model.get_module(ev.target.value);
+		}, false);
 		
-	</script>
+		var form = document.getElementById('create-form');
+		form.addEventListener('submit', function(ev) {
+			ev.preventDefault();
+			planeshift_view_model.create_plane_from_form(form);
+		}, false);
 
-	<section class="center-content">
+	});
+</script>
 
-		<div class="form-box rounded center-content">
-			<h1>Create new plane</h1>
-			<!-- <p id="info" class="error"></p> -->
+<section class="center-content">
 
-			<form id="create-form" class="form center-content" action="" method="post" enctype="multipart/form-data" name="plane-create">
-				{{ form.hidden_tag()  }}
-				{{ form.name(class="wide-form-field", placeholder='Plane name') }}
-				{{ form.password(class="wide-form-field", placeholder='(Optional) Password') }}
-				<div class="wide-form-field">
-					<span>Module</span>
-					{{ form.module(placeholder='none') }}
-					{#{{ form.version(placeholder='none') }}#}
-				</div>
-				<div class="wide-form-field">
-					{{ form.hidden }} Hide from public listing
-				</div>
-				<input type="submit" value="Create">
-			</form>
-		</div>
-	</section>
+	<div class="form-box rounded center-content">
+
+		<h1>Create new plane</h1>
+		<!-- <p id="info" class="error"></p> -->
+
+		<form id="create-form" class="form center-content" action="" method="post" enctype="multipart/form-data" name="plane-create">
+			{{ form.hidden_tag()  }}
+			{{ form.name(class="wide-form-field", placeholder='Plane name') }}
+			{{ form.password(class="wide-form-field", placeholder='(Optional) Password') }}
+
+			<select id="module" class="wide-form-field" data-bind="
+				optionsCaption: 'Select module',
+				options : module_list(),
+				optionsText: 'name',
+				optionsValue: 'name'
+				"
+			></select>
+			
+			<!-- ko if: current_module().name != '' -->
+			<select id="version" class="wide-form-field" data-bind="
+				optionsCaption: 'Select verison',
+				options : current_module().versions
+				"
+			></select>
+			<!-- /ko -->
+
+			<div class="wide-form-field">
+				{{ form.hidden }} Hide from public listing
+			</div>
+
+			<input type="submit" value="Create">
+
+		</form>
+
+	</div>
+
+</section>
+
 {% endblock content %}
-
-<!-- {#
-
-	<form action="" method="post" name="Create_plane" class="center-content top-padding-md">
-		{{ form.hidden_tag()  }}
-		{{ form.name(size=30, placeholder='name') }}
-		{% for error in form.name.errors %}
-		<span style="color: red;">[{{ error }}]</span>
-		{% endfor %}
-		{{ form.password(size=30, placeholder='password') }}
-		{% for error in form.password.errors %}
-		<span style="color: red;">[{{ error }}]</span>
-		{% endfor %}
-		{{ form.module(placeholder='none') }}
-		{% for error in form.module.errors %}
-		<span style="color: red;">[{{ error }}]</span>
-		{% endfor %}
-		{{ form.public }} Public
-		{% for error in form.public.errors %}
-		<span style="color: red;">[{{ error }}]</span>
-		{% endfor %}
-		<input type="submit" value="Create">
-	</form>
-
-#} -->

@@ -83,6 +83,9 @@ class Module(db.Model):
 		versions = ModuleVersion.get_all_for_module_id(module_id)
 		return versions
 
+	def has_version(self):
+		return self.latest_version != None
+
 	def get_owner(self):
 		return User.get_by_id(self.owner)
 
@@ -92,7 +95,7 @@ class Module(db.Model):
 		return self.owner == user.id
 
 	def get_version(self, name):
-		ModuleVersion.get_by_name(self.id, name)
+		return ModuleVersion.get_by_name(self.id, name)
 
 	def get_latest_version(self):
 		module_version = ModuleVersion.get_by_id(self.latest_version)
@@ -123,7 +126,7 @@ class Module(db.Model):
 			version_string = ''	
 
 		versions = Module.get_versions_for_module_id(self.id)
-		versions = [(v.id, v.version_string) for v in versions]
+		versions = [v.version_string for v in versions]
 
 		data = {
 			'name'      : self.name,

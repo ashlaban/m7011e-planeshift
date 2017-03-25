@@ -4,17 +4,63 @@
 <link rel="stylesheet" type="text/css" href="/static/css/planes/planes.css" />
 {% endblock css %}
 
-{% block content %}
+{% block js %}
+<script src="/static/js/planeshift-api.js"></script>
+<script src="/static/js/planeshift-viewmodel.js"></script>
 
-<ul class=center-content>
-{% for plane in planes %}
-<a href="/planes/name/{{plane.name}}" class="section-content center-content">
-	<div class="half">
-		<h1>{{plane.name}}</h1>
-		<p>Owner: {{plane.get_owner().username}}</p>
-		<p>Module: {{plane.get_module().name}}</p>
-	</div>
-</a>
-{% endfor %}
+<script type="text/javascript" charset="utf-8">
+	var planeshift_view_model = new PlaneshiftViewModel();
+
+	document.addEventListener('DOMContentLoaded', function () {	
+		ko.applyBindings(planeshift_view_model);
+		planeshift_view_model.get_plane_list();
+	});
+</script>
+{% endblock js %}
+
+{% block content %}
+<h1 class="page-heading">Public planes</h1>
+<div class="page-summary">
+	<p>Looking for a plane to join? Browse what is available here!</p>
+</div>
+
+<div class="divider"></div>
+
+<ul class=center-content data-bind="foreach: plane_list">
+
+	<a class="list-item-short rounded row"
+		data-bind="attr: { href: '/planes/name/' + name }">
+
+		<img class="module-icon" data-bind="attr: { src: picture }">
+
+		<div class="plane-info">
+			
+			<span class="plane-title row">
+				<h2 data-bind="text: name"></h2>
+				<span class="filler"></span>
+				<!-- ko if: has_password -->
+				<span class="badge badge--foldable">
+					<i class="fa fa-lock fa-lg" aria-hidden="true"></i>
+					<span>Password protected</span>
+				</span>
+				<!-- /ko -->
+				<span class="badge">
+					<i class="fa fa-user fa-lg" aria-hidden="true"></i>
+					<span data-bind="text: users.length"></span>
+				</span>
+			</span>
+			
+			<span class="list-item-description row">
+				<span class="list-item-label">Module</span>
+				<span class="list-item-field" data-bind="text: module_name"></span>
+				<span class="list-item-sep">-</span>
+				<span class="list-item-field" data-bind="text: module_version"></span>
+			</span>
+		
+		</div>
+	
+	</a>
+
 </ul>
+
 {% endblock %}

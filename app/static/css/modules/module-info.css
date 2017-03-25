@@ -5,14 +5,16 @@ h1 {
 #module-info {
 	margin-top: 2em;
 	padding-bottom: 2em;
+
+	display: flex;
+	justify-content: space-between;
 }
 
-#version-header {
-	padding-bottom: 1em;
-}
-
-#version-selector {
-	padding-left: 5em;
+.version-select {
+	font-size: 1em;
+	min-width: 6em;
+	max-width: 15em;
+	margin-right: 1em;
 }
 
 #short_desc {
@@ -36,4 +38,26 @@ h1 {
 	border-style: solid;
 	border-width: 0px;
 	border-radius: 1em;
+}
+
+.container {
+	width: 100%;
+	padding-top   : 1em;
+	padding-bottom: 1em;
+
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+}
+
+.module-pic-lg {
+	width : 250px;
+	height: 250px;
+
+	padding: 1em;
+}
+
+.module-info-interface {
+	padding   : 1em ;
+	flex-grow : 1   ;
 }

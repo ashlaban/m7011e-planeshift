@@ -3,168 +3,109 @@
 {% block css %}
 <link rel="stylesheet" type="text/css" href="/static/css/modules/module-base.css" />
 <link rel="stylesheet" type="text/css" href="/static/css/modules/module-upload.css" />
-
-<script src="/static/js/jquery-3.1.1.min.js"></script>
-<script src="/static/js/ko.js"></script>
 {% endblock css %}
 
-{% block content %}
-	<script type="text/javascript" charset="utf-8">
-		var fd;
-		function uploadFile(form) {
-			fd = new FormData();
-			
-			for (var file of vm.files()) {
-				console.log('Appending file ' + file.name + ' to form data.');
-				fd.append('files', file);
-			}
-			fd.append('version', form.version.value);
+{% block js %}
+<script src="/static/js/planeshift-api.js"></script>
+<script src="/static/js/planeshift-viewmodel.js"></script>
 
-			console.log(fd);
+<script type="text/javascript" charset="utf-8">
+	var planeshift_view_model = new PlaneshiftViewModel();
+	planeshift_view_model.get_module('{{module_name}}');
 
-			$.ajax({
-				type: 'POST',
-				url: "/api/modules/{{module_name}}",
-				data: fd,
-				processData: false,
-				contentType: false,
-				success: function(data) {
-					window.location = '/modules/name/{{module_name}}';
-				},
-				error: function(response) {
-					console.log(response)
-					// var payload = JSON.parse(response.responseText);
-					$('#info').html(response.responeJSON.msg);
-				},
-			});
-		}
+	document.addEventListener('DOMContentLoaded', function () {
+		// Form interaction
+		var form      = document.getElementById('upload-form');
+		var uploadbtn = document.getElementById('upload-btn');
+		uploadbtn.addEventListener('click', function(ev) {
+  			planeshift_view_model.upload_files_from_form(form);
+		}, false);
 
-		function PlaneshiftViewModel(info) {
-			this.files = ko.observableArray();
-		}
-
-		PlaneshiftViewModel.prototype.addFile = function (file) {
-			this.files.push(file);
-		}
-
-		PlaneshiftViewModel.prototype.addFiles = function (files) {
-			var length = files.length;
-			for (var i = 0; i < length; ++i) {
-				var file = files[i];
-				this.addFile(file);
-			}
-		}
-
-		PlaneshiftViewModel.prototype.clearFiles = function () {
-			this.files.removeAll();
-		}
-
-		PlaneshiftViewModel.prototype.removeFile = function (name) {
-			for (var file of this.files()) {
-				if (file.name === name) {
-					return this.files.remove(file)
-				}
-			}
-		}
-
-		var vm = new PlaneshiftViewModel();
-
-		$(document).ready( function () {
-
-			// Drop zone
-			var uploadbtn = document.getElementById('upload-btn');
-			uploadbtn.addEventListener('click', function(ev) {
-	  			uploadFile(form);
-			}, false);
-
-			var form = document.getElementById('upload-form');
-			form.addEventListener('submit', function(ev) {
-				ev.preventDefault();
-			});
-
-			var box = document.getElementById('box');
-			var dropzone = document.getElementById('dropzone');
-			box.addEventListener('dragover', function(ev) {
-				ev.preventDefault()
-				document.getElementById('dropzone-label').innerHTML = 'Drop them!';
-				console.log('Enter dropzone');
-			}, false);
-			box.addEventListener('dragleave', function(ev) {
-				ev.preventDefault()
-				document.getElementById('dropzone-label').innerHTML = 'Drag files here';
-				console.log('Exit dropzone');
-			}, false);
-
-			box.addEventListener('drop', function(ev) {
-				ev.preventDefault()
-				document.getElementById('dropzone-label').innerHTML = 'Drag files here';
-				vm.addFiles(event.dataTransfer.files);
-			}, false);
-
-			// Update file field
-			var filefield = document.getElementById('files');
-			filefield.addEventListener('change', function (ev) {
-				vm.addFiles(ev.target.files);
-			});
-
-			// http://stackoverflow.com/questions/6756583/prevent-browser-from-loading-a-drag-and-dropped-file
-			window.addEventListener("drop",function(e){
-			  e = e || event;
-			  e.preventDefault();
-			},false);
-			window.addEventListener("dragover",function(e){
-			  e = e || event;
-			  e.preventDefault();
-			},false);
-
-			// Final init
-			ko.applyBindings(vm);
+		var form = document.getElementById('upload-form');
+		form.addEventListener('submit', function(ev) {
+			ev.preventDefault();
 		});
 
-	</script>
+		// Dragging and dropping
+		var box = document.getElementById('box');
+		var dropzone = document.getElementById('dropzone');
+		box.addEventListener('dragover', function(ev) {
+			ev.preventDefault()
+			document.getElementById('dropzone-label').innerHTML = 'Drop them!';
+			console.log('Enter dropzone');
+		}, false);
+		box.addEventListener('dragleave', function(ev) {
+			ev.preventDefault()
+			document.getElementById('dropzone-label').innerHTML = 'Drag files here';
+			console.log('Exit dropzone');
+		}, false);
 
-	<section class="center-content top-padding-md">
+		box.addEventListener('drop', function(ev) {
+			ev.preventDefault()
+			document.getElementById('dropzone-label').innerHTML = 'Drag files here';
+			planeshift_view_model.add_files(event.dataTransfer.files);
+		}, false);
 
-		<div id="box" class="form-box rounded center-content">
-			<h1>{{module_name}} - New Version</h1>
-			<p>Upload your main.js module file and be good to go! You can also upload additional resources. See the module guide for more info.</p>
-			<p>Upload a file named icon.png to use as a an representation of your module. It should be fairly small 150x150 is suitable.</p>
-			<p><em>Note: Modules that do not conform to the site guidelines are subject to deletion.</em></p>
-			<!-- TODO: Link to module info page. -->
-			<!-- TODO: Link to guidelines. -->
+		// Update file field
+		var filefield = document.getElementById('files');
+		filefield.addEventListener('change', function (ev) {
+			planeshift_view_model.add_files(ev.target.files);
+		});
 
-			<form id="upload-form" class="form center-content" action="" method="post" enctype="multipart/form-data" name="module_upload">
-				<input type="text" name="version" id="version" class="wide-form-field", placeholder="New version name">
-				<input id="files" multiple="" name="files" type="file">
+		// http://stackoverflow.com/questions/6756583/prevent-browser-from-loading-a-drag-and-dropped-file
+		function prevent_default(e) {e = e || event; e.preventDefault();}
+		window.addEventListener("drop"    , prevent_default, false);
+		window.addEventListener("dragover", prevent_default, false);
 
-				<div id="dropzone" class="center-content">
-					<span id="dropzone-label">Drag files here</span>
-					<ul data-bind="foreach: files">
-						<li>
-							<span class="delete-item fa-stack" data-bind="click: function(){vm.removeFile(name)}">
-								<span class="fa fa-trash-o fa-stack-1x"></span>
-								<span class="fa fa-trash fa-stack-1x"></span>
-							</span>
-							<span data-bind="text:name"></span>
-						</li>
-					</ul>
-				</div>
+		// Final init
+		ko.applyBindings(planeshift_view_model);
+	});
+</script>
+{% endblock %}
 
-				<div class="btn-list">
-					<button id="upload-btn" class="btn">
-						<i class="fa fa-upload" aria-hidden="true"></i>
-						Upload
-					</button>
-					<button class="btn" onclick="document.getElementById('files').click()">
-						<i class="fa fa-plus" aria-hidden="true"></i>
-						Add files
-					</button>
-					<button class="btn" onclick="vm.clearFiles();" href="">
-						<i class="fa fa-eraser" aria-hidden="true"></i>
-						Clear
-					</button>
-				</div>
-			</form>
-		</div>
-	</section>
+{% block content %}
+<section class="center-content top-padding-md">
+
+	<div id="box" class="form-box rounded center-content">
+		<h1>{{module_name}} - New Version</h1>
+		<p>Upload your main.js module file and be good to go! You can also upload additional resources. See the module guide for more info.</p>
+		<p>Upload a file named icon.png to use as a an representation of your module. It should be fairly small 150x150 is suitable.</p>
+		<p><em>Note: Modules that do not conform to the site guidelines are subject to deletion.</em></p>
+		<!-- TODO: Link to module info page. -->
+		<!-- TODO: Link to guidelines. -->
+
+		<form id="upload-form" class="form center-content" action="" method="post" enctype="multipart/form-data" name="module_upload">
+			<input type="text" name="version" id="version" class="wide-form-field", placeholder="New version name">
+			<input id="files" multiple="" name="files" type="file">
+
+			<div id="dropzone" class="center-content">
+				<span id="dropzone-label">Drag files here</span>
+				<ul data-bind="foreach: file_list">
+					<li>
+						<span class="delete-item fa-stack" data-bind="click: function(){planeshift_view_model.remove_file(name)}">
+							<span class="fa fa-trash-o fa-stack-1x"></span>
+							<span class="fa fa-trash fa-stack-1x"></span>
+						</span>
+						<span data-bind="text:name"></span>
+					</li>
+				</ul>
+			</div>
+
+			<div class="btn-list">
+				<button id="upload-btn" class="btn">
+					<i class="fa fa-upload" aria-hidden="true"></i>
+					Upload
+				</button>
+				<button class="btn" onclick="document.getElementById('files').click()">
+					<i class="fa fa-plus" aria-hidden="true"></i>
+					Add files
+				</button>
+				<button class="btn" onclick="planeshift_view_model.clear_files();" href="">
+					<i class="fa fa-eraser" aria-hidden="true"></i>
+					Clear
+				</button>
+			</div>
+		</form>
+	</div>
+</section>
 {% endblock content %}

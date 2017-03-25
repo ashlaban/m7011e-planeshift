@@ -30,7 +30,7 @@ module_api = Blueprint('modules_api', __name__, url_prefix='/api/modules')
 @modules.route('/')
 def list_module():
 	modules = db.session.query(Module)
-	return render_template('modules/index.html', modules=modules)
+	return render_template('modules/index.html')
 
 @modules.route('/create')
 def create_module():
@@ -40,13 +40,16 @@ def create_module():
 	form = CreateForm()
 	return render_template('modules/create.html', form=form)
 
-# NOTE: Stored filename will become modulename-versionstring.xxx
 @modules.route('/upload/<name>', methods=['GET'])
 def upload_module(name):
 	if not g.user.is_authenticated:
 		return render_template('modules/403.html', name=name)
 
-	module = Module.get_by_name(name)
+	try:
+		name   = util.html_escape_or_none(name)
+		module = Module.get_by_name(name)
+	except ModuleNotFound:
+		return render_template('modules/404.html', name=name)
 
 	if not g.user.id == module.owner:
 		return render_template('modules/403.html', name=name)
@@ -55,13 +58,13 @@ def upload_module(name):
 
 @modules.route('/name/<name>')
 def info_module(name):
-	module   = Module.get_by_name(name)
-
-	is_owner = g.user.is_authenticated and g.user.id == module.owner
-	
-	if module is None:
+	try:
+		name   = util.html_escape_or_none(name)
+		module = Module.get_by_name(name)
+	except ModuleNotFound:
 		return render_template('modules/404.html', name=name)
 
+	is_owner = g.user.is_authenticated and g.user.id == module.owner
 	return render_template('modules/module.html', module_name = module.name)
 
 # =============================================================================
@@ -84,7 +87,7 @@ def info_module(name):
 # 
 # =============================================================================
 @module_api.route('/', methods=['GET'])
-def api_list_module():
+def api_list_modules():
 	'''List all modules in database.
 	Arguments:
 
@@ -106,7 +109,7 @@ def api_list_module():
 	else:
 		modules = Module.query
 
-	data = [ module.get_public_short_info() for module in modules ]
+	data = [ module.get_public_long_info() for module in modules ]
 
 	return util.make_json_success(data=data)
 
@@ -184,7 +187,7 @@ def api_delete_module():
 		{status: error, msg: '...'} otherwise.
 	'''
 	if not g.user.is_authenticated:
-		return util.make_json_error(msg='Not authenticated.')
+		return util.make_json_error(msg='Not authenticated.', error_code=403)
 	
 	args        = util.parse_request_to_json(request)
 	module_name = util.html_escape_or_none(args['name'])
@@ -201,13 +204,14 @@ def api_delete_module():
 		for version in Module.get_versions(module_name):
 			db.session.delete(version)
 		db.session.delete(module)
-		db.session.commit()
 
+		db.session.commit()
 		manager.delete_module(module)
 
 		return util.make_json_success(msg='Module ' + module_name + ' deleted.')
-	except:
+	except Exception as e:
 		db.session.rollback()
+		print(e)
 		return util.make_json_error(msg='Error deleting module.')
 
 @module_api.route('/<module_name>', methods=['GET'])
@@ -255,7 +259,7 @@ def api_version(module_name):
 		if escaped_version == "":
 			return util.make_json_error(msg='Version name cannot be empty.')
 
-		manager.upload_version(module=module, sVersion=escaped_version, files=files)
+		manager.upload_version(module=module, sVersion=escaped_version, added_files=files)
 
 	except manager.ModuleDuplicateVersionError as e:
 		return util.make_json_error(msg='Version name already exists.')

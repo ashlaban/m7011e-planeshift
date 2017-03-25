@@ -2,7 +2,7 @@ import json
 import collections
 import werkzeug
 
-def make_json_error(msg='', error_code=403):
+def make_json_error(msg='', error_code=400):
 	response = {
 		'status': 'error',
 		'msg'   : msg,
@@ -26,4 +26,4 @@ def parse_request_to_json(req):
 	return args
 
 def html_escape_or_none(item):
-	return werkzeug.utils.escape(item) if item is not None else None
+	return werkzeug.utils.escape(item).strip() if item is not None else None

@@ -2,126 +2,136 @@
 
 {% block css %}
 <link rel="stylesheet" type="text/css" href="/static/css/profile/profile-base.css" />
-
-<script src="/static/js/jquery-3.1.1.min.js"></script>
-<script src="/static/js/ko.js"></script>
+<link rel="stylesheet" type="text/css" href="/static/css/modules/module-base.css" />
+<link rel="stylesheet" type="text/css" href="/static/css/planes/planes.css" />
 {% endblock css %}
 
-{% block content %}
+{% block js %}
+<script src="/static/js/planeshift-api.js"></script>
+<script src="/static/js/planeshift-viewmodel.js"></script>
+
 <script type="text/javascript" charset="utf-8">
-	var vm;
-	var data;
-
-	function get_modules_for_user (username) {
-		$.ajax({
-			url: '/api/modules/',
-			data: {username: username},
-			dataType: 'json',
-			success: function(data) {
-				if (data.hasOwnProperty('data') ) {
-					vm.modules(data.data);
-				}
-			},
-			type: 'GET'
-		});
-	}
-
-	function get_planes_for_user (username) {
-		$.ajax({
-			url: '/api/planes/',
-			data: {username: username},
-			dataType: 'json',
-			success: function(data) {
-				if (data.hasOwnProperty('data') ) {
-					vm.planes(data.data);
-				}
-			},
-			type: 'GET'
-		});
-	}
-
-	function PlaneshiftViewModel(modules) {
-		var self = this;
-
-		self.modules = ko.observableArray();
-		self.planes  = ko.observableArray();
-	}
+	var planeshift_view_model = new PlaneshiftViewModel();
 
 	document.addEventListener('DOMContentLoaded', function () {
-		vm = new PlaneshiftViewModel();
-		ko.applyBindings(vm);
-		get_modules_for_user("{{user.username}}");
-		get_planes_for_user("{{user.username}}");
-	});		
+		ko.applyBindings(planeshift_view_model);
+
+		var username = '{{user.username}}';
+		planeshift_view_model.get_plane_list_for_user(username);
+		planeshift_view_model.get_module_list_for_user(username);
+	});
+
 </script>
+{% endblock %}
+
+{% block content %}
+<h1 class="page-heading">Profile Page</h1>
+<div class="page-summary">
+	<p>Welcome to Planeshift. Get a quick overview of what planes you can shift to and what modules you currently own. Be chill, stay cool.</p>
+</div>
+
+<div class="divider"></div>
 
 <section class="center-content">
-	<div class="form-box rounded center-content">
-		<!-- <h1><em>{{user.username}}</em>'s crib</h1> -->
-		<p>Welcome to Planeshift. Get a quick overview of what planes you can shift to and what modules you currently own. Be chill, stay cool.</p>
 
-		<div class="heading">
-			<h2>
-				<i class="fa fa-globe" aria-hidden="true"></i>
-				Your Planes
-			</h2>
-			<a class="btn-slim" href="/planes/create"><i class="fa fa-plus" aria-hidden="true"></i> New plane</a>
-		</div>
-		<em data-bind="if: planes().length==0">No currently active planes.</em>
-		<div data-bind="foreach: planes">
-			<a data-bind="attr: { href: '/planes/name/' + name }">
-			<li class="module-brief rounded">
-				<img data-bind="">
-				<span class="description">
-					<span class="module-title" data-bind="text: name"></span>
-					<!-- <span class="module-desc"  data-bind="text: short_desc"></span> -->
-				</span>
-				<span class="filler"></span>
-				<!-- ko if: is_owner -->
-				<button class="btn-slim" onclick="" href="" >
-					<i class="fa fa-trash-o" aria-hidden="true"></i>
-					<!-- <span>Delete</span> -->
-				</button>
-				<!-- /ko -->
-				<button class="btn-slim" onclick="" href="">
-					<i class="fa fa-sign-out" aria-hidden="true"></i>
-					<!-- <span>Disconnect</span> -->
-				</button>
-			</li>
-			</a>
-		</div>
+	<div class="heading">
+		<h2>
+			<i class="fa fa-globe" aria-hidden="true"></i>
+			<span>Your Planes</span>
+		</h2>
+		<a href="/planes/create">
+			<button class="btn badge badge--foldable" >
+			<i class="fa fa-plus" aria-hidden="true"></i>
+			<span>New plane</span>
+			</button>
+		</a>
+	</div>
 
-		<div class="heading">
-			<h2>
-				<i class="fa fa-microchip" aria-hidden="true"></i>
-				Your Modules
-			</h2>
-			<a class="btn-slim" href="/modules/create"><i class="fa fa-plus" aria-hidden="true"></i> New module</a>
-		</div>
-		<em data-bind="if: modules().length==0">You have not created any modules.</em>
-		<ul data-bind="foreach: modules">
-			<a data-bind="attr: { href: '/modules/name/' + name }">
-			<li class="module-brief rounded">
-				<img data-bind="attr: { src: picture }">
-				<span class="description">
-					<span class="module-title" data-bind="text: name"></span>
-					<span class="module-desc"  data-bind="text: short_desc"></span>
-				</span>
-				<span class="filler"></span>
-				<button class="btn-slim" onclick="" href="" >
-					<i class="fa fa-trash-o" aria-hidden="true"></i>
-					<!-- <span>Delete</span> -->
-				</button>
-				<button class="btn-slim" onclick="" href="">
-					<i class="fa fa-upload" aria-hidden="true"></i>
-					<!-- <span>Disconnect</span> -->
-				</button>
-			</li>
-			</a>
-		</ul>
+
+	
+	<em data-bind="if: plane_list().length==0">No currently active planes.</em>
+	<div data-bind="foreach: plane_list()">
+		<a class="list-item-short rounded row" data-bind="attr: { href: '/planes/name/' + name }">
+			<img class="module-icon" data-bind="attr: { src: picture }">
+			<div class="plane-info">
+				<div class="plane-title row">
+					<span class="list-item-title" data-bind="text: name"></span>
+					<span class="filler"></span>
+					<!-- ko if: has_password -->
+					<span class="badge badge--foldable">
+						<i class="fa fa-lock fa-lg" aria-hidden="true"></i>
+						<span>Password protected</span>
+					</span>
+					<!-- /ko -->
+					<span class="badge">
+						<i class="fa fa-user fa-lg" aria-hidden="true"></i>
+						<span data-bind="text: users.length"></span>
+					</span>
+				</div>
+			</div>
+		</a>
+	</div>
+
+
+	<div class="divider"></div>
+
+	<div class="heading">
+		<h2>
+			<i class="fa fa-microchip" aria-hidden="true"></i>
+			Your Modules
+		</h2>
+		<a href="/modules/create">
+			<button class="btn badge badge--foldable">
+				<i class="fa fa-plus" aria-hidden="true"></i>
+				<span>New module</span>
+			</button>
+		</a>
+	</div>
+
+	<em data-bind="if: module_list().length==0">You have not created any modules.</em>
+	
+	<ul data-bind="foreach: module_list">
+	
+		<a class="list-item-short list-item--fixed rounded row" data-bind="attr: { href: '/modules/name/' + name }">
+	
+				<img class="module-icon" data-bind="attr: { src: picture }">			
+
+				<div class="plane-info">
+
+					<span class="plane-title row">
+				
+						<span class="list-item-title list-item--short" data-bind="text: name"></span>
+				
+						<span class="filler"></span>
+				
+						<button class="btn badge badge--foldable" data-bind="event: { click: function(data, event) {
+							event.stopPropagation();
+							var success = planeshift.callback.redirect.to.profile();
+							planeshift_view_model.remove_module(name, success);
+						}}">
+							<i class="fa fa-trash-o" aria-hidden="true"></i>
+							<span>Delete</span>
+						</button>
+				
+						<button class="btn badge badge--foldable" data-bind="event: { click: function (data, event) {
+							event.stopPropagation();
+							planeshift.callback.redirect.to.module_new_version(name)();
+						}}">
+							<i class="fa fa-upload" aria-hidden="true"></i>
+							<span>New Version</span>
+						</button>
+				
+					</span>
+
+				</div>
+				
+		</a>
+
+
+
+	</ul>
 		
 
-	</div>
 </section>
 
 {% endblock %}
