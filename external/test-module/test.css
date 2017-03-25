@@ -1,5 +1,10 @@
 h1 {
-text-align: center;
+	text-align: center;
+}
+
+p {
+	display: flex;
+	justify-content: flex-start;
 }
 
 .container {
