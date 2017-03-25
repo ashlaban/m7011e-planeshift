@@ -27,6 +27,13 @@ class User(db.Model):
 		return user
 
 	@staticmethod
+	def get_by_email(email):
+		user = User.query.filter_by(email=email).first()
+		if user is None:
+			raise UserNotFoundError()
+		return user
+
+	@staticmethod
 	def authenticate(name, password):
 		try:
 			user = User.get_by_name(name)
@@ -39,6 +46,13 @@ class User(db.Model):
 	def exists(name):
 		try:
 			user = User.get_by_name(name)
+		except UserNotFoundError:
+			return False
+		return True
+
+	def exists_email(email):
+		try:
+			user = User.get_by_email(email)
 		except UserNotFoundError:
 			return False
 		return True

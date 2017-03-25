@@ -48,13 +48,21 @@ class SignupForm(Form):
 		if not Form.validate(self):
 			return False
 
+		if len(self.username.data) > 64:
+			self.username.errors.append('Username too long')
+			return False
+
+		if len(self.password.data) > 128:
+			self.username.errors.append('Password too long')
+			return False
+
 		if User.exists(self.username.data):
 			self.username.errors.append('Username taken')
 			return False
 
-		# if User.exists_email(self.email.data):
-		# 	self.username.errors.append('Email already taken')
-		# 	return False
+		if User.exists_email(self.email.data):
+			self.username.errors.append('Email already taken')
+			return False
 
 		return True
 
