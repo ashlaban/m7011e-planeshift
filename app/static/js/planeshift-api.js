@@ -44,8 +44,9 @@ var planeshift = (function () {
 			if (response && response.responseJSON && response.responseJSON.msg) {
 				var msg = response.responseJSON.msg;
 				console.log('Error message', msg)
-				$('#info').html(msg);
+				$('#info').html('Error: ' + msg);
 			}
+			console.log(response);
 		};
 	}
 
@@ -93,6 +94,7 @@ var planeshift = (function () {
 			type        : 'POST' ,
 			url         : url    ,
 			data        : data   ,
+			dataType    : 'json' ,
 			processData : false  ,
 			contentType : false  ,
 			success     : success,

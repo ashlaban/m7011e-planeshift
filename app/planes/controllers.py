@@ -77,30 +77,9 @@ def list_plane():
 def create_plane():
 	if g.user is not None and g.user.is_authenticated:
 		form = PlaneCreateForm()
-		# form.module.choices = form.get_modules()
-		if form.validate_on_submit():
-			m = None
-			if Module.query.filter_by(id=form.module.data).scalar() is not None:
-				m = Module.query.filter_by(id=form.module.data).first()
-			
-			'''
-			uid = uuid.uuid4()
-			while Plane.query.filter_by(uuid=uid).scalar() is not None:
-				uid = uuid.uuid4()
-			'''
-
-			plane = Plane(owner=g.user.id, password=form.password.data, module=m.id, data=None, name=form.name.data, public=not form.hidden.data)
-			db.session.add(plane)
-			db.session.commit()
-
-			flash('Plane created')
-			connect(g.user, plane)
-
-			return redirect(url_for('planes.show_plane', name=form.name.data, password=form.password.data))
+		return render_template('planes/create.html', title='Create Plane', form=form)
 	else:
 		return redirect(url_for('login'))
-
-	return render_template('planes/create.html', title='Create Plane', form=form)
 
 @planes.route('/name/<name>', methods=['GET', 'POST'])
 @login_required
@@ -166,11 +145,6 @@ def api_create_plane():
 	hidden       = util.html_escape_or_none(args['hidden'])
 
 	module = Module.query.filter_by(name=module_name).first()
-	
-	try:
-		version = module.get_latest_version()
-	except ModuleVersionNotFound:
-		return util.make_json_error(msg='Module has no version attached.')
 
 	if module is None:
 		return util.make_json_error(msg='Module does not exist.')
@@ -179,6 +153,11 @@ def api_create_plane():
 	if Plane.query.filter_by(name=plane_name).scalar() is not None:
 		return util.make_json_error(msg='A plane with that name already exists.')
 	
+	try:
+		version = module.get_latest_version()
+	except ModuleVersionNotFound:
+		return util.make_json_error(msg='Module has no version attached.')
+
 	hidden = (hidden == 'True')
 
 	plane = Plane(

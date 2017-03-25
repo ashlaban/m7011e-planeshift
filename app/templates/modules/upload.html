@@ -65,7 +65,6 @@
 
 {% block content %}
 <section class="center-content top-padding-md">
-
 	<div id="box" class="form-box rounded center-content">
 		<h1>{{module_name}} - New Version</h1>
 		<p>Upload your main.js module file and be good to go! You can also upload additional resources. See the module guide for more info.</p>
@@ -73,6 +72,7 @@
 		<p><em>Note: Modules that do not conform to the site guidelines are subject to deletion.</em></p>
 		<!-- TODO: Link to module info page. -->
 		<!-- TODO: Link to guidelines. -->
+		<p id="info" class="error"></p>
 
 		<form id="upload-form" class="form center-content" action="" method="post" enctype="multipart/form-data" name="module_upload">
 			<input type="text" name="version" id="version" class="wide-form-field", placeholder="New version name">
