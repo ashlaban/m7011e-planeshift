@@ -42,7 +42,7 @@
 		<a href="/planes/create">
 			<button class="btn badge badge--foldable" >
 			<i class="fa fa-plus" aria-hidden="true"></i>
-			<span>New plane</span>
+			<span class="badge--fold">New plane</span>
 			</button>
 		</a>
 	</div>
@@ -60,11 +60,12 @@
 					<!-- ko if: has_password -->
 					<span class="badge badge--foldable">
 						<i class="fa fa-lock fa-lg" aria-hidden="true"></i>
-						<span>Password protected</span>
+						<span class="badge--fold">Password protected</span>
 					</span>
 					<!-- /ko -->
-					<span class="badge">
+					<span class="badge badge--foldable">
 						<i class="fa fa-user fa-lg" aria-hidden="true"></i>
+						<span class="badge--fold">Connected users</span>
 						<span data-bind="text: users.length"></span>
 					</span>
 				</div>
@@ -83,7 +84,7 @@
 		<a href="/modules/create">
 			<button class="btn badge badge--foldable">
 				<i class="fa fa-plus" aria-hidden="true"></i>
-				<span>New module</span>
+				<span class="badge--fold">New module</span>
 			</button>
 		</a>
 	</div>
@@ -110,7 +111,7 @@
 							planeshift_view_model.remove_module(name, success);
 						}}">
 							<i class="fa fa-trash-o" aria-hidden="true"></i>
-							<span>Delete</span>
+							<span class="badge--fold">Delete</span>
 						</button>
 				
 						<button class="btn badge badge--foldable" data-bind="event: { click: function (data, event) {
@@ -118,7 +119,7 @@
 							planeshift.callback.redirect.to.module_new_version(name)();
 						}}">
 							<i class="fa fa-upload" aria-hidden="true"></i>
-							<span>New Version</span>
+							<span class="badge--fold">New Version</span>
 						</button>
 				
 					</span>

@@ -300,13 +300,13 @@ footer .fa-magic {
 	border-radius: 1em;
 }
 
-.badge--foldable :not(i) {
+.badge--foldable .badge--fold {
 	display: none;
 
 	padding: 5px;
 }
 
-.badge--foldable:hover :not(i) {
+.badge--foldable:hover .badge--fold {
 	display: initial;
 }
 

@@ -41,11 +41,12 @@
 				<!-- ko if: has_password -->
 				<span class="badge badge--foldable">
 					<i class="fa fa-lock fa-lg" aria-hidden="true"></i>
-					<span>Password protected</span>
+					<span class="badge--fold">Password protected</span>
 				</span>
 				<!-- /ko -->
-				<span class="badge">
+				<span class="badge badge--foldable">
 					<i class="fa fa-user fa-lg" aria-hidden="true"></i>
+					<span class="badge--fold">Connected users</span>
 					<span data-bind="text: users.length"></span>
 				</span>
 			</span>
