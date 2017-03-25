@@ -86,6 +86,13 @@ class Module(db.Model):
 	def has_version(self):
 		return self.latest_version != None
 
+	def has_version(self, version_string):
+		version_list = Module.get_versions(self.name)
+		for version in version_list:
+			if version.version_string == version_string:
+				return True
+		return False
+
 	def get_owner(self):
 		return User.get_by_id(self.owner)
 

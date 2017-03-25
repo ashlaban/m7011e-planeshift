@@ -253,6 +253,8 @@ def api_version(module_name):
 		# TODO: Argument validation should be standardised.
 		if escaped_version == "":
 			return util.make_json_error(msg='Version name cannot be empty.')
+		if module.has_version(escaped_version):
+			return util.make_json_error(msg='Version name already exists.')
 
 		manager.upload_version(module=module, sVersion=escaped_version, added_files=files)
 
