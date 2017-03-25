@@ -32,6 +32,12 @@ def index():
 def about():
 	return render_template('about.html')
 
+'''
+@app.route('/help')
+def help():
+	return render_template('help.html')
+'''
+
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
 	form = SignupForm()
