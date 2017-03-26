@@ -5,8 +5,9 @@
 
 {% block js %}
 <script type="text/javascript" charset="utf-8">
-	PLANE_NAME   = '{{plane_name}}';
-	CURRENT_USER = '{{current_user}}';
+	PLANE_NAME      = '{{plane_name}}';
+	CURRENT_USER    = '{{current_user}}';
+	CONNECTED_USERS = [{% for user in connected_users -%}'{{ user }}',{%- endfor %}];
 </script>
 
 <script src="/static/js/planeshift-planeapi.js"></script>

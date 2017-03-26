@@ -1,0 +1,22 @@
+<link rel="stylesheet type="text/css" href="{{module_path}}/dice.css">
+<h2>Latest dice rolls</h2>
+<p>
+<strong data-bind="text: latest_user"> </strong> rolled a <strong data-bind="text: latest_dice"></strong> with the result <strong data-bind="text: latest_val"> </strong>
+</p>
+<!-- <ul class=center-content data-bind="foreach: data['data']">
+	<li data-bind="text: $data"></li>
+</ul> -->
+
+<h2>Roll a dice</h2>
+<p>
+	Number of dice : <select data-bind="options: available_n, selectedOptions: n_dice"></select><br>
+	Number of sides: <select data-bind="options: available_sides, selectedOptions: sides"></select><br>
+	<button type="" onclick="view_model.publish_dice()">Roll dice</button>
+</p>
+
+<h2>Connected users</h2>
+<ul class=center-content data-bind="foreach: connected_users">
+	<li data-bind="text: $data"></li>
+</ul>
+
+</div>

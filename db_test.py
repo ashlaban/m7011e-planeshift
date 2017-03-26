@@ -9,6 +9,11 @@ import uuid
 ####################################################################
 import rethinkdb as r
 rethink_connection = r.connect( "localhost", 28015)
+try:
+	r.db_drop('planeshift').run(rethink_connection)
+except Exception:
+	pass
+r.db_create('planeshift').run(rethink_connection)
 r.db("planeshift").table_create("planes").run(rethink_connection)
 
 # Add test users

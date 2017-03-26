@@ -37,6 +37,11 @@ class Plane(db.Model):
 			return True
 		return False
 
+	def get_users(self):
+		users = map( (lambda item: User.get_by_id(item.user).username), Session.get_users_for_plane(self) )
+		users = list(users)
+		return users
+
 	def get_module(self):
 		module = Module.query.get(int(self.module)) if self.module is not None else None
 		return module
@@ -66,18 +71,19 @@ class Plane(db.Model):
 			return True
 		return False
 
-	def set_data(self, key, value):
-		r.db('test')                        \
-			.table('planes')                \
-			.get(self.get_id())             \
-			.update({'data': {key: value}}) \
+	def set_data(self, data):
+		r.db('planeshift')          \
+			.table('planes')        \
+			.get(self.get_id())     \
+			.update({'data': data}) \
 			.run(rethink_connection)
 
 	def get_data(self, key):
-		return r.db('test')                   \
-			.table('planes')                  \
-			.get(self.get_id())               \
-			.run(rethink_connection)['data'][key]
+		return r.db('planeshift')  \
+			.table('planes')       \
+			.get(self.get_id())    \
+			.pluck({'data': key})  \
+			.run(rethink_connection)['data']
 
 	def is_user_connected(self, user):
 		return (Session.get_session(user=user, plane=self) is not None)
@@ -101,8 +107,6 @@ class Plane(db.Model):
 		version = self.get_version()
 		version_name = version.version_string if version else "No version"
 
-		users = map( (lambda item: item.user), Session.get_users_for_plane(self) )
-
 		data = {
 			'is_owner'       : self.is_owner(user),
 			'has_password'   : self.has_password(),
@@ -111,7 +115,7 @@ class Plane(db.Model):
 			'picture'        : self.get_picture_path(),
 			'name'           : self.get_name(),
 			'public'         : self.is_public(),
-			'users'          : list(users),
+			'users'          : self.get_users(),
 			# 'users'          : "Not implemented",
 		}
 		return data

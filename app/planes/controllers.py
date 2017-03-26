@@ -3,6 +3,7 @@ from flask import Blueprint, render_template, flash, redirect, session, url_for,
 from flask_login import login_required
 
 import uuid
+import json
 
 from app import db, util
 from app.models import User
@@ -57,10 +58,11 @@ def show_plane_helper(plane):
 
 	# TODO: This should be rendered in a jinja sandbox environment.
 	return render_template('planes/plane.html', 
-		paths        = paths,
-		plane_name   = plane.get_name(),
-		current_user = g.user.username,
-		module_path  = module_path,
+		paths           = paths,
+		plane_name      = plane.get_name(),
+		current_user    = g.user.username,
+		module_path     = module_path,
+		connected_users = plane.get_users(),
 	)
 
 # Views
@@ -260,22 +262,20 @@ def api_get_plane(plane_id):
 def api_store_data(plane_id):
 	'''Store data on plane.
 	Arguments
-		key   - String - Key used to identify data.
-		value - String - Data to store.
+		data   - String - 
 	'''
 
 	if g.user is None or not g.user.is_authenticated:
 		return util.make_json_error(msg='Not authenticated.')
 
 	args  = util.parse_request_to_json(request)
-	key   = util.html_escape_or_none(args['key'])
-	value = util.html_escape_or_none(args['value'])
+	data  = args['data']
 	plane = Plane.get_plane(plane_id)
 
 	if plane.is_user_connected(g.user):
 		try:
-			plane.set_data(key, value)
-		except rethinkdb.errors.ReqlDriverCompileError:
+			plane.set_data(data)
+		except r.errors.ReqlDriverCompileError:
 			return util.make_json_error(msg='Invalid request.')	
 		return util.make_json_success(msg='Data stored successfully.')
 	else:	
@@ -285,18 +285,22 @@ def api_store_data(plane_id):
 def api_get_data(plane_id):
 	'''Get information for plane.
 	Arguments
-		key   - String - Key used to identify data.
+		key   - String - JSON key supporting nested selection.
 	'''
 	if g.user is None or not g.user.is_authenticated:
 		return util.make_json_error(msg='Not authenticated.')
 
 	args  = request.args
-	key   = util.html_escape_or_none(args['key'])
+	key   = args['key']
+	try:
+		key   = json.loads(key)
+	except:
+		key = True
+
 	plane = Plane.get_plane(plane_id)
 
 	if plane.is_user_connected(g.user):
 		data = plane.get_data(key)
-
 		return util.make_json_success(data=data)
 	else:
 		return util.make_json_error(msg='No session to plane.')
