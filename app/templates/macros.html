@@ -1,0 +1,62 @@
+{# 
+	Macros for increased consistency across the static part of the web app. 
+#}
+
+{# === Badges === #}
+{# Used for displaying short info #}
+
+{% macro badge_password_protected() %}
+<span class="badge badge--foldable">
+	<i class="fa fa-lock fa-lg" aria-hidden="true"></i>
+	<span class="badge--fold">Password protected</span>
+</span>
+{% endmacro %}
+
+{% macro badge_connected_users() %}
+<span class="badge badge--foldable">
+	<i class="fa fa-user fa-lg" aria-hidden="true"></i>
+	<span class="badge--fold">Connected users</span>
+	<span data-bind="text: users.length"></span>
+</span>
+{% endmacro %}
+
+{% macro badge_simple(icon, text) %}
+<span class="badge badge--foldable">
+	<i class="fa {{icon}} fa-lg" aria-hidden="true"></i>
+	<span class="badge--fold">{{text}}</span>
+</span>
+{% endmacro %}
+
+{# === Badge Buttons === #}
+{# These are as badges but also clickable #}
+
+{% macro button_new_plane() %}
+<button class="btn badge badge--foldable" >
+	<i class="fa fa-plus" aria-hidden="true"></i>
+	<span class="badge--fold">New plane</span>
+</button>
+{% endmacro %}
+
+{% macro button_new_module() %}
+<button class="btn badge badge--foldable">
+	<i class="fa fa-plus" aria-hidden="true"></i>
+	<span class="badge--fold">New module</span>
+</button>
+{% endmacro %}
+
+{% macro button_simple(icon, text) %}
+<button class="btn badge badge--foldable">
+	<i class="fa {{icon}} fa-lg" aria-hidden="true"></i>
+	<span class="badge--fold">{{text}}</span>
+</button>
+{% endmacro %}
+
+{# === Buttons === #}
+{# Buttons in the more traditional sense #}
+
+{% macro button(icon, text, id) %}
+<button id="{{id}}" class="btn" href="">
+	<i class="fa {{icon}}" aria-hidden="true"></i>
+	{{text}}
+</button>
+{% endmacro %}

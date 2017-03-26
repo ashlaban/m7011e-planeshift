@@ -39,16 +39,9 @@
 				<h2 data-bind="text: name"></h2>
 				<span class="filler"></span>
 				<!-- ko if: has_password -->
-				<span class="badge badge--foldable">
-					<i class="fa fa-lock fa-lg" aria-hidden="true"></i>
-					<span class="badge--fold">Password protected</span>
-				</span>
+				{{ macros.badge_password_protected() }}
 				<!-- /ko -->
-				<span class="badge badge--foldable">
-					<i class="fa fa-user fa-lg" aria-hidden="true"></i>
-					<span class="badge--fold">Connected users</span>
-					<span data-bind="text: users.length"></span>
-				</span>
+				{{ macros.badge_connected_users() }}
 			</span>
 			
 			<span class="list-item-description row">

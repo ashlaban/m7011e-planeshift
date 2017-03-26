@@ -21,6 +21,16 @@
   			planeshift_view_model.upload_files_from_form(form);
 		}, false);
 
+		var addfilesbtn = document.getElementById('add-files-btn');
+		addfilesbtn.addEventListener('click', function(ev) {
+			document.getElementById('files').click()
+		});
+
+		var clearfilesbtn = document.getElementById('clear-files-btn');
+		clearfilesbtn.addEventListener('click', function(ev) {
+			planeshift_view_model.clear_files();
+		});
+
 		var form = document.getElementById('upload-form');
 		form.addEventListener('submit', function(ev) {
 			ev.preventDefault();
@@ -92,18 +102,9 @@
 			</div>
 
 			<div class="btn-list">
-				<button id="upload-btn" class="btn">
-					<i class="fa fa-upload" aria-hidden="true"></i>
-					Upload
-				</button>
-				<button class="btn" onclick="document.getElementById('files').click()">
-					<i class="fa fa-plus" aria-hidden="true"></i>
-					Add files
-				</button>
-				<button class="btn" onclick="planeshift_view_model.clear_files();" href="">
-					<i class="fa fa-eraser" aria-hidden="true"></i>
-					Clear
-				</button>
+				{{macros.button("fa-upload", "Upload"   , "upload-btn"     )}}
+				{{macros.button("fa-plus"  , "Add files", "add-files-btn"  )}}
+				{{macros.button("fa-eraser", "Clear"    , "clear-files-btn")}}
 			</div>
 		</form>
 	</div>

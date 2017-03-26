@@ -40,10 +40,7 @@
 			<span>Your Planes</span>
 		</h2>
 		<a href="/planes/create">
-			<button class="btn badge badge--foldable" >
-			<i class="fa fa-plus" aria-hidden="true"></i>
-			<span class="badge--fold">New plane</span>
-			</button>
+			{{ macros.button_new_plane() }}
 		</a>
 	</div>
 
@@ -58,16 +55,9 @@
 					<span class="list-item-title" data-bind="text: name"></span>
 					<span class="filler"></span>
 					<!-- ko if: has_password -->
-					<span class="badge badge--foldable">
-						<i class="fa fa-lock fa-lg" aria-hidden="true"></i>
-						<span class="badge--fold">Password protected</span>
-					</span>
+					{{ macros.badge_password_protected() }}
 					<!-- /ko -->
-					<span class="badge badge--foldable">
-						<i class="fa fa-user fa-lg" aria-hidden="true"></i>
-						<span class="badge--fold">Connected users</span>
-						<span data-bind="text: users.length"></span>
-					</span>
+					{{ macros.badge_connected_users() }}
 				</div>
 			</div>
 		</a>
@@ -82,10 +72,7 @@
 			Your Modules
 		</h2>
 		<a href="/modules/create">
-			<button class="btn badge badge--foldable">
-				<i class="fa fa-plus" aria-hidden="true"></i>
-				<span class="badge--fold">New module</span>
-			</button>
+			{{ macros.button_new_module() }}
 		</a>
 	</div>
 
