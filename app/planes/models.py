@@ -2,6 +2,9 @@ from app import db
 from app.modules.models import Module, ModuleVersion
 from app.models import User
 
+import rethinkdb as r
+rethink_connection = r.connect( "localhost", 28015)
+
 class Plane(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	#uuid = db.Column(db.String(64), index=True, unique=True)
@@ -63,15 +66,18 @@ class Plane(db.Model):
 			return True
 		return False
 
-	def set_data(self, data):
-		if data is None:
-			self.data = None
-		else:
-			self.data = data.encode('utf-8')
+	def set_data(self, key, value):
+		r.db('test')                        \
+			.table('planes')                \
+			.get(self.get_id())             \
+			.update({'data': {key: value}}) \
+			.run(rethink_connection)
 
-	def get_data(self):
-		data = self.data if self.data is not None else ''.encode('utf-8')
-		return data.decode('utf-8')
+	def get_data(self, key):
+		return r.db('test')                   \
+			.table('planes')                  \
+			.get(self.get_id())               \
+			.run(rethink_connection)['data'][key]
 
 	def is_user_connected(self, user):
 		return (Session.get_session(user=user, plane=self) is not None)

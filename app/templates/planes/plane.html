@@ -5,11 +5,14 @@
 
 {% block js %}
 <script type="text/javascript" charset="utf-8">
-	plane_name = '{{name}}';
+	PLANE_NAME   = '{{plane_name}}';
+	CURRENT_USER = '{{current_user}}';
 </script>
 
-<script src="/static/js/jquery-3.1.1.min.js"></script>
+<script src="/static/js/planeshift-planeapi.js"></script>
 <script src="{{paths['main.js']}}"></script>
+
+<script src="/static/js/jquery-3.1.1.min.js"></script>
 {% endblock js %}
 
 {% block content %}

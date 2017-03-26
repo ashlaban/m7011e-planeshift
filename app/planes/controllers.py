@@ -57,10 +57,10 @@ def show_plane_helper(plane):
 
 	# TODO: This should be rendered in a jinja sandbox environment.
 	return render_template('planes/plane.html', 
-		paths=paths,
-		name=plane.get_name(),
-		user=g.user.username,
-		module_path=module_path,
+		paths        = paths,
+		plane_name   = plane.get_name(),
+		current_user = g.user.username,
+		module_path  = module_path,
 	)
 
 # Views
@@ -174,9 +174,20 @@ def api_create_plane():
 
 	try:
 		db.session.commit()
+
+		import rethinkdb as r
+		rethink_connection = r.connect( "localhost", 28015)
+		r.db('planeshift')                                \
+			.table('planes')                              \
+			.insert({'id': plane.get_id(), 'data': None}) \
+			.run(rethink_connection)
+
 	except sqlalchemy.exc.IntegrityError as e:
 		db.session.rollback()
 		return util.make_json_error(msg='Invalid arguments.')
+	except Exception as s:
+		db.session.rollback()
+		return util.make_json_error(msg='Internal error.')
 
 	connect(g.user, plane)
 	return util.make_json_success(msg='Plane created.')
@@ -249,40 +260,43 @@ def api_get_plane(plane_id):
 def api_store_data(plane_id):
 	'''Store data on plane.
 	Arguments
-		data - String - Data to store.
+		key   - String - Key used to identify data.
+		value - String - Data to store.
 	'''
 
 	if g.user is None or not g.user.is_authenticated:
 		return util.make_json_error(msg='Not authenticated.')
 
-	args = util.parse_request_to_json(request)
-
-	data = util.html_escape_or_none(args['data'])
+	args  = util.parse_request_to_json(request)
+	key   = util.html_escape_or_none(args['key'])
+	value = util.html_escape_or_none(args['value'])
 	plane = Plane.get_plane(plane_id)
 
 	if plane.is_user_connected(g.user):
-		plane.set_data(data)
 		try:
-			db.session.commit()
-		except sqlalchemy.exc.IntegrityError as e:
-			return util.make_json_error(msg='Invalid arguments.')
+			plane.set_data(key, value)
+		except rethinkdb.errors.ReqlDriverCompileError:
+			return util.make_json_error(msg='Invalid request.')	
 		return util.make_json_success(msg='Data stored successfully.')
 	else:	
-		return util.make_json_error(msg='Not owner of plane.')
+		return util.make_json_error(msg='Not connected to plane.')
 
 @planes_api.route('/<plane_id>/data', methods=['GET'])
 def api_get_data(plane_id):
 	'''Get information for plane.
-	Returns
-		data - 
+	Arguments
+		key   - String - Key used to identify data.
 	'''
 	if g.user is None or not g.user.is_authenticated:
 		return util.make_json_error(msg='Not authenticated.')
 
+	args  = request.args
+	key   = util.html_escape_or_none(args['key'])
 	plane = Plane.get_plane(plane_id)
 
 	if plane.is_user_connected(g.user):
-		data = plane.get_data()
+		data = plane.get_data(key)
+
 		return util.make_json_success(data=data)
 	else:
 		return util.make_json_error(msg='No session to plane.')

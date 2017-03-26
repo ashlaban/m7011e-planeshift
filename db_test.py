@@ -5,6 +5,12 @@ from app.modules import models as module_models
 
 import uuid
 
+# Set up rethink db
+####################################################################
+import rethinkdb as r
+rethink_connection = r.connect( "localhost", 28015)
+r.db("planeshift").table_create("planes").run(rethink_connection)
+
 # Add test users
 ####################################################################
 print('Adding users...')

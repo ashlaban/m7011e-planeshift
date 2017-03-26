@@ -13,3 +13,5 @@ flask_sqlalchemy
 flask_login
 
 sqlalchemy-migrate
+
+rethinkdb
