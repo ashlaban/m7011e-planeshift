@@ -42,12 +42,13 @@ def show_plane_helper(plane):
 		return render_template('planes/module-not-found.html')
 
 	paths = {}
+	version_name = plane.get_version().get_escaped_version()
 	try:
-		paths['index.html'] = manager.get_path_for_module_content('index.html', module)
+		paths['index.html'] = manager.get_path_for_module_content('index.html', module, version_name)
 	except ModuleHasNoData:
 		paths['index.html'] = ''
 	try:
-		paths['main.js'] = manager.get_path_for_module_content('main.js', module)
+		paths['main.js'] = manager.get_path_for_module_content('main.js', module, version_name)
 	except ModuleHasNoData:
 		paths['main.js'] = ''
 
