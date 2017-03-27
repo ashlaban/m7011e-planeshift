@@ -88,14 +88,16 @@ def add_plane(plane_name,  module_name, owner_name, password, public):
 	'''
 	print ('Add plane '+plane_name+' ')
 	try:
-		user   = user_models.User.get_by_name(owner_name)
-		module = module_models.Module.get_by_name(module_name)
+		user    = user_models.User.get_by_name(owner_name)
+		module  = module_models.Module.get_by_name(module_name)
+		version = module.get_latest_version()
 
 		plane = plane_models.Plane(
 			owner    = user.id,
 			password = password,
 			module   = module.id,
 			name     = plane_name,
+			version  = version.id,
 			public   = public
 		)
 
@@ -112,6 +114,9 @@ def add_plane(plane_name,  module_name, owner_name, password, public):
 		return False
 	except module_models.ModuleNotFound:
 		print ('\tSkipping -- module '+module_name+' not found.')
+		return False
+	except module_models.ModuleVersionNotFound:
+		print ('\tSkipping -- latest version for '+module_name+' not found.')
 		return False
 	except Exception as e:
 		print ('\tSkipping -- unknown exception.')
@@ -153,11 +158,26 @@ add_user('test', 'test', 'test@test.com')
 print()
 print('Adding modules...')
 print('='*80)
+
 add_module(
 	owner_name  = 'john',
 	module_name = 'Dice Roller',
 	short       = 'A simple dice roller application to alea some eacta est with your friends. Can roll up to 10 dice simultaneously, of any kind imaginable! Currently supports 2, 3, 6, 8, 12, 20 and 100 sided dice.',
 	long        = 'Roll dice with the button. The latest result will be automatically synced with everyone in the plane.',
+)
+
+add_module(
+	owner_name  = 'john',
+	module_name = 'Settlers of Catan',
+	short       = 'Keeps track of Catan cards.',
+	long        = 'A simple module that helps you keep track of your catan cards when playing. Never more will you suffer from the card explosion that can happen when your friends acidentally hits the table!',
+)
+
+add_module(
+	owner_name  = 'john',
+	module_name = 'Tutorial Module',
+	short       = 'Used for the About page demo room',
+	long        = '',
 )
 	
 # Add module versions
@@ -166,15 +186,34 @@ print()
 print('Adding module versions...')
 print('='*80)
 add_module_version("Dice Roller", "1.0.0", "external/dice")
+add_module_version("Settlers of Catan", "1.0.0", "external/catan")
+add_module_version("Tutorial Module", "1.0.0", "external/test-module")
 
 # Add test planes
 ####################################################################
 print()
 print('Adding planes...')
 print('='*80)
+
+add_plane(
+	plane_name  = 'Settlers Demo Room',
+	module_name = 'Settlers of Catan',
+	owner_name  = 'john',
+	password    = None,
+	public      = True,
+)
+
 add_plane(
 	plane_name  = 'Astral Plane',
 	module_name = 'Dice Roller',
+	owner_name  = 'john',
+	password    = None,
+	public      = True,
+)
+
+add_plane(
+	plane_name  = 'test-plane',
+	module_name = 'Tutorial Module',
 	owner_name  = 'john',
 	password    = None,
 	public      = True,
