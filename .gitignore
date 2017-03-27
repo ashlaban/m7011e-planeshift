@@ -11,6 +11,8 @@ uwsgi.ini
 app.db
 .well-known/
 app/static/img/banners
+db_repository/
+rethinkdb_data/
 
 # macOS specific
 *.DS_Store
