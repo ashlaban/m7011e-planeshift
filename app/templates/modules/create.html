@@ -18,7 +18,10 @@
 		var form = document.getElementById('create-form');
 		form.addEventListener('submit', function(ev) {
 			ev.preventDefault();
-			planeshift_view_model.create_module_from_form(form);
+
+			var new_module_name = form.name.value;
+			var success         = planeshift.callback.redirect.to.module_new_version(new_module_name);
+			planeshift_view_model.create_module_from_form(form, success);
 		}, false);
 
 	});
@@ -29,6 +32,7 @@
 <section class="center-content">
 	<div class="form-box rounded center-content">
 		<h1>Create new module</h1>
+		<p>This is the first step to running planes with your custom module! You will also have to upload a new version with the files. After you click create you will be taken to the new version page where you can do just this.</p>
 		<p id="info" class="error"></p>
 
 		<form id="create-form" class="form center-content" action="" method="post" enctype="multipart/form-data" name="module_create">

@@ -1,3 +1,8 @@
+h1 {
+	margin: 0em;
+	padding: 0em;
+}
+
 #main ul {
 	/*display: inline;*/
 
@@ -10,4 +15,19 @@
 #main a, a:visited, a:hover{
 	text-decoration: none;
 	color: inherit;
+}
+
+.heading {
+	padding-top: 0.25em;
+	padding-bottom: 0.25em;
+	padding-left : 0.25em;
+	padding-right: 2em;
+
+	margin-top: 2em;
+	margin-bottom: 0.5em;
+	
+	width: 40em;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
 }

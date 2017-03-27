@@ -26,7 +26,7 @@ var generate_empty_model = function () {
 
 function PlaneshiftViewModel() {
 	this.current_module = ko.observable(generate_empty_model());
-	this.current_plane = ko.observable(generate_empty_plane());
+	this.current_plane  = ko.observable(generate_empty_plane());
 	this.plane_list     = ko.observableArray();
 	this.module_list    = ko.observableArray();
 	this.file_list      = ko.observableArray();
@@ -78,24 +78,19 @@ PlaneshiftViewModel.prototype.get_plane = function (name) {
 }
 
 PlaneshiftViewModel.prototype.create_plane = function (data, success, error) {
-	console.log('Creating plane')
 	var success = success || planeshift.callback.redirect.to.plane(data.name);
 	var error   = error   || planeshift.callback.error.default();
-	
+
 	planeshift.create.plane(data, success, error);
 }
 
 PlaneshiftViewModel.prototype.create_plane_from_form = function (form, success, error) {
-	console.log('Creating plane')
 	var data = {
 		name     : form.name.value,
 		password : form.password.value,
 		module   : form.module.value,
 		hidden   : form.hidden.checked,
 	};
-
-	var success = success || planeshift.callback.redirect.to.plane(data.name);
-	var error   = error   || planeshift.callback.error.default();
 	
 	this.create_plane(data, success, error);
 }
@@ -237,7 +232,7 @@ PlaneshiftViewModel.prototype.create_module_from_form = function (form, success,
 	var short_desc = form.short_desc.value;
 	var long_desc  = form.long_desc.value;
 
-	this.create_module(name, short_desc, long_desc);
+	this.create_module(name, short_desc, long_desc, success, error);
 }
 
 PlaneshiftViewModel.prototype.remove_module = function (name, success, error) {

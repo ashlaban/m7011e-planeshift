@@ -20,9 +20,13 @@
 {% endblock js %}
 
 {% block content %}
-<h1 class="page-heading">Modules</h1>
+<div class="heading">
+	<h1 class="page-heading">Modules</h1>
+	<a href="/modules/create">{{ macros.button_new_module() }}</a>
+</div>
+
 <div class="page-summary">
-	<p>Looking for a game to play? Browse our repository of wonderful ideas!</p>
+	<p>Looking for a game to play? Browse our repository of wonderful ideas, or create your own!</p>
 </div>
 
 <div class="divider"></div>

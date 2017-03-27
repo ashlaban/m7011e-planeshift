@@ -19,7 +19,10 @@
 {% endblock js %}
 
 {% block content %}
-<h1 class="page-heading">Public planes</h1>
+<div class="heading">
+	<h1 class="page-heading">Public planes</h1>
+	<a href="/modules/create">{{ macros.button_new_plane() }}</a>
+</div>
 <div class="page-summary">
 	<p>Looking for a plane to join? Browse what is available here!</p>
 </div>

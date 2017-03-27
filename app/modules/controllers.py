@@ -138,6 +138,9 @@ def api_create_module():
 	# picture        = args['picture']
 	latest_version = None
 
+	if module_name is None or module_name == '':
+		return util.make_json_error(msg='Module must have a name.')
+
 	module      = None
 	try:
 		module = Module.get_by_name(module_name)
