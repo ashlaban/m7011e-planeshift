@@ -13,7 +13,7 @@ function DiceViewModel() {
 	this.current_user    = ko.observable(CURRENT_USER);
 
 	this.n_dice = ko.observable(1);
-	this.sides  = ko.observable(6);
+	this.sides  = ko.observable(2);
 	this.available_n      = [1,2,3,4,5,6,7,8,9,10];
 	this.available_sides  = [2,3,6,8,12,20,100];
 
