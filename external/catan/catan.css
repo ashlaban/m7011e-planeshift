@@ -14,5 +14,23 @@ float: left;
 }
 
 .cntObj {
-float: left;
+	background-color: #8FBCDB;
+    border: 2px solid #8FBCDB;
+    border-radius: 10px;
+    /*color: #8FBCDB;*/
+
+	width : 75px;
+	height: 75px;
+	line-height:70px;
+
+	text-align: center;
+	font-size: 45px;
+}
+
+.counter {
+	display: flex;
+
+	flex-direction: row;
+	justify-content: space-around;
+	align-items: stretch;
 }

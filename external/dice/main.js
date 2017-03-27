@@ -36,10 +36,12 @@ DiceViewModel.prototype.get_latest = function () {
 
 	get_data(true, function(data) {
 		console.log(data)
-		self.latest_user(data['data']['latest']['user']);
-		self.latest_dice(data['data']['latest']['dice']);
-		self.latest_val(data['data']['latest']['val']);
-		self.data(data['data'])
+		data = data.data.data
+		console.log(data)
+		self.latest_user(data['latest']['user']);
+		self.latest_dice(data['latest']['dice']);
+		self.latest_val(data['latest']['val']);
+		self.data(data)
 	});
 }
 

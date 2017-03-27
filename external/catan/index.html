@@ -4,43 +4,43 @@
 
 <div id="cards">
 	<div class="resource">
-		<img id="stone" src="{{module_path}}/stone.jpg">
+		<img src="{{module_path}}/stone.jpg">
 		<div class="counter">
-			<button class="cntObj" type="button" onclick="addStone()">+</button>
-			<div id="stoneNum" class="cntObj"></div>
-			<button class="cntObj" type="button" onclick="subStone()">-</button>
+			<button class="cntObj" type="button" onclick="mod(-1, 'stone')">-</button>
+			<div id="stone" class="cntObj"></div>
+			<button class="cntObj" type="button" onclick="mod(1, 'stone')">+</button>
 		</div>
 	</div>
 	<div class="resource">
-		<img id="wheat" src="{{module_path}}/wheat.jpg">
+		<img src="{{module_path}}/wheat.jpg">
 		<div class="counter">
-			<button class="cntObj" type="button" onclick="addWheat()">+</button>
-			<div id="wheatNum" class="cntObj"></div>
-			<button class="cntObj" type="button" onclick="subWheat()">-</button>
+			<button class="cntObj" type="button" onclick="mod(-1, 'wheat')">-</button>
+			<div id="wheat" class="cntObj"></div>
+			<button class="cntObj" type="button" onclick="mod(1, 'wheat')">+</button>
 		</div>
 	</div>
 	<div class="resource">
-		<img id="brick" src="{{module_path}}/brick.jpg">
+		<img src="{{module_path}}/brick.jpg">
 		<div class="counter">
-			<button class="cntObj" type="button" onclick="addBrick()">+</button>
-			<div id="brickNum" class="cntObj"></div>
-			<button class="cntObj" type="button" onclick="subBrick()">-</button>
+			<button class="cntObj" type="button" onclick="mod(-1, 'brick')">-</button>
+			<div id="brick" class="cntObj"></div>
+			<button class="cntObj" type="button" onclick="mod(1, 'brick')">+</button>
 		</div>
 	</div>
 	<div class="resource">
-		<img id="wood" src="{{module_path}}/wood.jpg">
+		<img src="{{module_path}}/wood.jpg">
 		<div class="counter">
-			<button class="cntObj" type="button" onclick="addWood()">+</button>
-			<div id="woodNum" class="cntObj"></div>
-			<button class="cntObj" type="button" onclick="subWood()">-</button>
+			<button class="cntObj" type="button" onclick="mod(-1, 'wood')">-</button>
+			<div id="wood" class="cntObj"></div>
+			<button class="cntObj" type="button" onclick="mod(1, 'wood')">+</button>
 		</div>
 	</div>
 	<div class="resource">
-		<img id="sheep" src="{{module_path}}/sheep.jpg">
+		<img src="{{module_path}}/sheep.jpg">
 		<div class="counter">
-			<button class="cntObj" type="button" onclick="addSheep()">+</button>
-			<div id="sheepNum" class="cntObj"></div>
-			<button class="cntObj" type="button" onclick="subSheep()">-</button>
+			<button class="cntObj" type="button" onclick="mod(-1, 'sheep')">-</button>
+			<div id="sheep" class="cntObj"></div>
+			<button class="cntObj" type="button" onclick="mod(1, 'sheep')">+</button>
 		</div>
 	</div>
 </div>

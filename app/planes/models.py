@@ -84,7 +84,7 @@ class Plane(db.Model):
 			.table('planes')       \
 			.get(self.get_id())    \
 			.pluck({'data': key})  \
-			.run(rethink_connection)['data']
+			.run(rethink_connection)
 
 	def is_user_connected(self, user):
 		return (Session.get_session(user=user, plane=self) is not None)
