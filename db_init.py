@@ -122,6 +122,9 @@ def add_plane(plane_name,  module_name, owner_name, password, public):
 
 # Set up rethink db
 ####################################################################
+print()
+print('Setting up rethink db...')
+print('='*80)
 import rethinkdb as r
 rethink_connection = r.connect( "localhost", 28015)
 try:
@@ -133,7 +136,9 @@ r.db("planeshift").table_create("planes").run(rethink_connection)
 
 # Add test users
 ####################################################################
+print()
 print('Adding users...')
+print('='*80)
 add_user('john', 'pass', 'john@test.com')
 add_user('test', 'test', 'test@test.com')
 
@@ -145,7 +150,9 @@ add_user('test', 'test', 'test@test.com')
 # 	short       = ,
 # 	long        = ,
 # )
-
+print()
+print('Adding modules...')
+print('='*80)
 add_module(
 	owner_name  = 'john',
 	module_name = 'Dice Roller',
@@ -155,11 +162,16 @@ add_module(
 	
 # Add module versions
 ####################################################################
+print()
+print('Adding module versions...')
+print('='*80)
 add_module_version("Dice Roller", "1.0.0", "external/dice")
 
 # Add test planes
 ####################################################################
-
+print()
+print('Adding planes...')
+print('='*80)
 add_plane(
 	plane_name  = 'Astral Plane',
 	module_name = 'Dice Roller',
