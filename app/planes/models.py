@@ -2,6 +2,8 @@ from app import db
 from app.modules.models import Module, ModuleVersion
 from app.models import User
 
+from config import RETHINK_DB_PORT
+
 import rethinkdb as r
 
 class Plane(db.Model):
@@ -71,7 +73,7 @@ class Plane(db.Model):
 		return False
 
 	def set_data(self, data):
-		rethink_connection = r.connect("localhost", 28015)
+		rethink_connection = r.connect("localhost", RETHINK_DB_PORT)
 		r.db('planeshift')          \
 			.table('planes')        \
 			.get(self.get_id())     \
@@ -79,7 +81,7 @@ class Plane(db.Model):
 			.run(rethink_connection)
 
 	def get_data(self, key):
-		rethink_connection = r.connect("localhost", 28015)
+		rethink_connection = r.connect("localhost", RETHINK_DB_PORT)
 		return r.db('planeshift')  \
 			.table('planes')       \
 			.get(self.get_id())    \

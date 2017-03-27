@@ -14,6 +14,8 @@ from app.modules.models import ModuleHasNoData, ModuleVersionNotFound
 
 from app.modules import manager
 
+from config import RETHINK_DB_PORT
+
 import sqlalchemy
 
 # Define the blueprint: 'auth', set its url prefix: app.url/auth
@@ -179,7 +181,7 @@ def api_create_plane():
 		db.session.commit()
 
 		import rethinkdb as r
-		rethink_connection = r.connect( "localhost", 28015)
+		rethink_connection = r.connect( "localhost", RETHINK_DB_PORT)
 		r.db('planeshift')                                \
 			.table('planes')                              \
 			.insert({'id': plane.get_id(), 'data': None}) \

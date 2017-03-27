@@ -5,6 +5,8 @@ from app.modules import models as module_models
 from app         import models as user_models
 from app.modules import manager as manager
 
+from config import RETHINK_DB_PORT
+
 # TODO: The add_user etc. should use manager functions in the same style as 
 # 	app.modules.manager for adding module versions.
 
@@ -131,7 +133,7 @@ print()
 print('Setting up rethink db...')
 print('='*80)
 import rethinkdb as r
-rethink_connection = r.connect( "localhost", 28015)
+rethink_connection = r.connect( "localhost", RETHINK_DB_PORT)
 try:
 	r.db_drop('planeshift').run(rethink_connection)
 except Exception:
