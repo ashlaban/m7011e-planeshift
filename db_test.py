@@ -2,8 +2,123 @@
 from app import db, models
 from app.planes import models as plane_models
 from app.modules import models as module_models
+from app         import models as user_models
+from app.modules import manager as manager
 
-import uuid
+# TODO: The add_user etc. should use manager functions in the same style as 
+# 	app.modules.manager for adding module versions.
+
+def add_user(name, password, email):
+	'''Add a user to the database
+	'''
+	print ('Add user ' + name + '')
+	try:
+		user_models.User.get_by_name(name)
+		print ('\tSkipping -- owner _does_ exist.')
+		return False
+	except user_models.UserNotFoundError:
+		pass
+
+	try:
+		u = models.User(username=name, password=password, email=email)
+		db.session.add(u)
+		db.session.commit()
+	except Exception as e:
+		print ('\tSkipping -- unknown error.')
+		return False
+
+	return True
+
+def add_module(owner_name, module_name, short, long):
+	'''Add a module to the database
+	'''
+	print ('Add module ' + module_name + '')
+	try:
+		module_models.Module.get_by_name(module_name)
+		print ('\tSkipping -- module exists.')
+		return False
+	except module_models.ModuleNotFound:
+		pass
+
+	try:
+		owner = user_models.User.get_by_name(owner_name)
+	except user_models.UserNotFoundError:
+		print ('\tSkipping -- owner does not exist.')
+		return False
+
+	try:
+		module = module_models.Module(
+			owner      = owner.id,
+			name       = module_name,
+			short_desc = short,
+			long_desc  = long,
+
+			latest_version=None,
+		)
+		db.session.add(module)
+		db.session.commit()
+	except Exception as e:
+		print ('\tSkipping -- unknown error.')
+		print ('\t'+str(e))
+		return False
+	return True
+
+def add_module_version(module_name, version_name, path):
+	'''Add a verison to a given module
+	'''
+	print ('Add version '+version_name+' to '+module_name+'.')
+	try:
+		module = module_models.Module.get_by_name(module_name)
+		if not module.has_version(version_name):
+			manager.upload_version_path(module, version_name, path)
+		else:
+			print ('\tSkipping -- version already exists.')	
+			return False
+	except module_models.ModuleNotFound:
+		print ('\tSkipping -- module not found.')
+		return False
+	except Exception as e:
+		print ('\tSkipping -- unknown exception.')
+		print ('\t'+str(e))
+		return False
+	return True
+
+def add_plane(plane_name,  module_name, owner_name, password, public):
+	'''Add a plane to the database
+	'''
+	print ('Add plane '+plane_name+' ')
+	try:
+		user   = user_models.User.get_by_name(owner_name)
+		module = module_models.Module.get_by_name(module_name)
+
+		plane = plane_models.Plane(
+			owner    = user.id,
+			password = password,
+			module   = module.id,
+			name     = plane_name,
+			public   = public
+		)
+
+		db.session.add(plane)
+		db.session.commit()
+
+		r.db('planeshift')                                \
+			.table('planes')                              \
+			.insert({'id': plane.get_id(), 'data': None}) \
+			.run(rethink_connection)
+
+	except user_models.UserNotFoundError:
+		print ('\tSkipping -- user '+owner_name+' not found.')
+		return False
+	except module_models.ModuleNotFound:
+		print ('\tSkipping -- module '+module_name+' not found.')
+		return False
+	except Exception as e:
+		print ('\tSkipping -- unknown exception.')
+		print ('\t'+str(e))
+		return False
+	return True
+
 
 # Set up rethink db
 ####################################################################
@@ -19,89 +134,53 @@ r.db("planeshift").table_create("planes").run(rethink_connection)
 # Add test users
 ####################################################################
 print('Adding users...')
-if db.session.query(models.User).filter(models.User.username=='john').first() is None:
-	print('User: john')
-	u = models.User(username='john', password='pass', email='john@email.com')
-	db.session.add(u)
-	db.session.commit()
-
-if db.session.query(models.User).filter(models.User.username=='test').first() is None:
-	print('User: test')
-	u = models.User(username='test', password='test', email='test@test.com')
-	db.session.add(u)
-	db.session.commit()
+add_user('john', 'pass', 'john@test.com')
+add_user('test', 'test', 'test@test.com')
 
 # Add test modules
 ####################################################################
-from app.modules import models as module_models
-user_john = db.session.query(models.User).filter(models.User.username=='john').first()
+# add_module(
+# 	owner_name  = ,
+# 	module_name = ,
+# 	short       = ,
+# 	long        = ,
+# )
 
-if db.session.query(module_models.Module).filter(module_models.Module.name=='TestModule').first() is None:
-	module1 = module_models.Module(
-		owner   = user_john.id,
-		name       = 'TestModule',
-		short_desc = 'Short description of a module',
-		long_desc  = 'This is a test module long description',
-
-		latest_version=None,
-	)
-	db.session.add(module1)
-
-if db.session.query(module_models.Module).filter(module_models.Module.name=='FakeThing').first() is None:
-	module2 = module_models.Module(
-		owner   = user_john.id,
-		name       = 'FakeThing',
-		short_desc = 'Lorem ipsum sit amet. Praise be Amun-Ra!',
-		long_desc  = 'This is a test module long description',
-
-		latest_version=None,
-	)
-	db.session.add(module2)
-
-db.session.commit()
+add_module(
+	owner_name  = 'john',
+	module_name = 'Dice Roller',
+	short       = 'A simple dice roller application to alea some eacta est with your friends. Can roll up to 10 dice simultaneously, of any kind imaginable! Currently supports 2, 3, 6, 8, 12, 20 and 100 sided dice.',
+	long        = 'Roll dice with the button. The latest result will be automatically synced with everyone in the plane.',
+)
+	
+# Add module versions
+####################################################################
+add_module_version("Dice Roller", "1.0.0", "external/dice")
 
 # Add test planes
 ####################################################################
-user_john = db.session.query(models.User).filter(models.User.username=='john').first()
-test_module = db.session.query(module_models.Module).filter(module_models.Module.name=='TestModule').first()
 
-'''
-uid = []
-for i in range(3):
-	x = uuid.uuid4()
-	
-	while x in uid:
-		x = uuid.uuid4()
-	
-	uid.append(x)
-#debug stuff
-for j in uid:
-	print j.hex
-'''
+add_plane(
+	plane_name  = 'Astral Plane',
+	module_name = 'Dice Roller',
+	owner_name  = 'john',
+	password    = None,
+	public      = True,
+)
 
-plane1 = plane_models.Plane(
-	owner = user_john.id,
-	password = None,
-	module = test_module.id,
-	name = 'Astral Plane',
-	public = True)
+add_plane(
+	plane_name  = 'Haven',
+	module_name = 'Dice Roller',
+	owner_name  = 'john',
+	password    = 'iomedae',
+	public      = False,
+)
 
-plane2 = plane_models.Plane(
-	owner = user_john.id,
-	password = 'iomedae',
-	module = test_module.id,
-	name = 'Haven',
-	public = False)
-
-plane3 = plane_models.Plane(
-	owner = user_john.id,
-	password = 'asmodeus',
-	module = test_module.id,
-	name = 'Hell',
-	public = False)
-
-db.session.add(plane1)
-db.session.add(plane2)
-db.session.add(plane3)
-db.session.commit()
+add_plane(
+	plane_name  = 'Hell',
+	module_name = 'Dice Roller',
+	owner_name  = 'john',
+	password    = 'asmodeus',
+	public      = False,
+)
 

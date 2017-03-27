@@ -86,15 +86,15 @@ def get_path_for_module_content(filename, module, version=None):
 	module_path = get_modver_web_path(module_name=module.name, sVersion=version)
 	return os.path.join(module_path, filename)
 
-def copy_prev_version(curr_version_path, prev_version_path, exclude_list=[]):
-	if prev_version_path is None:
+def copy_version(target_version_path, source_version_path, exclude_list=[]):
+	if source_version_path is None:
 		return False
 
-	ensure_module_path(curr_version_path)
-	for dirpath, dirnames, filenames in os.walk(prev_version_path):
+	ensure_module_path(target_version_path)
+	for dirpath, dirnames, filenames in os.walk(source_version_path):
 		for filename in filenames:
-			src = os.path.join(prev_version_path, filename)
-			dst = os.path.join(curr_version_path, filename)
+			src = os.path.join(source_version_path, filename)
+			dst = os.path.join(target_version_path, filename)
 
 			if src in exclude_list:
 				continue
@@ -102,7 +102,7 @@ def copy_prev_version(curr_version_path, prev_version_path, exclude_list=[]):
 			shutil.copyfile(src, dst)
 	return True
 
-def persist_files_to_disk(target_path, added_files, removed_file_paths):
+def persist_files_to_disk(target_path, added_files):
 	ensure_module_path(target_path)
 
 	for file in added_files:
@@ -133,8 +133,8 @@ def upload_version(module, sVersion, added_files, removed_file_paths=[]):
 
 		session.commit()
 
-		copy_prev_version(curr_version_path, prev_version_path)
-		persist_files_to_disk(curr_version_path, added_files, removed_file_paths)
+		copy_version(curr_version_path, prev_version_path, removed_file_paths)
+		persist_files_to_disk(curr_version_path, added_files)
 
 	except sqlalchemy.exc.IntegrityError as e:
 		session.rollback()
@@ -142,6 +142,46 @@ def upload_version(module, sVersion, added_files, removed_file_paths=[]):
 		session.commit()
 		# TODO: delete folder for version as well?
 		raise ModuleDuplicateVersionError('Version {} already exists for module {}'.format(sVersion, module.name))
+	except Exception as e:
+		session.rollback()
+		db.session.delete(new_version)
+		session.commit()
+		# TODO: delete folder for version as well?
+		raise e
+
+	return
+
+def upload_version_path(module, version_name, added_files_root_path, removed_file_paths=[]):
+	session = db.session
+
+	try:
+		prev_version      = module.get_latest_version().version_string
+		prev_version_path = get_modver_sys_path(module.name, prev_version)
+	except ModuleVersionNotFound:
+		prev_version_path = None
+
+	try:
+		new_version = ModuleVersion(module_id=module.id, version_string=version_name)
+		session.add(new_version)
+		session.commit()
+
+		module.latest_version = new_version.id
+		session.add(module)
+
+		curr_version      = module.get_latest_version().version_string
+		curr_version_path = get_modver_sys_path(module.name, curr_version)
+
+		session.commit()
+
+		copy_version(curr_version_path, prev_version_path)
+		copy_version(curr_version_path, added_files_root_path)
+
+	except sqlalchemy.exc.IntegrityError as e:
+		session.rollback()
+		db.session.delete(new_version)
+		session.commit()
+		# TODO: delete folder for version as well?
+		raise ModuleDuplicateVersionError('Version {} already exists for module {}'.format(version_name, module.name))
 	except Exception as e:
 		session.rollback()
 		db.session.delete(new_version)
