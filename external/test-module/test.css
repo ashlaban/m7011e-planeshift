@@ -1,3 +1,4 @@
+/*
 h1 {
 	text-align: center;
 }
@@ -10,4 +11,12 @@ p {
 .container {
 	display: flex;
 	justify-content: center;
+}
+*/
+
+section {
+	text-align: justify;
+	width: 600px;
+
+	min-height: 300px;
 }
