@@ -91,6 +91,9 @@ def create_plane():
 def show_plane(name):
 	plane = Plane.query.filter_by(name=name).first()
 
+	if plane is None:
+		return render_template('planes/404.html', name=name)
+
 	if plane and plane.has_password() and not plane.is_user_connected(g.user):
 		form = PlanarAuthenticateForm(plane_name=plane.name)
 		if form.validate_on_submit():
@@ -100,6 +103,8 @@ def show_plane(name):
 	else:
 		connect(g.user, plane)
 		return show_plane_helper(plane)
+
+
 
 # API endpoints
 @planes_api.route('/', methods=['GET'])
