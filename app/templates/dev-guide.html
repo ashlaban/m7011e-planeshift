@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block css %}
+<link rel="stylesheet" type="text/css" href="/static/css/dev-guide.css" />
+
+{% endblock css %}
+
+{% block content %}
+
+<section class="center-content">
+	<h1>Developers guide</h1>
+
+</section>
+
+<section class="center-content">
+	<h1>API</h1>
+	<A NAME="api"></a>
+	<!-- This could probably be done better with a text field -->
+	<div class="codebox">
+		<code>
+			def main():<br>
+			test = "hello world!"<br>
+			return test
+		</code>
+	</div>
+
+	<h2>Planes</h2>
+	<A NAME="api-planes"></a>
+	
+	<h2>Modules</h2>
+	<A NAME="api-modules"></a>
+
+</section>
+
+<section class="center-content">
+	<h1>Modules guide</h1>
+	<A NAME="mod"></a>
+
+	<h2>js-API</h2>
+	<A NAME="mod-js"></a>
+
+</section>
+
+{% endblock content %}

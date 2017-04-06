@@ -32,11 +32,11 @@ def index():
 def about():
 	return render_template('about.html')
 
-'''
-@app.route('/help')
-def help():
-	return render_template('help.html')
-'''
+
+@app.route('/dev-guide')
+def dev_guide():
+	return render_template('dev-guide.html')
+
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():

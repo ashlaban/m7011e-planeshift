@@ -1,0 +1,71 @@
+/*
+	Color scheme: http://www.colorcombos.com/color-schemes/423/ColorCombo423.html;
+	153450 - darkest blue
+	294052 - dark blue
+	447294 - blue
+	8FBCDB - light blue
+	F4D6BC - linen
+	F8E4CC - light linen
+*/
+
+.title {
+	font-size: 4em;
+	font-weight: 600;
+
+	text-align: center;
+}
+
+.title-text {
+	padding-right: 1em;
+	padding-left : 1em;
+	text-align: left;
+}
+
+.codebox {
+    border:1px solid grey;
+    background-color:#EEEEFF;
+    width:100%;
+    overflow:auto;    
+    padding:10px;
+}
+
+.codebox code {
+    font-size:0.9em;
+}
+
+section {
+	text-align: justify;
+	width: 600px;
+
+	min-height: 300px;
+}
+
+#main:last-child {
+	margin-bottom: 3em;
+}
+
+/*
+.banner-1 {background-image: url("/static/img/banners/banner_3.jpg");}
+.banner-2 {background-image: url("/static/img/banners/banner_cc_4.jpg");}
+.banner-3 {background-image: url("/static/img/banners/banner_cc_3.jpg");}
+.banner-4 {background-image: url("/static/img/banners/banner_cc_4.jpg");}
+.banner-5 {background-image: url("/static/img/banners/banner_cc_5.jpg");}
+.banner-6 {background-image: url("/static/img/banners/banner_cc_6.jpg");}
+
+.img-filler {
+	margin-top: 2em;
+	margin-bottom: 2em;
+
+	position: relative;
+	left: -200%;
+	
+
+	background-size: cover;
+  	background-position: center;
+  	background-attachment: fixed;
+  	outline: none;
+	
+	width: 1000%;
+	min-height: 400px;
+}
+*/
