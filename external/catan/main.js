@@ -28,8 +28,11 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
 	get_user_data(true, function (d) {
 		console.log(d)
-		data = d.data.data[CURRENT_USER];
-		console.log(data)
+		if (d.data.data[CURRENT_USER]) {
+			data = d.data.data[CURRENT_USER];
+			console.log(data)
+		}
+		
 		if (data) {
 			document.getElementById("stone").innerHTML = data.stone;
 			document.getElementById("wheat").innerHTML = data.wheat;
