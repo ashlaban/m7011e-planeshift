@@ -2,43 +2,63 @@
 
 {% block css %}
 <link rel="stylesheet" type="text/css" href="/static/css/dev-guide.css" />
-
+<link rel="stylesheet" type="text/css" href="/static/css/dev-guide-theme.css" />
 {% endblock css %}
 
+{% block js %}
+<script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
+{% endblock js %}
+
 {% block content %}
+<section class="center-content">
+	<h1>Module Developer's Guide</h1>
+	Enter some text here summarising the information on the page.
+
+	<h2>Content</h2>
+	<p>Description of what content is..!</p>
+
+	<h3>main.js</h3>
+	<p>Description</p>
+
+	<h3>index.html</h3>
+	<p>Description</p>
+
+	<h3>extra resources</h3>
+	<p>Description</p>
+
+	<h2>Metadata</h2>
+	<p>Desc. of what metadata is.</p>
+
+	<h3>icon</h3>
+	<p>Description</p>
+
+	<h3>README.md</h3>
+	<p>Description</p>
+</section>
 
 <section class="center-content">
-	<h1>Developers guide</h1>
+	<h1>Plane Context</h1>
+	<p>Each plane has a context defined. It is: </p>
+	<dl>
+		<dt>PLANE_NAME</dt><dd>testa sdf asdfasdfv abfra d gaodi öfjöals djfölak sjd fölka jsfaenr1</dd>
+		<dt>PLANE_NAME</dt><dd>test2</dd>
+		<dt>PLANE_NAME</dt><dd>test4</dd>
+	</dl>
 
 </section>
 
 <section class="center-content">
-	<h1>API</h1>
-	<A NAME="api"></a>
-	<!-- This could probably be done better with a text field -->
-	<div class="codebox">
-		<code>
-			def main():<br>
-			test = "hello world!"<br>
-			return test
-		</code>
-	</div>
+	<h1>Plane API</h1>
+	<a name="api"></a>
 
-	<h2>Planes</h2>
-	<A NAME="api-planes"></a>
-	
-	<h2>Modules</h2>
-	<A NAME="api-modules"></a>
+	<h2>get_user_data</h2>
+	<h3>Example</h3>
+	<pre class="prettyprint linenums">
+<code>def main():
+    test = "hello world!"
+    return test</code>
+</pre>
+
 
 </section>
-
-<section class="center-content">
-	<h1>Modules guide</h1>
-	<A NAME="mod"></a>
-
-	<h2>js-API</h2>
-	<A NAME="mod-js"></a>
-
-</section>
-
 {% endblock content %}

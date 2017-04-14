@@ -11,12 +11,12 @@
 </script>
 
 <script src="/static/js/planeshift-planeapi.js"></script>
-<script src="{{paths['main.js']}}"></script>
+<script src="{{web_paths['main.js']}}"></script>
 
 <script src="/static/js/jquery-3.1.1.min.js"></script>
 {% endblock js %}
 
 {% block content %}
 
-{% include paths['index.html'] ignore missing %}
+{% include web_paths['index.html'] ignore missing %}
 {% endblock %}

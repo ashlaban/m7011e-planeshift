@@ -4,6 +4,7 @@ from flask_login import login_required
 
 import uuid
 import json
+import os
 
 from app import db, util
 from app.models import User
@@ -43,25 +44,21 @@ def show_plane_helper(plane):
 	if module is None:
 		return render_template('planes/module-not-found.html')
 
-	paths = {}
+	web_paths = {}
 	version_name = plane.get_version().get_escaped_version()
 	try:
-		paths['index.html'] = manager.get_path_for_module_content('index.html', module, version_name)
+		web_paths['index.html'] = manager.get_path_for_module_content('index.html', module, version_name)
+		web_paths['main.js']    = manager.get_path_for_module_content('main.js', module, version_name)
+		module_path = manager.get_modver_web_path(module.name, None)
 	except ModuleHasNoData:
-		paths['index.html'] = ''
-	try:
-		paths['main.js'] = manager.get_path_for_module_content('main.js', module, version_name)
-	except ModuleHasNoData:
-		paths['main.js'] = ''
+		return render_template('planes/module-not-found.html')
 
-	try:
-		module_path=manager.get_modver_web_path(module.name, None)
-	except:
+	if not manager.exists_path_for_module_content('main.js', module, version_name):
 		return render_template('planes/module-not-found.html')
 
 	# TODO: This should be rendered in a jinja sandbox environment.
 	return render_template('planes/plane.html', 
-		paths           = paths,
+		web_paths       = web_paths,
 		plane_name      = plane.get_name(),
 		current_user    = g.user.username,
 		module_path     = module_path,

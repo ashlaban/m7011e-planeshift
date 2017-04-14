@@ -67,11 +67,30 @@ def get_modver_sys_path(module_name, sVersion=None):
 def ensure_module_path(path):
 	return os.makedirs(path, exist_ok=True)
 
+def exists_path_for_module_content(filename, module, version=None):
+	if module is None:
+		raise ValueError('Argument module must not be None')
+
+	if filename == 'icon':
+		# TODO: There is always a picture available for the module.
+		# TODO: The semantics here could be changed to show whether 
+		# 	these is a custom icon or not!
+		return True
+	
+	if version is None:
+		version = get_latest_ver_string(module.name)
+
+	module_path = get_modver_sys_path(module_name=module.name, sVersion=version)
+	sys_path    = os.path.join(module_path, filename)
+
+	return os.path.exists(sys_path)
+
+
 def get_path_for_module_content(filename, module, version=None):
 	if module is None:
 		raise ValueError('Argument module must not be None')
 
-	if filename == 'icon.png':
+	if filename == 'icon':
 		try:
 			module_sys_path = get_modver_sys_path(module_name=module.name, sVersion=version)
 			full_sys_path   = os.path.join(module_sys_path, filename)
@@ -84,7 +103,9 @@ def get_path_for_module_content(filename, module, version=None):
 		version = get_latest_ver_string(module.name)
 
 	module_path = get_modver_web_path(module_name=module.name, sVersion=version)
-	return os.path.join(module_path, filename)
+	web_path    = os.path.join(module_path, filename)
+
+	return web_path
 
 def copy_version(target_version_path, source_version_path, exclude_list=[]):
 	if source_version_path is None:

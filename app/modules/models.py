@@ -111,7 +111,7 @@ class Module(db.Model):
 	def get_picture_path(self):
 		from app.modules.manager import get_path_for_module_content
 		try:
-			return get_path_for_module_content('icon.png', self)
+			return get_path_for_module_content('icon', self)
 		except ModuleHasNoData:
 			return ''
 

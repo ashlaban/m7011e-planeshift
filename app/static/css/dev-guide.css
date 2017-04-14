@@ -8,6 +8,10 @@
 	F8E4CC - light linen
 */
 
+.subsection-header {
+	align-self: flex-start;
+}
+
 .title {
 	font-size: 4em;
 	font-weight: 600;

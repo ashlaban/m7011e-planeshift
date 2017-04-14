@@ -131,17 +131,14 @@ def api_create_module():
 
 	args = util.parse_request_to_json(request)
 
-	module_name = util.html_escape_or_none(args['name'])
-	short_desc  = util.html_escape_or_none(args['short_desc'])
-	long_desc   = util.html_escape_or_none(args['long_desc'])
-
-	# picture        = args['picture']
+	module_name    = util.html_escape_or_none(args['name'])
+	short_desc     = util.html_escape_or_none(args['short_desc'])
+	long_desc      = util.html_escape_or_none(args['long_desc'])
 	latest_version = None
 
 	if module_name is None or module_name == '':
 		return util.make_json_error(msg='Module must have a name.')
 
-	module      = None
 	try:
 		module = Module.get_by_name(module_name)
 		return util.make_json_error(msg='Module ' + module_name + ' already exists.')
@@ -159,8 +156,6 @@ def api_create_module():
 		module.short_desc = short_desc
 	if long_desc is not None:
 		module.long_desc = long_desc
-	# if picture is not None:
-	# 	module.picture = picture
 
 	db.session.add(module)
 
