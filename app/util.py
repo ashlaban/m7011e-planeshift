@@ -1,6 +1,8 @@
-import json
 import collections
+import json
 import werkzeug
+
+from bs4 import BeautifulSoup
 
 def make_json_error(msg='', error_code=400):
 	response = {
@@ -27,3 +29,8 @@ def parse_request_to_json(req):
 
 def html_escape_or_none(item):
 	return werkzeug.utils.escape(item).strip() if item is not None else None
+
+def get_first_html_paragraph(hypertext):
+	soup = BeautifulSoup(hypertext, 'html.parser')
+	return soup.p.string
+			

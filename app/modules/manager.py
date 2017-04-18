@@ -1,21 +1,22 @@
 
+import hashlib
 import os
+import os.path
+import shutil
+import subprocess
 import sqlalchemy
+import werkzeug
 
 from app import app
 from app import db
+from app import util
 from app.modules.models import Module, ModuleVersion
 from app.modules.models import ModuleNotFound, ModuleHasNoData, ModuleVersionNotFound
 
-import shutil
-import os
-import os.path
-
-import werkzeug
-import hashlib
-
 class ModuleDuplicateVersionError(ValueError):
 	'''Raise when a module already has a version with the same name.'''
+class FileNotFoundError(ValueError):
+	'''Raise when looked for file cannot be found.'''
 
 def get_file_basename(module_name, sVersion):
 	filebasename = '{}-{}'.format(module_name, sVersion)
@@ -132,44 +133,14 @@ def persist_files_to_disk(target_path, added_files):
 		with open(path, 'wb+') as file_handle:
 			file.save(file_handle)
 
+import tempfile
+
+
+## TODO: Persist files to temp folder, then reuse upload_version_path
 def upload_version(module, sVersion, added_files, removed_file_paths=[]):
-	session = db.session
-
-	try:
-		prev_version      = module.get_latest_version().version_string
-		prev_version_path = get_modver_sys_path(module.name, prev_version)
-	except ModuleVersionNotFound:
-		prev_version_path = None
-
-	try:
-		new_version = ModuleVersion(module_id=module.id, version_string=sVersion)
-		session.add(new_version)
-		session.commit()
-
-		module.latest_version = new_version.id
-		session.add(module)
-
-		curr_version      = module.get_latest_version().version_string
-		curr_version_path = get_modver_sys_path(module.name, curr_version)
-
-		session.commit()
-
-		copy_version(curr_version_path, prev_version_path, removed_file_paths)
-		persist_files_to_disk(curr_version_path, added_files)
-
-	except sqlalchemy.exc.IntegrityError as e:
-		session.rollback()
-		db.session.delete(new_version)
-		session.commit()
-		# TODO: delete folder for version as well?
-		raise ModuleDuplicateVersionError('Version {} already exists for module {}'.format(sVersion, module.name))
-	except Exception as e:
-		session.rollback()
-		db.session.delete(new_version)
-		session.commit()
-		# TODO: delete folder for version as well?
-		raise e
-
+	with tempfile.TemporaryDirectory() as tmpdirname:
+		persist_files_to_disk(tmpdirname, added_files)
+		upload_version_path(module, sVersion, tmpdirname, removed_file_paths)
 	return
 
 def upload_version_path(module, version_name, added_files_root_path, removed_file_paths=[]):
@@ -197,6 +168,8 @@ def upload_version_path(module, version_name, added_files_root_path, removed_fil
 		copy_version(curr_version_path, prev_version_path)
 		copy_version(curr_version_path, added_files_root_path)
 
+		update_module_desc(module)
+
 	except sqlalchemy.exc.IntegrityError as e:
 		session.rollback()
 		db.session.delete(new_version)
@@ -213,10 +186,38 @@ def upload_version_path(module, version_name, added_files_root_path, removed_fil
 	return
 
 def delete_module(module):
-	"""Delete a given module.
+	'''Delete a given module.
 	Precondition: The database entry should already be removed.
 	Postcondition: Best-effort removal of the underlying files.
-	"""
+	'''
 	module_path = get_mod_sys_path(module.name)
 	shutil.rmtree(module_path, ignore_errors=True)
 	return
+
+def update_module_desc(module):
+	module_path = get_modver_sys_path(module.name)
+	readme_path = module_path+'/README.md'
+
+	if os.path.exists(readme_path):
+		session = db.session
+
+		html = readme_to_html(module)
+		module.short_desc = util.get_first_html_paragraph(html)
+		module.long_desc  = html
+	
+		session.add(module)
+		session.commit()
+
+
+def readme_to_html(module):
+	'''Renders a README.md file to html using the github md renderer.
+	'''
+	module_path = get_modver_sys_path(module.name)
+	readme_path = module_path+'/README.md'
+
+	if os.path.exists(readme_path):
+		res  = subprocess.run(['./external/markdown/gfm-md-to-html.rb', readme_path], stdout=subprocess.PIPE)
+		html_as_bytes = res.stdout
+		return html_as_bytes.decode('utf-8')
+
+	raise FileNotFoundError()

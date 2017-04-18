@@ -1,0 +1,6 @@
+source 'https://rubygems.org'
+
+gem 'github-markup'
+gem 'github-markdown'
+gem 'github-linguist'
+gem 'html-pipeline'

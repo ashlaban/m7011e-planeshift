@@ -26,44 +26,29 @@
 
 {% block content %}
 <div class="center-content">
-	<section id="module-info" class="section-content center-content">
-		<img class="module-icon module-icon--2x" data-bind="attr: { src: current_module().picture }">
-		<div class="module-info-interface">
-			<ul>
-				<h1 data-bind="text: current_module().name"></h1>
-				<!-- <div class="container"> -->
-					<!-- <span class="version-label">Version</span> -->
-					<!-- ko if: current_module().versions && current_module().versions.length -->
-					<!-- <select class="version-select" data-bind="
-						options: current_module().versions,
-						value: current_module().versions.find(function(el){return el[0]==current_module().latest_version[0]})">
-					</select> -->
-					<!-- /ko -->
-					<!-- ko ifnot: current_module().versions &&  current_module().versions.length -->
-					<!-- <em class="version-select" >No versions yet</em> -->
-					<!-- /ko -->
-				<!-- </div> -->
-				
-				<li id="short_desc" data-bind="text: current_module().short_desc"></li>
-				<li id="long_desc"  data-bind="text: current_module().long_desc"></li>
-				
-				<div class="container">
-					<!-- ko if: current_module().is_owner -->
-					<a class="btn"
-						data-bind="attr: {href: '/modules/upload/'+current_module().name }">
-						<i class="fa fa-upload" aria-hidden="true"></i>
-						New version
-						</a>
-					<!-- TODO: Move delete to suitable place and confimation modal or something. -->
-					<a id="btn-delete" class="btn" href="" data-bind="event: {click: delete_button_callback}">
-						<i class="fa fa-trash-o" aria-hidden="true"></i>
-						Delete
-					</a>
-					<!-- /ko -->
-				</div>
+	<section class="module-wrapper section-content center-content">
 
-			</ul>
+		<div class="module-info">
+			<img class="module-icon" data-bind="attr: { src: current_module().picture }">
+			<!-- ko if: current_module().is_owner -->
+			<a class="btn"
+				data-bind="attr: { href: '/modules/upload/'+current_module().name }">
+				<i class="fa fa-upload" aria-hidden="true"></i>
+				New version
+			</a>
+			<!-- TODO: Move delete to suitable place and confimation modal or something. -->
+			<a id="btn-delete" class="btn" href="" data-bind="event: {click: delete_button_callback}">
+				<i class="fa fa-trash-o" aria-hidden="true"></i>
+				Delete
+			</a>
+			<!-- /ko -->
 		</div>
+
+		<div class="module-content">
+			<h1 class="module-name" data-bind="text: current_module().name"></h1>
+			<div class="module-description"  data-bind="html: current_module().long_desc"></div>
+		</div>
+
 	</section>
 </div>
 {% endblock %}

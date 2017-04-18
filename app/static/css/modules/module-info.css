@@ -2,36 +2,28 @@ h1 {
 	margin-bottom: 0;
 }
 
-#module-info {
-	margin-top: 2em;
-	padding-bottom: 2em;
+.module-info {
+	margin-top: 1em;
 
 	display: flex;
 	justify-content: space-between;
+	align-items: stretch;
+	flex-direction: column;
+
+	width: 200px;
 }
 
-.version-select {
-	font-size: 1em;
-	min-width: 6em;
-	max-width: 15em;
-	margin-right: 1em;
-}
-
-#short_desc {
-	padding-bottom: 1em;
-}
-
-#long_desc {
-	padding-bottom: 1em;	
+.module-info > * {
+	margin-bottom: 20px;
 }
 
 .section-content {
 	display: flex;
 	flex-direction: row;
-	align-items: center;
-	justify-content: center;
 
-	width : 800px;
+	align-items: flex-start; 
+
+	/*width : 800px;*/
 
 	background: #F8E4CC;
 
@@ -40,24 +32,22 @@ h1 {
 	border-radius: 1em;
 }
 
-.container {
-	width: 100%;
-	padding-top   : 1em;
-	padding-bottom: 1em;
-
-	display: flex;
-	flex-direction: row;
-	justify-content: space-between;
+.module-name {
+	font-size: 3em;
+	height: 100px;
+	margin : 0;
+	padding: 0;
 }
 
-.module-pic-lg {
-	width : 250px;
-	height: 250px;
+.module-icon {
+	min-width: 200px;
+	max-width: 200px;
+	min-height: 200px;
+	max-height: 200px;
+	padding: 0;
+}
 
+.module-content {
 	padding: 1em;
-}
-
-.module-info-interface {
-	padding   : 1em ;
-	flex-grow : 1   ;
+	width: 600px;
 }

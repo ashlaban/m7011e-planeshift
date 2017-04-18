@@ -119,21 +119,14 @@ def api_create_module():
 	Arguments:
 		module_name - String - Name of module. If module does not 
 		                       exist it will be created.
-
-	Optional arguments:
-		short_desc  - String - Short description of module. Will be included in
-		                       listings.
-		long_desc   - String - Longer description of module. Will not be 
-		                       included in listings.
 	'''
 	if not g.user.is_authenticated:
 		return util.make_json_error(msg='Not authenticated.')
 
+	print(request)
 	args = util.parse_request_to_json(request)
 
 	module_name    = util.html_escape_or_none(args['name'])
-	short_desc     = util.html_escape_or_none(args['short_desc'])
-	long_desc      = util.html_escape_or_none(args['long_desc'])
 	latest_version = None
 
 	if module_name is None or module_name == '':
@@ -146,16 +139,8 @@ def api_create_module():
 		module = Module(
 			owner = g.user.id,
 			name  = module_name,
-			short_desc = short_desc,
-			long_desc  = long_desc,
-
 			latest_version = latest_version,
 		)
-		
-	if short_desc is not None:
-		module.short_desc = short_desc
-	if long_desc is not None:
-		module.long_desc = long_desc
 
 	db.session.add(module)
 

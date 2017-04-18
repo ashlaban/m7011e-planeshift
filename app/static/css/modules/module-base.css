@@ -3,16 +3,7 @@ h1 {
 	padding: 0em;
 }
 
-#main ul {
-	/*display: inline;*/
-
-	padding: 0;
-	margin : 0;
-
-	list-style-type: none;
-}
-
-#main a, a:visited, a:hover{
+.module, .module:visited, .module:hover {
 	text-decoration: none;
 	color: inherit;
 }

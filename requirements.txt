@@ -15,3 +15,5 @@ flask_login
 sqlalchemy-migrate
 
 rethinkdb
+
+beautifulsoup4

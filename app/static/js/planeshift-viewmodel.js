@@ -220,19 +220,17 @@ PlaneshiftViewModel.prototype.get_module = function (name, success, error) {
 	planeshift.fetch.module(name, success, error);
 }
 
-PlaneshiftViewModel.prototype.create_module = function (name, short_desc, long_desc, success, error) {
+PlaneshiftViewModel.prototype.create_module = function (name, success, error) {
 	var error   = error   || planeshift.callback.error.default();
 	var success = success || planeshift.callback.redirect.to.module(name);
 	
-	planeshift.create.module(name, short_desc, long_desc, success, error);
+	planeshift.create.module(name, success, error);
 }
 
 PlaneshiftViewModel.prototype.create_module_from_form = function (form, success, error) {
 	var name       = form.name.value;
-	var short_desc = form.short_desc.value;
-	var long_desc  = form.long_desc.value;
 
-	this.create_module(name, short_desc, long_desc, success, error);
+	this.create_module(name, success, error);
 }
 
 PlaneshiftViewModel.prototype.remove_module = function (name, success, error) {

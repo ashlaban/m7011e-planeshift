@@ -282,6 +282,17 @@ footer .fa-magic {
 	box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
 }
 
+/* For buttons that are also links */
+.btn, .btn:visited, .btn:hover {
+	text-decoration: none;
+	color: inherit;
+}
+
+.btn a, .btn a:visited, .btn a:hover {
+	text-decoration: none;
+	color: inherit;
+}
+
 .badge {
 	display: inline;
 

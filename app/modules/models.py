@@ -50,7 +50,7 @@ class Module(db.Model):
 	# picture = db.Column(db.Text()) # TODO: size should be limited
 
 	name       = db.Column(db.String(64) , nullable=False)
-	short_desc = db.Column(db.String(128))
+	short_desc = db.Column(db.String(500))
 	long_desc  = db.Column(db.Text())
 
 	latest_version     = db.Column(db.ForeignKey('module_versions.id'))

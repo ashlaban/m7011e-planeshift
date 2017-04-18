@@ -163,14 +163,9 @@ var planeshift = (function () {
 		api_delete(url, data, success, error);
 	}
 
-	function create_module(name, short_desc, long_desc, success, error) {
+	function create_module(name, success, error) {
 		var url  = '/api/modules/'
-		var data = {
-			name       : name,
-			short_desc : short_desc,
-			long_desc  : long_desc,
-		};
-		
+		var data = { name: name };
 		api_post(url, data, success, error);
 	}
 
