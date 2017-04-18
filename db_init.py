@@ -31,7 +31,7 @@ def add_user(name, password, email):
 
 	return True
 
-def add_module(owner_name, module_name, short, long):
+def add_module(owner_name, module_name):
 	'''Add a module to the database
 	'''
 	print ('Add module ' + module_name + '')
@@ -52,8 +52,6 @@ def add_module(owner_name, module_name, short, long):
 		module = module_models.Module(
 			owner      = owner.id,
 			name       = module_name,
-			short_desc = short,
-			long_desc  = long,
 
 			latest_version=None,
 		)
@@ -164,22 +162,16 @@ print('='*80)
 add_module(
 	owner_name  = 'john',
 	module_name = 'Dice Roller',
-	short       = 'A simple dice roller application to alea some eacta est with your friends. Can roll up to 10 dice simultaneously, of any kind imaginable! Currently supports 2, 3, 6, 8, 12, 20 and 100 sided dice.',
-	long        = 'Roll dice with the button. The latest result will be automatically synced with everyone in the plane.',
 )
 
 add_module(
 	owner_name  = 'john',
 	module_name = 'Settlers of Catan',
-	short       = 'Keeps track of Catan cards.',
-	long        = 'A simple module that helps you keep track of your catan cards when playing. Never more will you suffer from the card explosion that can happen when your friends acidentally hits the table!',
 )
 
 add_module(
 	owner_name  = 'john',
 	module_name = 'Tutorial Module',
-	short       = 'Used for the About page demo room',
-	long        = '',
 )
 	
 # Add module versions
