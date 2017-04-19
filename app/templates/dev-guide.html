@@ -15,29 +15,30 @@
 	This page contains information neassesary to develop modules for Planeshift. The content of a module is described, as well as how to define metadata such as description and icon image. Documentation of the plane context and js-API needed to communicate with the server is also found here.
 
 	<h2>Content</h2>
-	<p>A module's content defines its functionality. A module is developed using primarily javascript and html. The content is what will be seen on a plane that is using the module. The content consists of the mandatory file <i>main.js</i>, the optional <i>index.html</i> and additional resources such as images.</p>
+	<p>A module's content defines its functionality. A module is developed using primarily javascript and html. The content is what will be seen on a plane that is using the module. The content consists of the mandatory file <i>main.js</i>, the optional <i>index.html</i>, and additional resources such as images or css.</p>
 
 	<h3>main.js</h3>
-	<p>Description</p>
+	<p>This file is mandatory and contains the modules js-code. The module code has access to a <a href="#api">Plane API</a> for server communication.</p>
 
 	<h3>index.html</h3>
-	<p>Description</p>
+	<p>This file is optional and contains the modules html-code. The html has access to some <a href="#context">jinja variables</a>.</p>
 
 	<h3>extra resources</h3>
-	<p>Description</p>
+	<p>The extra resources are any optional resources used by the module such as images or css. These files are uploaded along with the other files.</p>
 
 	<h2>Metadata</h2>
-	<p>Desc. of what metadata is.</p>
+	<p>The metadata consists of a display icon and a module description. The files used are uploaded along with the content using reserved names for easy integration with e.g. git repositories.</p>
 
 	<h3>icon</h3>
-	<p>Description</p>
+	<p><i>icon</i> is an image file used to give the module a graphical representation on the website. The icon can be any image that can be displayed by a browser as long as it is named <i>icon</i>. There are no mandatory dimensions for the image, but a relatively small square image is recommended (e.g. 250x250 px). The icon file is uploaded along with the content. In the absence of an icon file the module will use a randomized default image.</p>
 
 	<h3>README.md</h3>
-	<p>Description</p>
+	<p>The module description is uploaded as a <i>README.md</i> file along with the content. The description supports <a href="https://github.com/adam-p/markdown-here/wiki/Markdown-Here-Cheatsheet">markdown</a> text formatting. In the absence of a README.md file the description will use a default text.</p>
 </section>
 
 <section>
 <h1>Plane Context</h1>
+<a name="context"></a>
 <p>When designing your module, you will have access to a Jinja context. It will be sandboxed, meaning that some attributes and methods are prohibited. For more details of how Jinja templates work, you can have a look at their <a href="http://jinja.pocoo.org/docs/2.9/">documentation</a>.
 </p>
 
@@ -111,7 +112,7 @@ get_data({player2: {points: true}}, success);
 </pre>
 
 <a name="get_plane_name"></a>
-	<h2>get_plane_name</h2>
+	<h2>get_plane_name()</h2>
 
 	<a name="get_plane_name"></a>
 	<p>Returns the name of the current plane as a string.</p>
