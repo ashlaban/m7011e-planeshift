@@ -18,8 +18,6 @@
 		var form      = document.getElementById('upload-form');
 		var uploadbtn = document.getElementById('upload-btn');
 		uploadbtn.addEventListener('click', function(ev) {
-  			planeshift_view_model.upload_files_from_form(form);
-
   			// Disable all buttons while uploading and processing.
   			$('button').prop('disabled', true);
   			$('button').css('color', 'grey');
@@ -27,11 +25,29 @@
   			var oldContent = uploadbtn.innerHTML;
   			uploadbtn.innerHTML = 'Processing...';
 
-  			window.onbeforeunload = function() {
+  			var reset_buttons = function (data) {
   				$('button').prop('disabled', false);
   				$('button').css('color', 'black');
+  				var uploadbtn = document.getElementById('upload-btn');
   				uploadbtn.innerHTML = oldContent;
-  			};
+  			}
+
+  			var reset_buttons_and_redirect = function () {
+  				reset_buttons();
+  				var module_name = planeshift_view_model.current_module().name;
+  				planeshift.callback.redirect.to.module(module_name)();
+  			}
+
+  			var reset_buttons_and_show_error = function (data) {
+  				reset_buttons();
+  				planeshift.callback.error.default()(data);
+  			}
+
+  			planeshift_view_model.upload_files_from_form(
+  				form,
+  				reset_buttons_and_redirect,
+  				reset_buttons_and_show_error
+  			);
 
 		}, false);
 

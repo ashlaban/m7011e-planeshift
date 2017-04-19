@@ -173,7 +173,7 @@ PlaneshiftViewModel.prototype.upload_files = function (version_name, success, er
 
 PlaneshiftViewModel.prototype.upload_files_from_form = function (form, success, error) {
 	var version_name = form.version.value;
-	this.upload_files(version_name);
+	this.upload_files(version_name, success, error);
 }
 
 // ========================================================================
