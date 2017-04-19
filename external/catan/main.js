@@ -26,10 +26,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
 	document.getElementById("sheep").innerHTML = 0;
 
 
-	get_user_data(true, function (d) {
-		console.log(d)
-		if (d.data.data[CURRENT_USER]) {
-			data = d.data.data[CURRENT_USER];
+	get_user_data(true, function (data) {
+		if (data[CURRENT_USER]) {
+			data = data[CURRENT_USER];
 			console.log(data)
 		}
 		

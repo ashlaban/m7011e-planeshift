@@ -5,18 +5,21 @@
 
 {% block js %}
 <script type="text/javascript" charset="utf-8">
+	/* This is the plane context. This is not to be used.
+	 *   Check out the planeshift-planeapi instead for an API to use.
+	 */
 	PLANE_NAME      = '{{plane_name}}';
 	CURRENT_USER    = '{{current_user}}';
 	CONNECTED_USERS = [{% for user in connected_users -%}'{{ user }}',{%- endfor %}];
 </script>
 
 <script src="/static/js/planeshift-planeapi.js"></script>
-<script src="{{web_paths['main.js']}}"></script>
+<script src="{{module_path}}/main.js"></script>
 
 <script src="/static/js/jquery-3.1.1.min.js"></script>
 {% endblock js %}
 
 {% block content %}
 
-{% include web_paths['index.html'] ignore missing %}
+{% include module_path+'/index.html' ignore missing %}
 {% endblock %}

@@ -26,7 +26,6 @@ function DiceViewModel() {
 DiceViewModel.prototype.publish_dice = function () {
 	var d = dice(this.sides(), this.n_dice());
 	var s = ''+this.n_dice()+'d'+this.sides()
-	console.log(d)
 	set_user_data({val: d});
 	set_data({latest: {val:d, dice:s, user:this.current_user()}});
 }
@@ -35,9 +34,6 @@ DiceViewModel.prototype.get_latest = function () {
 	var self = this;
 
 	get_data(true, function(data) {
-		console.log(data)
-		data = data.data.data
-		console.log(data)
 		self.latest_user(data['latest']['user']);
 		self.latest_dice(data['latest']['dice']);
 		self.latest_val(data['latest']['val']);

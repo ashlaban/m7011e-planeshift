@@ -2,7 +2,6 @@
 
 {% block css %}
 <link rel="stylesheet" type="text/css" href="/static/css/dev-guide.css" />
-<link rel="stylesheet" type="text/css" href="/static/css/dev-guide-theme.css" />
 {% endblock css %}
 
 {% block js %}
@@ -10,12 +9,13 @@
 {% endblock js %}
 
 {% block content %}
-<section class="center-content">
+<link rel="stylesheet" type="text/css" href="/static/css/dev-guide-theme.css" />
+<section>
 	<h1>Module Developer's Guide</h1>
 	This page contains information neassesary to develop modules for Planeshift. The content of a module is described, as well as how to define metadata such as description and icon image. Documentation of the plane context and js-API needed to communicate with the server is also found here.
 
 	<h2>Content</h2>
-	<p>A modules content defines its functionality. A module is developed using primarily javascript and html. The content is what will be seen on a plane that is using the module. The content consists of the mandatory files <i>main.js</i> and <i>index.html</i>, and additional resources such as images.</p>
+	<p>A module's content defines its functionality. A module is developed using primarily javascript and html. The content is what will be seen on a plane that is using the module. The content consists of the mandatory file <i>main.js</i>, the optional <i>index.html</i> and additional resources such as images.</p>
 
 	<h3>main.js</h3>
 	<p>Description</p>
@@ -36,29 +36,183 @@
 	<p>Description</p>
 </section>
 
-<section class="center-content">
-	<h1>Plane Context</h1>
-	<p>Each plane has a context defined. It is: </p>
-	<dl>
-		<dt>PLANE_NAME</dt><dd>testa sdf asdfasdfv abfra d gaodi öfjöals djfölak sjd fölka jsfaenr1</dd>
-		<dt>PLANE_NAME</dt><dd>test2</dd>
-		<dt>PLANE_NAME</dt><dd>test4</dd>
-	</dl>
+<section>
+<h1>Plane Context</h1>
+<p>When designing your module, you will have access to a Jinja context. It will be sandboxed, meaning that some attributes and methods are prohibited. For more details of how Jinja templates work, you can have a look at their <a href="http://jinja.pocoo.org/docs/2.9/">documentation</a>.
+</p>
+
+<p>
+	The context provided each plane in their <i>index.html</i> consists of jinja variables that can be used for static display, a js-api for communicating with the server and <a href="https://jquery.com">jQuery-3.1.1</a>.
+</p>
+<dl>
+	<dt>current_user</dt>
+		<dd>Name of the current logged in user.</dd>
+	<dt>module_path</dt>
+		<dd>Path to where the module resources can be found.</dd>
+	<dt>plane_name</dt>
+		<dd>Name of the current plane.</dd>
+</dl>
+
+<p>
+	For example should your module include an image as a resource, you can include it in your html as
+</p>
+<pre class="prettyprint linenums">
+&ltimg src="{% raw %}{{module_path}}{% endraw %}/image.png">
+</pre>
 
 </section>
 
-<section class="center-content">
+<section>
 	<h1>Plane API</h1>
 	<a name="api"></a>
+	<!-- API -->
+	<p>The API defines a number of functions to make your life easier.</p>
+	<ul>
+		<li><a href="#get_plane_name">get_plane_name</a></li>
+		<li><a href="#get_user_name">get_user_name</a></li>
+		<li><a href="#get_connected_users">get_connected_users</a></li>
+		<li><a href="#set_data">set_data</a></li>
+		<li><a href="#get_data">get_data</a></li>
+		<li><a href="#set_user_data">set_user_data</a></li>
+		<li><a href="#get_user_data">get_user_data</a></li>
+	</ul>
 
-	<h2>get_user_data</h2>
-	<h3>Example</h3>
-	<pre class="prettyprint linenums">
-<code>def main():
-    test = "hello world!"
-    return test</code>
+	<p>The first three of these provide information about the plane the module is running in. The last four provide communication with the server backend and the storage area associated with the plane. The storage area is intended for smaller amounts of structured json data.</p>
+
+	<p>The code snippet below shows the basics of interaction with the API. Consider a very simple game where there are two players and they can collect both points and fouls. One, somewhat contrieved, way of organising this data is seen below together with example code for storing and retrieving the information from the server.</p>
+
+<pre class="prettyprint linenums">
+// Define the data
+var success = function (data) {console.log(data);}
+var data    = {player1: 0, player2: {points: 1, fouls: 1}};
+
+// Send the data to the server
+set_data(data);
+
+// Get all data in the plane storage
+// Prints {player1: 0, player2: {points: 1, fouls: 1}}
+get_data(true, success);
+
+// Get only one particular key
+// Prints {player1: 0}
+get_data('player1', success);
 </pre>
 
+<p>
+	Deeper nesting is also possible.
+</p>
+
+<pre class="prettyprint linenums">
+// Prints {player2: {points: 1, fouls: 1}}
+get_data('player2', success);
+
+// Prints {player2: {points: 1}}
+get_data({player2: {points: true}}, success);
+</pre>
+
+<a name="get_plane_name"></a>
+	<h2>get_plane_name</h2>
+
+	<a name="get_plane_name"></a>
+	<p>Returns the name of the current plane as a string.</p>
+	<pre class="prettyprint linenums">
+var plane_name = get_plane_name();
+
+// Prints "test-plane" when run in a plane created with this 
+//   name.
+console.log(plane_name);
+</pre>
+
+<a name="get_username"></a>
+<h2>get_username()</h2>
+<p>Get the username of the current user as a string.</p>
+<h3>Example</h3>
+<pre class="prettyprint linenums">
+var username = get_username();
+
+// Prints "Cassie" for user Cassie
+console.log(username);
+</pre>
+
+<a name="get_connected_users"></a>
+<h2>get_connected_users()</h2>
+
+<p>
+	Get an array of usernames connected to the plane by using the function below. The returned list contains recently active usernames. Disconnects are not guaranteed to be noticed immediately.
+</p>
+
+<h3>Example</h3>
+<p>If there are two users, John and Cassie connected, the code</p>
+<pre class="prettyprint linenums">
+var users = get_connected_users();
+for (user : users) {
+	console.log(user);
+}
+</pre>
+will print the following
+<pre class="prettyprint linenums">
+"John"
+"Cassie"
+</pre>
+
+<!-- Get/Set data -->
+<a name="set_data"></a>
+<h2>set_data(data, success, error)</h2>
+
+<pre class="prettyprint linenums">
+set_data(data, success, error)
+</pre>
+
+<a name="get_data"></a>
+<h2>get_data(key, success, error)</h2>
+
+<p>The parameter key is a string or json object specifying the path to the object to retrieve. The parameters success nad error are callbacks for handling a successful and failed call repectively. The success callback should take as argument the returned data, the error callback should take the request as argument.</p>
+
+<h3>Example</h3>
+<p>When retrieving data from the server one can retrieve data in a number of ways, there are two different syntaxes that are acceptable. The first is to use a json object to specify the path to the object you want fetched. The second is to specify a key as a string. Note that this second syntax cannot access nested elements. Also note that to access all data in the store as a single json object use the path <i>true</i>.</p>
+<pre class="prettyprint linenums">
+// Get all data in the plane store
+get_data(true);
+
+// Get the json object under a specific key
+get_data('key');
+get_data({key: true});
+
+// Get the json object stored under a nested key
+get_data({key: {nested_key: true}});
+</pre>
+
+<p>The callbacks use different parameters. The success callback will be provided the retrieved data while the error callback will be provided the complete request object.</p>
+
+<pre class="prettyprint linenums">
+var success = function (data)    {console.log(data);   }
+var error   = function (request) {console.log(request);}
+
+// Use like so
+get_data(key, success, error)
+</pre>
+
+<!-- Get/Set user data -->
+<a name="set_user_data"></a>
+<h2>set_user_data(data, success, error)</h2>
+
+<p>The function <i>set_user_data</i> is shorthand for storing data in the per-user section of the plane storage. It is functionally equivalent to</p>
+
+<pre class="prettyprint linenums">
+var data     = {key: value};
+var username = get_username();
+var wrapper  = {username: data};
+set_data(wrapper);
+</pre>
+
+<a name="get_user_data"></a>
+<h2>get_user_data(key, success, error)</h2>
+
+<p>The function <i>get_user_data</i> is shorthand for accessing data stored in the per-user section of the plane storage. It is functionally equivalent to</p>
+<pre class="prettyprint linenums">
+var username = get_username();
+get_data(wrapper);
+</pre>
 
 </section>
 {% endblock content %}
