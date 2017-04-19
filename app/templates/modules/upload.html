@@ -30,7 +30,6 @@
   				$('button').css('color', 'black');
   				var uploadbtn = document.getElementById('upload-btn');
   				uploadbtn.innerHTML = oldContent;
-  				console.log(data);
   			}
 
   			var reset_buttons_and_redirect = function () {
@@ -39,10 +38,15 @@
   				planeshift.callback.redirect.to.module(module_name)();
   			}
 
+  			var reset_buttons_and_show_error = function (data) {
+  				reset_buttons();
+  				planeshift.callback.error.default()(data);
+  			}
+
   			planeshift_view_model.upload_files_from_form(
   				form,
   				reset_buttons_and_redirect,
-  				reset_buttons
+  				reset_buttons_and_show_error
   			);
 
 		}, false);
