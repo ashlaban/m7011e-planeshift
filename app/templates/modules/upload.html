@@ -19,6 +19,20 @@
 		var uploadbtn = document.getElementById('upload-btn');
 		uploadbtn.addEventListener('click', function(ev) {
   			planeshift_view_model.upload_files_from_form(form);
+
+  			// Disable all buttons while uploading and processing.
+  			$('button').prop('disabled', true);
+  			$('button').css('color', 'grey');
+
+  			var oldContent = uploadbtn.innerHTML;
+  			uploadbtn.innerHTML = 'Processing...';
+
+  			window.onbeforeunload = function() {
+  				$('button').prop('disabled', false);
+  				$('button').css('color', 'black');
+  				uploadbtn.innerHTML = oldContent;
+  			};
+
 		}, false);
 
 		var addfilesbtn = document.getElementById('add-files-btn');
@@ -77,8 +91,7 @@
 <section class="center-content top-padding-md">
 	<div id="box" class="form-box rounded center-content">
 		<h1>{{module_name}} - New Version</h1>
-		<p>Upload your main.js module file and be good to go! You can also upload additional resources. See the module guide for more info.</p>
-		<p>Upload a file named <em>icon</em> to use as a representation of your module. It should be fairly small 150x150 is suitable. Note the lack of file extension.</p>
+		<p>Upload your main.js module file and be good to go! You can also upload additional resources. See the <a href="/dev-guide">module guide</a> for more info.</p>
 		<p><em>Note: Modules that do not conform to the site guidelines are subject to deletion.</em></p>
 		<!-- TODO: Link to module info page. -->
 		<!-- TODO: Link to guidelines. -->
