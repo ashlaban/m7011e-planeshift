@@ -22,10 +22,10 @@
 	<p>A module's content defines its functionality. A module is developed using primarily javascript and html. The content is what will be seen on a plane that is using the module. The content consists of the mandatory file <i>main.js</i>, the optional <i>index.html</i>, and additional resources such as images or css.</p>
 
 	<h3>main.js</h3>
-	<p>This file is mandatory and contains the modules js-code. The module code has access to a <a href="#api">Plane API</a> for server communication.</p>
+	<p>This file is mandatory and contains the module's js-code. The module code has access to a <a href="#api">Plane API</a> for server communication.</p>
 
 	<h3>index.html</h3>
-	<p>This file is optional and contains the modules html-code. The html has access to some <a href="#context">jinja variables</a>.</p>
+	<p>This file is optional and contains the module's html-code. The html has access to some <a href="#context">jinja variables</a>.</p>
 
 	<h3>extra resources</h3>
 	<p>The extra resources are any optional resources used by the module such as images or css. These files are uploaded along with the other files.</p>
@@ -43,12 +43,12 @@
 <section>
 <h1>Plane Context</h1>
 <a name="context"></a>
-<p>When designing your module, you will have access to a Jinja context. It will be sandboxed, meaning that some attributes and methods are prohibited. For more details of how Jinja templates work, you can have a look at their <a href="http://jinja.pocoo.org/docs/2.9/">documentation</a>.
+<p>When designing your module you will have access to some surrounding infrastructure. There will be some facilities provided to you locally through the <i>index.html</i> page, and some remotely on the server through the js-api.
 </p>
 
 <h3>Local Context</h3>
 <p>
-	The context provided each plane in their <i>index.html</i> consists of jinja variables that can be used for static display, a js-api for communicating with the server and <a href="https://jquery.com">jQuery-3.1.1</a>.
+	The context provided each plane in their <i>index.html</i> consists of jinja variables that can be used for static display, a js-api for communicating with the server and <a href="https://jquery.com">jQuery-3.1.1</a>. The Jinja context will be sandboxed, meaning that some attributes and methods are prohibited. For more details of how Jinja templates work, you can have a look at their <a href="http://jinja.pocoo.org/docs/2.9/">documentation</a>.
 </p>
 <dl>
 	<dt>current_user</dt>
@@ -67,9 +67,13 @@
 </pre>
 
 <h3>Remote Contex</h3>
-<p>Each plane is additionally provided a storage area on the server called the plane storage. This storage can be interacted with through the js-api.</p>
-
+<p>Each plane is additionally provided a storage area on the server called the plane storage. This storage can be interacted with through the js-api. It can be used to store information that is public to all players connected to the plane, and also have methods for providing per-user storage. The storage is persistent across user logins and will be deleted when the plane is deleted.</p>
 </section>
+
+
+
+
+
 
 <section>
 	<h1>Plane API</h1>
@@ -119,12 +123,16 @@ get_data('player2', success);
 get_data({player2: {points: true}}, success);
 </pre>
 
-<a name="get_plane_name"></a>
-	<h2>get_plane_name()</h2>
 
-	<a name="get_plane_name"></a>
-	<p>Returns the name of the current plane as a string.</p>
-	<pre class="prettyprint linenums">
+
+
+
+<a name="get_plane_name"></a>
+<h2>get_plane_name()</h2>
+
+<a name="get_plane_name"></a>
+<p>Returns the name of the current plane as a string.</p>
+<pre class="prettyprint linenums">
 var plane_name = get_plane_name();
 
 // Prints "test-plane" when run in a plane created with this 
@@ -171,7 +179,7 @@ for (user : users) {
 
 <p>The function <i>set_data</i> is used to store data in the plane storage.</p>
 
-<p>The parameter key is a string or json object specifying the path to the object to retrieve. The parameters success nad error are callbacks for handling a successful and failed call repectively. The success callback should take as argument the returned data, the error callback should take the request as argument.</p>
+<p>The parameter key is a string or json object specifying the path to the object to retrieve. The parameters success nad error are callbacks for handling a successful and failed call respectively. The success callback should take as argument the returned data, the error callback should take the request as argument.</p>
 
 <h3>Example</h3>
 <p>Inserting a new entry in the store is possible. The object as a whole will be added and can later be retrieved, in whole or in part, by <i>get_data</i>.</p>
@@ -205,7 +213,7 @@ var data = {John: {inventory: {bow  : {value: 250 }}}};
 set_data(data);
 </pre>
 
-<p>The callbacks use different parameters. The both the success and error callbacks will be provided a status object containing a </p>
+<p>The callbacks use different parameters. The success callback will be provided the retrieved data while the error callback will be provided a status message.</p>
 
 <pre class="prettyprint linenums">
 var success = function (status) {console.log(status);}
@@ -224,7 +232,7 @@ set_data(data, success, error)
 
 <p>The function <i>get_data</i> is used to retrieve data from the plane storage.</p>
 
-<p>The parameter key is a string or json object specifying the path to the object to retrieve. The parameters success nad error are callbacks for handling a successful and failed call repectively. The success callback should take as argument the returned data, the error callback should take the request as argument.</p>
+<p>The parameter key is a string or json object specifying the path to the object to retrieve. The parameters success and error are callbacks for handling a successful and failed call respectively. The success callback should take as argument the returned data, the error callback should take the request as argument.</p>
 
 <h3>Example</h3>
 <p>When retrieving data from the server one can retrieve data in a number of ways, there are two different syntaxes that are acceptable. The first is to use a json object to specify the path to the object you want fetched. The second is to specify a key as a string. Note that this second syntax cannot access nested elements. Also note that to access all data in the store as a single json object use the path <i>true</i>.</p>
@@ -303,7 +311,7 @@ var data = {inventory: {sword  : {value: 250 }}};
 set_user_data(data);
 </pre>
 
-<p>The callbacks use different parameters. The both the success and error callbacks will be provided a status object containing a </p>
+<p>Both the success and error callbacks will be provided a status object containing a status code and a message describing the success or failure reason.</p>
 
 <pre class="prettyprint linenums">
 var success = function (status) {console.log(status);}
