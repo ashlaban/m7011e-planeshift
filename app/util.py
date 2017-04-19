@@ -32,5 +32,5 @@ def html_escape_or_none(item):
 
 def get_first_html_paragraph(hypertext):
 	soup = BeautifulSoup(hypertext, 'html.parser')
-	return soup.p.string
+	return str(soup.p)
 			
