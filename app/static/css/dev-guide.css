@@ -8,6 +8,19 @@
 	F8E4CC - light linen
 */
 
+h1 { padding-top: 2em; }
+h2 { padding-top: 2em; }
+h3 { padding-top: 1em; }
+
+img {
+	padding-top: 1em;
+	width: 400px;
+}
+
+dt {
+	font-weight: 600;
+}
+
 .subsection-header {
 	align-self: flex-start;
 }

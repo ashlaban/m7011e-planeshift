@@ -14,6 +14,10 @@
 	<h1>Module Developer's Guide</h1>
 	This page contains information neassesary to develop modules for Planeshift. The content of a module is described, as well as how to define metadata such as description and icon image. Documentation of the plane context and js-API needed to communicate with the server is also found here.
 
+	<div class="center-content">
+	<img src="/static/img/dev-guide/developer-module-structure.png" alt="Overview of Content vs. Metadata">
+	</div>
+
 	<h2>Content</h2>
 	<p>A module's content defines its functionality. A module is developed using primarily javascript and html. The content is what will be seen on a plane that is using the module. The content consists of the mandatory file <i>main.js</i>, the optional <i>index.html</i>, and additional resources such as images or css.</p>
 
@@ -42,6 +46,7 @@
 <p>When designing your module, you will have access to a Jinja context. It will be sandboxed, meaning that some attributes and methods are prohibited. For more details of how Jinja templates work, you can have a look at their <a href="http://jinja.pocoo.org/docs/2.9/">documentation</a>.
 </p>
 
+<h3>Local Context</h3>
 <p>
 	The context provided each plane in their <i>index.html</i> consists of jinja variables that can be used for static display, a js-api for communicating with the server and <a href="https://jquery.com">jQuery-3.1.1</a>.
 </p>
@@ -60,6 +65,9 @@
 <pre class="prettyprint linenums">
 &ltimg src="{% raw %}{{module_path}}{% endraw %}/image.png">
 </pre>
+
+<h3>Remote Contex</h3>
+<p>Each plane is additionally provided a storage area on the server called the plane storage. This storage can be interacted with through the js-api.</p>
 
 </section>
 
@@ -143,57 +151,127 @@ console.log(username);
 </p>
 
 <h3>Example</h3>
-<p>If there are two users, John and Cassie connected, the code</p>
+<p>If there are two users, John and Cassie connected, the following code will print their names.</p>
 <pre class="prettyprint linenums">
 var users = get_connected_users();
+
+// Prints
+// 	"John"
+// 	"Cassie"
 for (user : users) {
 	console.log(user);
 }
 </pre>
-will print the following
-<pre class="prettyprint linenums">
-"John"
-"Cassie"
-</pre>
 
-<!-- Get/Set data -->
+
+
+
 <a name="set_data"></a>
 <h2>set_data(data, success, error)</h2>
 
+<p>The function <i>set_data</i> is used to store data in the plane storage.</p>
+
+<p>The parameter key is a string or json object specifying the path to the object to retrieve. The parameters success nad error are callbacks for handling a successful and failed call repectively. The success callback should take as argument the returned data, the error callback should take the request as argument.</p>
+
+<h3>Example</h3>
+<p>Inserting a new entry in the store is possible. The object as a whole will be added and can later be retrieved, in whole or in part, by <i>get_data</i>.</p>
 <pre class="prettyprint linenums">
+// In store: {
+//	Cassie: {inventory: {sword: {value: 100}}},
+// }
+
+// Get all data in the plane user store
+// In store after: {
+//	Cassie: {inventory: {sword: {value: 100}}},
+//	John:   {inventory: {bow  : {value: 50 }}},
+// }
+var data = {John: {inventory: {bow  : {value: 50 }}}};
+set_data(data);
+</pre>
+
+<p>Updating a value is also possible. The difference between the two objects will be noted and the object in the store will be updated with the new values. In this way partial updates can be applied. This can be combined with adding values.</p>
+<pre class="prettyprint linenums">
+// In store: {
+//	Cassie: {inventory: {sword: {value: 100}}},
+//	John:   {inventory: {bow  : {value: 50 }}},
+// }
+
+// Get all data in the plane user store
+// In store after: {
+//	Cassie: {inventory: {sword: {value: 100}}},
+//	John:   {inventory: {bow  : {value: 250}}},
+// }
+var data = {John: {inventory: {bow  : {value: 250 }}}};
+set_data(data);
+</pre>
+
+<p>The callbacks use different parameters. The both the success and error callbacks will be provided a status object containing a </p>
+
+<pre class="prettyprint linenums">
+var success = function (status) {console.log(status);}
+var error   = function (status) {console.log(status);}
+
+// Use like so
+// Prints {status: "ok", msg: "Data stored successfully."}
+// on success.
 set_data(data, success, error)
 </pre>
 
+
+
 <a name="get_data"></a>
 <h2>get_data(key, success, error)</h2>
+
+<p>The function <i>get_data</i> is used to retrieve data from the plane storage.</p>
 
 <p>The parameter key is a string or json object specifying the path to the object to retrieve. The parameters success nad error are callbacks for handling a successful and failed call repectively. The success callback should take as argument the returned data, the error callback should take the request as argument.</p>
 
 <h3>Example</h3>
 <p>When retrieving data from the server one can retrieve data in a number of ways, there are two different syntaxes that are acceptable. The first is to use a json object to specify the path to the object you want fetched. The second is to specify a key as a string. Note that this second syntax cannot access nested elements. Also note that to access all data in the store as a single json object use the path <i>true</i>.</p>
 <pre class="prettyprint linenums">
-// Get all data in the plane store
+// In store: {
+//	Cassie: {inventory: {sword: {value: 100}}},
+//	John:   {inventory: {bow  : {value: 50 }}},
+// }
+
+// Get all data in the plane user store
+// Prints {
+//	Cassie: {inventory: {sword: {value: 100}}},
+//	John:   {inventory: {bow  : {value: 50 }}},
+// }
 get_data(true);
 
 // Get the json object under a specific key
-get_data('key');
-get_data({key: true});
+// print {Cassie: {inventory: {sword: {value: 100}}}}
+get_data('Cassie');
+get_data({Cassie: true});
 
 // Get the json object stored under a nested key
-get_data({key: {nested_key: true}});
+// Prints {inventory {sword: {value: 100}}}
+get_data({Cassie: {inventory: true}});
 </pre>
 
-<p>The callbacks use different parameters. The success callback will be provided the retrieved data while the error callback will be provided the complete request object.</p>
+<p>The callbacks use different parameters. The success callback will be provided the retrieved data while the error callback will be provided a status message.</p>
 
 <pre class="prettyprint linenums">
-var success = function (data)    {console.log(data);   }
-var error   = function (request) {console.log(request);}
+var success = function (data)    {console.log(data);  }
+var error   = function (status)  {console.log(status);}
 
 // Use like so
 get_data(key, success, error)
 </pre>
 
-<!-- Get/Set user data -->
+<p>On error a message indicating the status and the reason behind the error will be provided the callback.</p>
+<pre class="prettyprint linenums">
+{
+	'status': 'error',
+	'msg'   : 'Reason be provided here.',
+}
+</pre>
+
+
+
+
 <a name="set_user_data"></a>
 <h2>set_user_data(data, success, error)</h2>
 
@@ -206,6 +284,39 @@ var wrapper  = {username: data};
 set_data(wrapper);
 </pre>
 
+<h3>Example</h3>
+<p>The same access techniques as for <i>set_data</i> can be used for this function, however the current user's username can be omitted.</p>
+
+<pre class="prettyprint linenums">
+// In store: {
+//	Cassie: {inventory: {sword: {value: 100}}},
+//	John:   {inventory: {bow  : {value: 50 }}},
+// }
+
+// Get all data in the plane user store
+// In store after: {
+//	Cassie: {inventory: {sword: {value: 250}}},
+//	John:   {inventory: {bow  : {value: 50 }}},
+// }
+// (If the current user's username is Cassie.)
+var data = {inventory: {sword  : {value: 250 }}};
+set_user_data(data);
+</pre>
+
+<p>The callbacks use different parameters. The both the success and error callbacks will be provided a status object containing a </p>
+
+<pre class="prettyprint linenums">
+var success = function (status) {console.log(status);}
+var error   = function (status) {console.log(status);}
+
+// Use like so
+// Prints {status: "ok", msg: "Data stored successfully."}
+// on success.
+set_user_data(data, success, error)
+</pre>
+
+
+
 <a name="get_user_data"></a>
 <h2>get_user_data(key, success, error)</h2>
 
@@ -213,6 +324,29 @@ set_data(wrapper);
 <pre class="prettyprint linenums">
 var username = get_username();
 get_data(wrapper);
+</pre>
+
+<h3>Example</h3>
+<p>The same access techniques as for <i>get_data</i> can be used for this function, however the current user's username can be omitted.</p>
+<pre class="prettyprint linenums">
+// In store: {
+//	Cassie: {inventory: {sword: {value: 100}}},
+//	John:   {inventory: {bow  : {value: 50 }}},
+// }
+
+// Get all data in the plane user store
+// Prints {Cassie: {inventory: {sword: {value: 100}}}}
+// (If user is indeed Cassie.)
+get_user_data(true);
+
+// Get the json object under a specific key
+// print {inventory: {sword: {value: 100}}}
+get_user_data('inventory');
+get_user_data({inventory: true});
+
+// Get the json object stored under a nested key
+// Prints {sword: {value: 100}}
+get_user_data({inventory: {sword: true}});
 </pre>
 
 </section>
