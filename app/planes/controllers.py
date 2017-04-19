@@ -278,7 +278,10 @@ def api_store_data(plane_id):
 		try:
 			plane.set_data(data)
 		except r.errors.ReqlDriverCompileError:
-			return util.make_json_error(msg='Invalid request.')	
+			return util.make_json_error(msg='Invalid request.')
+		except:
+			return util.make_json_error(msg='Error setting data.')
+
 		return util.make_json_success(msg='Data stored successfully.')
 	else:	
 		return util.make_json_error(msg='Not connected to plane.')
@@ -302,7 +305,10 @@ def api_get_data(plane_id):
 	plane = Plane.get_plane(plane_id)
 
 	if plane.is_user_connected(g.user):
-		data = plane.get_data(key)
-		return util.make_json_success(data=data)
+		try:
+			data = plane.get_data(key)
+			return util.make_json_success(data=data)
+		except:
+			return util.make_json_error(msg='Error retrieving data for key: ' + str(key))
 	else:
 		return util.make_json_error(msg='No session to plane.')

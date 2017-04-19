@@ -140,6 +140,10 @@ def api_create_module():
 			owner = g.user.id,
 			name  = module_name,
 			latest_version = latest_version,
+			short_desc = 'No description provided yet.',
+			long_desc  = 'No description provided for this module yet.'
+				' Upload a file README.md containing Github Flavoured Markdown'
+				' to provide one.'
 		)
 
 	db.session.add(module)
