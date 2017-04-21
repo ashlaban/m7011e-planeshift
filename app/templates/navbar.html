@@ -30,8 +30,13 @@
 		<li class="nav-filler"></li>
 
 		{% if g.user.is_authenticated %}
-		<li class="nav-button"><a href="/profile">Profile</a></li>
-		<li class="nav-button"><a href="/logout" >Logout</a></li>
+		<li class="nav-menu">
+			<a class="nav-sub-button" href="/profile">{{ g.user.username }}</a>
+			<ul>
+				<li><a class="nav-sub-button" href="/profile">Profile</a></li>
+				<li><a class="nav-sub-button" href="/logout">Logout</a></li>
+			</ul>
+		</li>
 		{% else %}
 		<li class="nav-button"><a href="/signup">Signup</a></li>
 		<li class="nav-button"><a href="/login" >Login</a></li>
