@@ -1,4 +1,4 @@
-var data = {
+var g_data = {
 	stone: 0,
 	wheat: 0,
 	brick: 0,
@@ -7,14 +7,14 @@ var data = {
 }
 
 function mod(amt, type) {
-	if (data[type] + amt < 0) {
+	if (g_data[type] + amt < 0) {
 		return;
 	}
 
-	data[type] += amt;
-	document.getElementById(type).innerHTML = data[type];
+	g_data[type] += amt;
+	document.getElementById(type).innerHTML = g_data[type];
 
-	set_user_data(data);
+	set_user_data(g_data);
 }
 
 document.addEventListener("DOMContentLoaded", function(event) {
@@ -28,16 +28,16 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
 	get_user_data(true, function (data) {
 		if (data[CURRENT_USER]) {
-			data = data[CURRENT_USER];
-			console.log(data)
+			g_data = data[CURRENT_USER];
+			console.log(g_data)
 		}
 		
-		if (data) {
-			document.getElementById("stone").innerHTML = data.stone;
-			document.getElementById("wheat").innerHTML = data.wheat;
-			document.getElementById("brick").innerHTML = data.brick;
-			document.getElementById("wood").innerHTML  = data.wood;
-			document.getElementById("sheep").innerHTML = data.sheep;
+		if (g_data) {
+			document.getElementById("stone").innerHTML = g_data.stone;
+			document.getElementById("wheat").innerHTML = g_data.wheat;
+			document.getElementById("brick").innerHTML = g_data.brick;
+			document.getElementById("wood").innerHTML  = g_data.wood;
+			document.getElementById("sheep").innerHTML = g_data.sheep;
 		}
 	});
 });
