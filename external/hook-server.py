@@ -20,7 +20,9 @@ def redeploy_webserver(path, branch):
 
 	subprocess.run(['sudo', 'systemctl', 'stop', 'planeshift-'+branch])
 	
+	subprocess.run(['git', 'stash'])
 	subprocess.run(['git', 'pull', 'origin', branch])
+	subprocess.run(['git', 'stash', 'pop'])
 
 	# The two lines below is replacement for the above, and handles local changes better
 	# subprocess.run(['git', 'fetch', 'origin', branch])
