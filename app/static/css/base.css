@@ -146,6 +146,8 @@ nav .nav-menu ul {
 	flex-direction: column;
 	align-items: stretch;
 	justify-content: center;
+
+	overflow-x: hidden;
 }
 
 nav .nav-menu ul a {
