@@ -12,32 +12,34 @@ import subprocess
 def redeploy_webserver(path, branch):
 	'''Redeploy a webserver based in a git repo.
 	'''
-
-	# TODO: Add update of python requirements
-	# TODO: What if manage did not exist at first?
-	# TODO: What if manage fails?
 	
 	print('Redeploying {branch} web server'.format(branch=branch))
 
 	cwd = os.getcwd()
 	os.chdir(path)
 
-	subprocess.run(['sudo', './manage', branch, 'stop'])
+	subprocess.run(['sudo', 'systemctl', 'stop', 'planeshift-'+branch])
 	
-	# subprocess.run(['git', 'pull', 'origin', branch])
-	# The two lines below is replacement for the above, and handles local changes better
-	subprocess.run(['git', 'fetch', 'origin', branch])
-	subprocess.run(['git', 'merge', '-s', 'recursive', '-X', 'theirs', 'origin/{}'.format(branch)])
+	subprocess.run(['git', 'pull', 'origin', branch])
 
+	# The two lines below is replacement for the above, and handles local changes better
+	# subprocess.run(['git', 'fetch', 'origin', branch])
+	# subprocess.run(['git', 'merge', '-s', 'recursive', '-X', 'theirs', 'origin/{}'.format(branch)])
+	
 	subprocess.run(['git', 'checkout', branch])
-	subprocess.run(['sudo', './manage', branch, 'start'])
+
+	# Recreate the database and ensure permissions
+	subprocess.run(['rm', 'app.db', '&&', './db_create.py', '&&', './db_init.py', '&&', 'chmod', 'g+w', 'app.db'])
+
+	subprocess.run(['sudo', 'systemctl', 'start', 'planeshift-'+branch])
+
 	os.chdir(cwd)
 	return
 
 app = Flask(__name__)
 app.config['VALIDATE_IP']         = True
 app.config['VALIDATE_SIGNATURE']  = True
-app.config['GITHUB_WEBHOOKS_KEY'] = 'iamacaravanTwo'
+app.config['GITHUB_WEBHOOKS_KEY'] = fill in the correct value here
 
 hooks = Hooks(app, url='/hooks')
 
