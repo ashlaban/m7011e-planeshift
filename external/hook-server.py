@@ -29,7 +29,10 @@ def redeploy_webserver(path, branch):
 	subprocess.run(['git', 'checkout', branch])
 
 	# Recreate the database and ensure permissions
-	subprocess.run(['rm', 'app.db', '&&', './db_create.py', '&&', './db_init.py', '&&', 'chmod', 'g+w', 'app.db'])
+	subprocess.run(['rm', 'app.db'])
+	subprocess.run(['./db_create.py']) 
+	subprocess.run(['./db_init.py'])
+	subprocess.run(['chmod', 'g+w', 'app.db'])
 
 	subprocess.run(['sudo', 'systemctl', 'start', 'planeshift-'+branch])
 
