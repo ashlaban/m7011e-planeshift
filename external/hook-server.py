@@ -9,47 +9,47 @@ import re
 import os
 import subprocess
 
-def redeploy_webserver(path, branch):
+def redeploy_webserver(name, path, branch):
 	'''Redeploy a webserver based in a git repo.
 	'''
 	
-	print('Redeploying {branch} web server'.format(branch=branch))
+	print('Redeploying {name} web server (branch={branch}).'.format(name=name, branch=branch), '\n'*2)
 
 	cwd = os.getcwd()
 	os.chdir(path)
 
 
-	print('Running command: ' + ' '.join(['sudo', 'systemctl', 'stop', 'planeshift-'+branch]))
-	subprocess.run(['sudo', 'systemctl', 'stop', 'planeshift-'+branch])
+	print('Running command: ' + ' '.join(['sudo', 'systemctl', 'stop', name]), '\n'*2)
+	subprocess.run(['sudo', 'systemctl', 'stop', name])
 	
-	print('Running command: ' + ' '.join(['git', 'stash']))
+	print('Running command: ' + ' '.join(['git', 'stash']), '\n'*2)
 	subprocess.run(['git', 'stash'])
-	print('Running command: ' + ' '.join(['git', 'pull', 'origin', branch]))
+	print('Running command: ' + ' '.join(['git', 'pull', 'origin', branch]), '\n'*2)
 	subprocess.run(['git', 'pull', 'origin', branch])
-	print('Running command: ' + ' '.join(['git', 'stash', 'pop']))
+	print('Running command: ' + ' '.join(['git', 'stash', 'pop']), '\n'*2)
 	subprocess.run(['git', 'stash', 'pop'])
 
 	# The two lines below is replacement for the above, and handles local changes better
-	# print('Running command: ' + ' '.join(['git', 'fetch', 'origin', branch]))
+	# print('Running command: ' + ' '.join(['git', 'fetch', 'origin', branch]), '\n'*2)
 	# subprocess.run(['git', 'fetch', 'origin', branch])
-	# print('Running command: ' + ' '.join(['git', 'merge', '-s', 'recursive', '-X', 'theirs', 'origin/{}'.format(branch)]))
+	# print('Running command: ' + ' '.join(['git', 'merge', '-s', 'recursive', '-X', 'theirs', 'origin/{}'.format(branch)]), '\n'*2)
 	# subprocess.run(['git', 'merge', '-s', 'recursive', '-X', 'theirs', 'origin/{}'.format(branch)])
 	
-	print('Running command: ' + ' '.join(['git', 'checkout', branch]))
+	print('Running command: ' + ' '.join(['git', 'checkout', branch]), '\n'*2)
 	subprocess.run(['git', 'checkout', branch])
 
 	# Recreate the database and ensure permissions
-	print('Running command: ' + ' '.join(['rm', 'app.db']))
+	print('Running command: ' + ' '.join(['rm', 'app.db']), '\n'*2)
 	subprocess.run(['rm', 'app.db'])
-	print('Running command: ' + ' '.join(['./db_create.py'])))
+	print('Running command: ' + ' '.join(['./db_create.py']), '\n'*2)
 	subprocess.run(['./db_create.py']) 
-	print('Running command: ' + ' '.join(['./db_init.py']))
+	print('Running command: ' + ' '.join(['./db_init.py']), '\n'*2)
 	subprocess.run(['./db_init.py'])
-	print('Running command: ' + ' '.join(['chmod', 'g+w', 'app.db']))
+	print('Running command: ' + ' '.join(['chmod', 'g+w', 'app.db']), '\n'*2)
 	subprocess.run(['chmod', 'g+w', 'app.db'])
 
-	print('Running command: ' + ' '.join(['sudo', 'systemctl', 'start', 'planeshift-'+branch]))
-	subprocess.run(['sudo', 'systemctl', 'start', 'planeshift-'+branch])
+	print('Running command: ' + ' '.join(['sudo', 'systemctl', 'start', name]), '\n'*2)
+	subprocess.run(['sudo', 'systemctl', 'start', name])
 
 	os.chdir(cwd)
 	return
@@ -63,7 +63,7 @@ hooks = Hooks(app, url='/hooks')
 
 @hooks.hook('ping')
 def ping(data, guid):
-	print('Received: {}'.format(data))
+	print('Received: {}'.format(data), '\n'*2)
 	return 'pong'
 
 @hooks.hook('push')
@@ -85,11 +85,13 @@ def push(data, guid):
 	# Pushing to master means redeploy development server.
 	# Pushing to 'prod' means redeploy production server.
 	if branch == 'prod':
-		path = '/var/local/www/m7011e/prod'
+		service_path = '/var/local/www/m7011e/prod'
+		service_name = 'planeshift-prod'
 	elif branch == 'master':
-		path = '/var/local/www/m7011e/dev'
+		service_path = '/var/local/www/m7011e/dev'
+		service_name = 'planeshift-dev'
 
-	redeploy_webserver(path, branch)
+	redeploy_webserver(service_name, service_path, branch)
 	return 'OK!'
 
 app.run(host='0.0.0.0', port=8999)
