@@ -23,7 +23,7 @@ p {
 
 #dropzone {
 	padding: 2em 0 2em 0;
-	min-width: 25em;
+	min-width: 35em;
 	min-height: 5em;
 }
 
@@ -34,4 +34,31 @@ p {
 #files {
 	position: absolute;
 	top: -100em;
+}
+
+.file-list-item {
+	width: 30em;
+	display: inline-flex;
+	justify-content: stretch;
+}
+
+.delete-item {
+	width: 2em;
+	height: 2em;
+}
+
+.file {
+	display: inline-flex;
+	padding: 0em 1em;
+	width: calc(100% - 2em);
+}
+
+.file-text {
+	vertical-align: middle;
+	line-height: 2em;
+}
+
+.file--highlight {
+	background-color: #8FBCDB;
+	border-radius: 5px;
 }

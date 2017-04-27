@@ -122,13 +122,21 @@ PlaneshiftViewModel.prototype.leave_plane = function (name, success, error) {
 // ========================================================================
 // === FILES
 // ========================================================================
+PlaneshiftViewModel.prototype.contains_file = function (file) {
+	for (var list_file of this.file_list()) {
+		if (list_file.name === file.name) {return true;}
+	}
+	return false;
+}
+
 PlaneshiftViewModel.prototype.add_file = function (file) {
-	this.file_list.push(file);
+	if (! this.contains_file(file)) {
+		this.file_list.push(file);
+	}
 }
 
 PlaneshiftViewModel.prototype.add_files = function (files) {
-	var length = files.length;
-	for (var i = 0; i < length; ++i) {
+	for (var i = 0; i < files.length; ++i) {
 		var file = files[i];
 		this.add_file(file);
 	}
