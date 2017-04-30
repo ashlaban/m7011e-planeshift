@@ -71,20 +71,20 @@
 		// Dragging and dropping
 		var box = document.getElementById('box');
 		var dropzone = document.getElementById('dropzone');
-		box.addEventListener('dragover', function(ev) {
+		dropzone.addEventListener('dragover', function(ev) {
 			ev.preventDefault()
 			document.getElementById('dropzone-label').innerHTML = 'Drop them!';
 			console.log('Enter dropzone');
 		}, false);
-		box.addEventListener('dragleave', function(ev) {
+		dropzone.addEventListener('dragleave', function(ev) {
 			ev.preventDefault()
-			document.getElementById('dropzone-label').innerHTML = 'Drag files here';
+			document.getElementById('dropzone-label').innerHTML = 'Drag files here or click "Add files"';
 			console.log('Exit dropzone');
 		}, false);
 
-		box.addEventListener('drop', function(ev) {
+		dropzone.addEventListener('drop', function(ev) {
 			ev.preventDefault()
-			document.getElementById('dropzone-label').innerHTML = 'Drag files here';
+			document.getElementById('dropzone-label').innerHTML = 'Drag files here or click "Add files"';
 			planeshift_view_model.add_files(event.dataTransfer.files);
 		}, false);
 
@@ -97,8 +97,8 @@
 
 		// http://stackoverflow.com/questions/6756583/prevent-browser-from-loading-a-drag-and-dropped-file
 		function prevent_default(e) {e = e || event; e.preventDefault();}
-		window.addEventListener("drop"    , prevent_default, false);
-		window.addEventListener("dragover", prevent_default, false);
+		window.addEventListener('drop'    , prevent_default, false);
+		window.addEventListener('dragover', prevent_default, false);
 
 		// Final init
 		ko.applyBindings(planeshift_view_model);
@@ -111,7 +111,7 @@
 	<div id="box" class="form-box rounded center-content">
 		<h1>{{module_name}} - New Version</h1>
 		<p>Upload your main.js module file and be good to go! You can also upload additional resources. See the <a href="/dev-guide">module guide</a> for more info.</p>
-		<p><em>Note: Modules that do not conform to the site guidelines are subject to deletion.</em></p>
+		<!-- <p><em>Note: Modules that do not conform to the site guidelines are subject to deletion.</em></p> -->
 		<!-- TODO: Link to module info page. -->
 		<!-- TODO: Link to guidelines. -->
 		<p id="info" class="error"></p>
@@ -121,27 +121,33 @@
 			<input id="files" multiple="" name="files" type="file">
 
 			<div id="dropzone" class="center-content">
-				<span id="dropzone-label" data-bind="if: file_list().length==0">Drag files here</span>
-				<ul data-bind="foreach: file_list">
-					<li class="file-list-item">
-						<span class="delete-item fa-stack" data-bind="click: function(){planeshift_view_model.remove_file(name)}">
-							<span class="fa fa-trash-o fa-stack-1x"></span>
-							<span class="fa fa-trash fa-stack-1x"></span>
-						</span>
-						<span class="file" data-bind=" css: {'file--highlight': name=='icon' || name=='README.md'}">
-							<span class="file-text" data-bind="text:name"></span>
-							<span class="filler"></span>
-							<span class="file-text file-role" data-bind="if: name=='icon'">new icon</span>
-							<span class="file-text file-role" data-bind="if: name=='README.md'">new description</span>
-						</span>
-					</li>
-				</ul>
+				<span>
+					<span id="dropzone-label" data-bind="if: file_list().length==0">Drag files here or click "Add files"</span>
+					<ul data-bind="foreach: file_list">
+						<li class="list-row">
+							<span class="delete-item fa-stack" data-bind="click: function(){planeshift_view_model.remove_file(name)}">
+								<span class="fa fa-trash-o fa-stack-1x"></span>
+								<span class="fa fa-trash fa-stack-1x"></span>
+							</span>
+							<span class="list-row-text">
+								<span class="file-name" data-bind="text:name"></span>
+								<span class="filler"></span>
+								<!-- ko if: name=='icon' -->
+								{{ macros.badge_new_icon() }}
+								<!-- /ko -->
+								<!-- ko if: name=='README.md'-->
+								{{ macros.badge_new_description() }}
+								<!-- /ko -->
+							</span>
+						</li>
+					</ul>
+				</span>
 			</div>
 
 			<div class="btn-list">
-				{{macros.button("fa-upload", "Upload"   , "upload-btn"     )}}
 				{{macros.button("fa-plus"  , "Add files", "add-files-btn"  )}}
 				{{macros.button("fa-eraser", "Clear"    , "clear-files-btn")}}
+				{{macros.button("fa-upload", "Upload"   , "upload-btn"     )}}
 			</div>
 		</form>
 	</div>

@@ -6,24 +6,36 @@
 {# Used for displaying short info #}
 
 {% macro badge_password_protected() %}
-<span class="badge badge--foldable">
-	<i class="fa fa-lock fa-lg" aria-hidden="true"></i>
-	<span class="badge--fold">Password protected</span>
-</span>
+{{ badge_simple('fa-lock', 'Password protected') }}
 {% endmacro %}
 
 {% macro badge_connected_users() %}
-<span class="badge badge--foldable">
-	<i class="fa fa-user fa-lg" aria-hidden="true"></i>
-	<span class="badge--fold">Connected users</span>
-	<span data-bind="text: users.length"></span>
-</span>
+{{ badge_simple(
+	'fa-user',
+	'Connected users',
+	'<span data-bind="text: users.length"></span>'
+)}}
 {% endmacro %}
 
-{% macro badge_simple(icon, text) %}
+{% macro badge_new_icon() %}
+{{ badge_simple(
+	'fa-image',
+	'New Icon'
+)}}
+{% endmacro %}
+
+{% macro badge_new_description() %}
+{{ badge_simple(
+	'fa-pencil-square-o',
+	'New Description'
+)}}
+{% endmacro %}
+
+{% macro badge_simple(icon, text, html) %}
 <span class="badge badge--foldable">
 	<i class="fa {{icon}} fa-lg" aria-hidden="true"></i>
 	<span class="badge--fold">{{text}}</span>
+	{{html|safe}}
 </span>
 {% endmacro %}
 

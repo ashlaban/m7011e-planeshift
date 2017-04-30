@@ -27,6 +27,8 @@ p {
 	min-height: 5em;
 }
 
+#dropzone-label * { pointer-events: none; }
+
 #dropzone-label {
 	color: #aaaaaa;
 }
@@ -36,7 +38,7 @@ p {
 	top: -100em;
 }
 
-.file-list-item {
+.list-row {
 	width: 30em;
 	display: inline-flex;
 	justify-content: stretch;
@@ -47,13 +49,13 @@ p {
 	height: 2em;
 }
 
-.file {
+.list-row-text {
 	display: inline-flex;
 	padding: 0em 1em;
 	width: calc(100% - 2em);
 }
 
-.file-text {
+.file-name {
 	vertical-align: middle;
 	line-height: 2em;
 }
