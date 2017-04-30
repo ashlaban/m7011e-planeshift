@@ -72,18 +72,18 @@
 		var box = document.getElementById('box');
 		var dropzone = document.getElementById('dropzone');
 		dropzone.addEventListener('dragover', function(ev) {
-			ev.preventDefault()
+			ev.preventDefault();
 			document.getElementById('dropzone-label').innerHTML = 'Drop them!';
 			console.log('Enter dropzone');
 		}, false);
 		dropzone.addEventListener('dragleave', function(ev) {
-			ev.preventDefault()
+			ev.preventDefault();
 			document.getElementById('dropzone-label').innerHTML = 'Drag files here or click "Add files"';
 			console.log('Exit dropzone');
 		}, false);
 
 		dropzone.addEventListener('drop', function(ev) {
-			ev.preventDefault()
+			ev.preventDefault();
 			document.getElementById('dropzone-label').innerHTML = 'Drag files here or click "Add files"';
 			planeshift_view_model.add_files(event.dataTransfer.files);
 		}, false);
@@ -91,7 +91,6 @@
 		// Update file field
 		var filefield = document.getElementById('files');
 		filefield.addEventListener('change', function (ev) {
-			console.log('test');
 			planeshift_view_model.add_files(ev.target.files);
 		});
 
@@ -132,10 +131,10 @@
 							<span class="file-name" data-bind="text:name"></span>
 							<span class="filler"></span>
 							<!-- ko if: name=='icon' -->
-							{{ macros.badge_new_icon() }}
+							{{ macros.button_new_icon() }}
 							<!-- /ko -->
 							<!-- ko if: name=='README.md'-->
-							{{ macros.badge_new_description() }}
+							{{ macros.button_new_description() }}
 							<!-- /ko -->
 						</li>
 					</ul>

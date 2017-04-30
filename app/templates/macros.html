@@ -17,20 +17,6 @@
 )}}
 {% endmacro %}
 
-{% macro badge_new_icon() %}
-{{ badge_simple(
-	'fa-image',
-	'New Icon'
-)}}
-{% endmacro %}
-
-{% macro badge_new_description() %}
-{{ badge_simple(
-	'fa-pencil-square-o',
-	'New Description'
-)}}
-{% endmacro %}
-
 {% macro badge_simple(icon, text, html) %}
 <span class="badge badge--foldable">
 	<i class="fa {{icon}} fa-lg" aria-hidden="true"></i>
@@ -43,12 +29,12 @@
 {# These are as badges but also clickable #}
 
 {% macro button_simple(icon, text, redirect) %}
-<button class="btn badge badge--foldable">
+<div class="btn badge badge--foldable">
 	<a href="{{redirect}}">
 		<i class="fa {{icon}} fa-lg" aria-hidden="true"></i>
 		<span class="badge--fold">{{text}}</span>
 	</a>
-</button>
+</div>
 {% endmacro %}
 
 {% macro button_new_plane() %}
@@ -57,6 +43,14 @@
 
 {% macro button_new_module() %}
 {{ button_simple("fa-plus", "New Module", "/modules/create") }}
+{% endmacro %}
+
+{% macro button_new_icon() %}
+{{ button_simple("fa-image", "New Icon", "/dev-guide#icon")}}
+{% endmacro %}
+
+{% macro button_new_description() %}
+{{ button_simple("fa-pencil-square-o", "New Description", "/dev-guide#README.md")}}
 {% endmacro %}
 
 {# === Buttons === #}
