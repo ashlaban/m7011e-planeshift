@@ -123,22 +123,20 @@
 			<div id="dropzone" class="center-content">
 				<span>
 					<span id="dropzone-label" data-bind="if: file_list().length==0">Drag files here or click "Add files"</span>
-					<ul data-bind="foreach: file_list">
+					<ul class="file-list" data-bind="foreach: file_list">
 						<li class="list-row">
 							<span class="delete-item fa-stack" data-bind="click: function(){planeshift_view_model.remove_file(name)}">
 								<span class="fa fa-trash-o fa-stack-1x"></span>
 								<span class="fa fa-trash fa-stack-1x"></span>
 							</span>
-							<span class="list-row-text">
-								<span class="file-name" data-bind="text:name"></span>
-								<span class="filler"></span>
-								<!-- ko if: name=='icon' -->
-								{{ macros.badge_new_icon() }}
-								<!-- /ko -->
-								<!-- ko if: name=='README.md'-->
-								{{ macros.badge_new_description() }}
-								<!-- /ko -->
-							</span>
+							<span class="file-name" data-bind="text:name"></span>
+							<span class="filler"></span>
+							<!-- ko if: name=='icon' -->
+							{{ macros.badge_new_icon() }}
+							<!-- /ko -->
+							<!-- ko if: name=='README.md'-->
+							{{ macros.badge_new_description() }}
+							<!-- /ko -->
 						</li>
 					</ul>
 				</span>
