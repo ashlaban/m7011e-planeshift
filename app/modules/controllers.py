@@ -40,6 +40,11 @@ def create_module():
 	form = CreateForm()
 	return render_template('modules/create.html', form=form)
 
+@modules.route('/upload', methods=['GET'])
+@modules.route('/upload/', methods=['GET'])
+def module_page_not_found_upload():
+	return render_template('/404.html')
+
 @modules.route('/upload/<name>', methods=['GET'])
 def upload_module(name):
 	if not g.user.is_authenticated:
@@ -55,6 +60,11 @@ def upload_module(name):
 		return render_template('modules/403.html', name=name)
 
 	return render_template('modules/upload.html', module_name=name)
+
+@modules.route('/name', methods=['GET'])
+@modules.route('/name/', methods=['GET'])
+def module_page_not_found_name():
+	return render_template('/404.html')
 
 @modules.route('/name/<name>')
 def info_module(name):

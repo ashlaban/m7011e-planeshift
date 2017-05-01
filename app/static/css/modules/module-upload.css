@@ -28,6 +28,7 @@ p {
 	min-height: 5em;
 }
 
+#dropzone-label { pointer-events: none; }
 #dropzone-label * { pointer-events: none; }
 
 #dropzone-label {

@@ -80,6 +80,11 @@ def create_plane():
 	else:
 		return redirect(url_for('login'))
 
+@planes.route('/name', methods=['GET'])
+@planes.route('/name/', methods=['GET'])
+def plane_page_not_found_upload():
+	return render_template('/404.html')
+
 @planes.route('/name/<name>', methods=['GET', 'POST'])
 @login_required
 def show_plane(name):
