@@ -23,7 +23,8 @@ p {
 
 #dropzone {
 	padding: 2em 0 2em 0;
-	min-width: 35em;
+	min-width: 25em;
+	max-width: 25em;
 	min-height: 5em;
 }
 
@@ -39,7 +40,7 @@ p {
 }
 
 .file-list {
-	padding: 0em 3em;
+	padding: 0em 0em;
 }
 
 .list-row {

@@ -28,9 +28,14 @@
 {# === Badge Buttons === #}
 {# These are as badges but also clickable #}
 
-{% macro button_simple(icon, text, redirect) %}
+{% macro button_simple(icon, text, redirect, open_in_new_tab) %}
 <div class="btn badge badge--foldable">
-	<a href="{{redirect}}">
+	{% if open_in_new_tab: %}
+		<a href="{{redirect}}" target="_blank">
+	{% else: %}
+		<a href="{{redirect}}">
+	{% endif %}
+
 		<i class="fa {{icon}} fa-lg" aria-hidden="true"></i>
 		<span class="badge--fold">{{text}}</span>
 	</a>
@@ -38,19 +43,19 @@
 {% endmacro %}
 
 {% macro button_new_plane() %}
-{{ button_simple("fa-plus", "New Plane", "/planes/create") }}
+{{ button_simple("fa-plus", "New Plane", "/planes/create", false) }}
 {% endmacro %}
 
 {% macro button_new_module() %}
-{{ button_simple("fa-plus", "New Module", "/modules/create") }}
+{{ button_simple("fa-plus", "New Module", "/modules/create", false) }}
 {% endmacro %}
 
 {% macro button_new_icon() %}
-{{ button_simple("fa-image", "New Icon", "/dev-guide#icon")}}
+{{ button_simple("fa-image", "New Icon", "/dev-guide#icon", true)}}
 {% endmacro %}
 
 {% macro button_new_description() %}
-{{ button_simple("fa-pencil-square-o", "New Description", "/dev-guide#README.md")}}
+{{ button_simple("fa-pencil-square-o", "New Description", "/dev-guide#README.md", true)}}
 {% endmacro %}
 
 {# === Buttons === #}
